@@ -1,0 +1,16 @@
+# OCR
+pytesseract>=0.3.10
+Pillow>=10.0.0
+
+# PDF processing
+pymupdf>=1.23.0
+
+# Markdown processing
+markdown-it-py>=3.0.0
+
+# Computer vision
+opencv-python>=4.8.0
+
+# Data handling
+pydantic>=2.0.0
+numpy>=1.26.0
