@@ -2,9 +2,11 @@ version: "1.0"
 id: "entregable-2-arquitectura"
 description: "Evaluación Entregable 2 - Arquitectura y Diseño del Sistema"
 
-models:
-  text: "qwen3:32b"
-  vision: "qwen3-vl:30b"
+provider:
+  type: "dashscope"
+  region: "singapore"
+  text_model: "qwen3.6-plus"
+  vision_model: "qwen-vl-max"
 
 rubric:
   criteria:

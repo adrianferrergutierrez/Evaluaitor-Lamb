@@ -31,9 +31,17 @@ class CriterionConfig(BaseModel):
 
 
 class ModelsConfig(BaseModel):
-    """LLM model configuration."""
+    """LLM model configuration (legacy Ollama)."""
     text: str = "qwen3:32b"
     vision: str = "qwen3-vl:30b"
+
+
+class ProviderConfig(BaseModel):
+    """Cloud provider configuration (DashScope, etc.)."""
+    type: str = "dashscope"
+    region: str = "singapore"
+    text_model: str = "qwen3.6-plus"
+    vision_model: str = "qwen-vl-max"
 
 
 class OptionsConfig(BaseModel):
@@ -42,6 +50,8 @@ class OptionsConfig(BaseModel):
     skip_existing: bool = False
     min_text_model_size: str = "14b"
     min_vision_model_size: str = "7b"
+    enable_feedback: bool = False
+    detailed_scoring: bool = False
 
 
 class RubricConfig(BaseModel):
@@ -49,7 +59,8 @@ class RubricConfig(BaseModel):
     version: str = "1.0"
     id: str = "default"
     description: str = ""
-    models: ModelsConfig = Field(default_factory=ModelsConfig)
+    models: Optional[ModelsConfig] = None
+    provider: Optional[ProviderConfig] = Field(default_factory=ProviderConfig)
     rubric: Dict[str, List[CriterionConfig]]
     options: OptionsConfig = Field(default_factory=OptionsConfig)
 

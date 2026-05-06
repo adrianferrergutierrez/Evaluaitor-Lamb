@@ -19,7 +19,14 @@ import requests
 
 logger = logging.getLogger(__name__)
 
-DASHSCOPE_BASE_URL = "https://dashscope.aliyuncs.com/compatible-mode/v1"
+DASHSCOPE_ENDPOINTS = {
+    "singapore": "https://dashscope-intl.aliyuncs.com/compatible-mode/v1",
+    "us": "https://dashscope-us.aliyuncs.com/compatible-mode/v1",
+    "china": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+}
+
+DEFAULT_MODEL = os.environ.get("DASHSCOPE_MODEL", "qwen3.5-plus")
+DEFAULT_ENDPOINT = os.environ.get("DASHSCOPE_ENDPOINT", "singapore")
 
 
 class DashScopeClient:
@@ -37,9 +44,14 @@ class DashScopeClient:
         self,
         api_key: Optional[str] = None,
         base_url: Optional[str] = None,
+        region: Optional[str] = None,
     ):
         self.api_key = api_key or os.environ.get("DASHSCOPE_API_KEY", "")
-        self.base_url = (base_url or DASHSCOPE_BASE_URL).rstrip("/")
+        self.region = (region or os.environ.get("DASHSCOPE_REGION", "singapore")).lower()
+        self.base_url = (
+            base_url
+            or DASHSCOPE_ENDPOINTS.get(self.region, DASHSCOPE_ENDPOINTS["singapore"])
+        ).rstrip("/")
         self.session = requests.Session()
         self.session.headers.update({
             "Authorization": f"Bearer {self.api_key}",

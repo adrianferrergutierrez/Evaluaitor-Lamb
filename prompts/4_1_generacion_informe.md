@@ -8,27 +8,14 @@ Genera un informe final de síntesis basado en todas las evaluaciones realizadas
 
 # Generación de Informe Final de Evaluación
 
-## Evaluaciones Realizadas:
+## Documento Evaluado:
+--{DOCUMENTO}--
 
-### Evaluación de Objetivos (20%):
---{EVAL_OBJETIVOS}--
+## Evaluaciones Realizadas por Criterio:
 
-### Evaluación de Requisitos de Información (15%):
---{EVAL_REQUISITOS_INFO}--
+--{EVALUACIONES}--
 
-### Evaluación de Requisitos No Funcionales (10%):
---{EVAL_REQUISITOS_NF}--
-
-### Evaluación de Casos de Uso (35%):
---{EVAL_CASOS_USO}--
-
-### Evaluación de Matrices (20%):
---{EVAL_MATRICES}--
-
-### Puntuaciones extraídas:
---{PUNTUACIONES}--
-
-### Nota final calculada:
+## Nota final calculada:
 --{NOTA_FINAL}--
 
 ## Instrucciones para el Informe:
@@ -37,7 +24,7 @@ Genera un informe de síntesis que incluya:
 
 ### 1. Resumen Ejecutivo
 - Nota final y nivel de desempeño
-- Evaluación general del proyecto
+- Evaluación general del documento
 - Principales fortalezas y debilidades
 
 ### 2. Análisis por Criterios
@@ -46,9 +33,9 @@ Genera un informe de síntesis que incluya:
 - Coherencia general entre elementos
 
 ### 3. Observaciones Transversales
-- Patrones identificados en todo el proyecto
-- Coherencia entre objetivos, requisitos y casos de uso
+- Patrones identificados en todo el documento
 - Calidad general de la documentación
+- Aspectos destacables
 
 ### 4. Recomendaciones Prioritarias
 - 3-5 recomendaciones específicas para mejorar
@@ -68,3 +55,5 @@ Genera un informe de síntesis que incluya:
 **Formato**: Markdown con estructura clara y lenguaje profesional pero accesible.
 **Extensión**: 800-1200 palabras aproximadamente.
 **Tono**: Constructivo y orientado a la mejora.
+
+**Nota importante**: Este informe es una herramienta de apoyo. La calificación final es responsabilidad exclusiva del profesorado.

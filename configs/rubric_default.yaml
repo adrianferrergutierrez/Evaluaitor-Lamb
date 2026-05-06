@@ -2,9 +2,11 @@ version: "1.0"
 id: "entregable-1-uso"
 description: "Evaluación Entregable 1 - Casos de Uso"
 
-models:
-  text: "qwen3:32b"
-  vision: "qwen3-vl:30b"
+provider:
+  type: "dashscope"
+  region: "singapore"
+  text_model: "qwen3.6-plus"
+  vision_model: "qwen-vl-max"
 
 rubric:
   criteria:
@@ -32,5 +34,3 @@ rubric:
 options:
   multimodal: true
   skip_existing: false
-  min_text_model_size: "14b"
-  min_vision_model_size: "7b"
