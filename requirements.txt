@@ -19,5 +19,8 @@ markdown-it-py>=3.0.0
 # Data validation (optional, for structured outputs)
 pydantic>=2.0.0
 
+# YAML configuration loading
+pyyaml>=6.0,<7.0
+
 # Numeric utilities (optional, for extended grading statistics)
 numpy>=1.26.0

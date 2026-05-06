@@ -1,0 +1,48 @@
+version: "1.0"
+id: "entregable-2-arquitectura"
+description: "Evaluación Entregable 2 - Arquitectura y Diseño del Sistema"
+
+models:
+  text: "qwen3:32b"
+  vision: "qwen3-vl:30b"
+
+rubric:
+  criteria:
+    - id: "arquitectura_general"
+      name: "Arquitectura General del Sistema"
+      weight: 0.25
+      prompt: "4_1_evaluacion_arquitectura_general.md"
+      description: "Evalúa la claridad, coherencia y adecuación de la arquitectura propuesta para el sistema"
+    - id: "diagramas_clase"
+      name: "Diagramas de Clases"
+      weight: 0.20
+      prompt: "4_2_evaluacion_diagramas_clase.md"
+      description: "Evalúa la calidad y completitud de los diagramas de clases del diseño"
+    - id: "diagramas_secuencia"
+      name: "Diagramas de Secuencia"
+      weight: 0.15
+      prompt: "4_3_evaluacion_diagramas_secuencia.md"
+      description: "Evalúa la representación de las interacciones entre componentes del sistema"
+    - id: "modelo_datos"
+      name: "Modelo de Datos"
+      weight: 0.20
+      prompt: "4_4_evaluacion_modelo_datos.md"
+      description: "Evalúa el diseño de la base de datos y estructura de datos del sistema"
+    - id: "patrones_diseno"
+      name: "Patrones de Diseño Aplicados"
+      weight: 0.10
+      prompt: "4_5_evaluacion_patrones_diseno.md"
+      description: "Evalúa la identificación y aplicación adecuada de patrones de diseño"
+    - id: "consideraciones_tecnicas"
+      name: "Consideraciones Técnicas"
+      weight: 0.10
+      prompt: "4_6_evaluacion_consideraciones_tecnicas.md"
+      description: "Evalúa las decisiones tecnológicas, escalabilidad y mantenibilidad"
+
+options:
+  multimodal: true
+  skip_existing: false
+  min_text_model_size: "14b"
+  min_vision_model_size: "7b"
+  enable_feedback: true
+  detailed_scoring: true

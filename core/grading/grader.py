@@ -43,6 +43,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
+from core.config.config_manager import ConfigManager, RubricConfig
+
 logger = logging.getLogger(__name__)
 
 
@@ -246,7 +248,6 @@ class ScoreExtractor:
 
 # ---------------------------------------------------------------------------
 # Rubric grader
-# Migrated from Lamb-Project/SE-rubric-evaluAItor utils/report_generator.py (GPL-3.0)
 # ---------------------------------------------------------------------------
 
 # Default rubric weights (must sum to 1.0)
@@ -288,6 +289,7 @@ class GradingResult:
     weights: Dict[str, float]
     weighted_final: float
     mean_xbar: float
+    labels: Dict[str, str] = field(default_factory=dict)
     performance_level: str = ""
     evaluated_file: str = ""
     evaluated_at: str = field(default_factory=lambda: datetime.now().isoformat())
@@ -306,7 +308,7 @@ class GradingResult:
     def rubric_table_markdown(self) -> str:
         """Render a Markdown rubric table."""
         rows = []
-        for key, label in DEFAULT_CRITERION_LABELS.items():
+        for key, label in self.labels.items():
             if key not in self.scores:
                 continue
             score = self.scores[key]
@@ -336,7 +338,10 @@ class RubricGrader:
     ----------
     weights:
         Criterion weights (normalised internally).  Defaults to
-        :data:`DEFAULT_WEIGHTS`.
+        :data:`DEFAULT_WEIGHTS` or loaded from config file.
+    labels:
+        Human-readable labels for each criterion. Defaults to
+        :data:`DEFAULT_CRITERION_LABELS`.
     evaluated_file:
         Optional name of the evaluated document (for reports).
     """
@@ -344,11 +349,36 @@ class RubricGrader:
     def __init__(
         self,
         weights: Optional[Dict[str, float]] = None,
+        labels: Optional[Dict[str, str]] = None,
         evaluated_file: str = "",
     ) -> None:
         self.weights = weights or dict(DEFAULT_WEIGHTS)
+        self.labels = labels or dict(DEFAULT_CRITERION_LABELS)
         self.evaluated_file = evaluated_file
         self._extractor = ScoreExtractor()
+
+    @classmethod
+    def from_config(cls, config_path: Optional[str | Path] = None, **kwargs) -> "RubricGrader":
+        """Create a RubricGrader from a YAML configuration file.
+
+        Parameters
+        ----------
+        config_path:
+            Path to YAML config file. Uses default if None.
+        **kwargs:
+            Additional arguments passed to RubricGrader (e.g., evaluated_file).
+
+        Returns
+        -------
+        RubricGrader
+        """
+        manager = ConfigManager(config_path)
+        cfg = manager.load()
+        return cls(
+            weights=cfg.weights,
+            labels=cfg.labels,
+            **kwargs,
+        )
 
     def grade(
         self,
@@ -388,6 +418,7 @@ class RubricGrader:
         return GradingResult(
             scores=extracted,
             weights=self.weights,
+            labels=self.labels,
             weighted_final=round(wfinal, 2),
             mean_xbar=round(xbar, 4),
             performance_level=level,
@@ -429,6 +460,10 @@ def main() -> None:
             "Markdown files (e.g. eval_obj.md:objetivos eval_cu.md:casos_uso)"
         ),
     )
+    parser.add_argument(
+        "--config", type=str, default=None,
+        help="Path to YAML rubric config file (default: configs/rubric_default.yaml)",
+    )
     args = parser.parse_args()
 
     result: Dict[str, Any] = {}
@@ -443,7 +478,7 @@ def main() -> None:
         result["weighted_final"] = round(weighted_score(items), 2)
 
     if args.eval_md:
-        grader = RubricGrader()
+        grader = RubricGrader.from_config(args.config) if args.config else RubricGrader()
         eval_results: Dict[str, str] = {}
         for pair in args.eval_md:
             if ":" not in pair:

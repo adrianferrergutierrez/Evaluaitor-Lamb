@@ -1,0 +1,36 @@
+version: "1.0"
+id: "entregable-1-uso"
+description: "Evaluación Entregable 1 - Casos de Uso"
+
+models:
+  text: "qwen3:32b"
+  vision: "qwen3-vl:30b"
+
+rubric:
+  criteria:
+    - id: "objetivos"
+      name: "Objetivos del Sistema"
+      weight: 0.20
+      prompt: "3_1_evaluacion_objetivos.md"
+    - id: "requisitos_info"
+      name: "Requisitos de Información"
+      weight: 0.15
+      prompt: "3_2_evaluacion_requisitos_info.md"
+    - id: "requisitos_nf"
+      name: "Requisitos No Funcionales"
+      weight: 0.10
+      prompt: "3_3_evaluacion_requisitos_nf.md"
+    - id: "casos_uso"
+      name: "Casos de Uso"
+      weight: 0.35
+      prompt: "3_4_evaluacion_caso_uso.md"
+    - id: "matrices"
+      name: "Matrices de Trazabilidad"
+      weight: 0.20
+      prompt: "3_5_evaluacion_matrices.md"
+
+options:
+  multimodal: true
+  skip_existing: false
+  min_text_model_size: "14b"
+  min_vision_model_size: "7b"

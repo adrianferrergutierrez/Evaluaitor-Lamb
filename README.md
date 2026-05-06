@@ -36,7 +36,11 @@ SE-Agentic-Evaluator/
 ├── .opencode/
 │   └── skills/
 │       └── evaluator_skill.md      # Definición de la Skill para opencode.ai
+├── configs/
+│   └── rubric_default.yaml         # Rúbrica por defecto (pesos, modelos, prompts)
 ├── core/
+│   ├── config/
+│   │   └── config_manager.py       # Carga y validación de configs YAML (Pydantic)
 │   ├── extraction/
 │   │   ├── objectives.py            # Tool: extraer OBJ-X
 │   │   ├── requirements.py          # Tool: extraer IRQ/NFR
@@ -148,7 +152,55 @@ python core/grading/grader.py \
 python core/grading/grader.py \
   --criteria-json criteria.json
 # Output: {"weighted_final": 7.43}
+
+# Con configuración YAML personalizada
+python core/grading/grader.py \
+  --config configs/rubric_default.yaml \
+  --eval-md eval_obj.md:objetivos eval_cu.md:casos_uso
 ```
+
+---
+
+## Configuración de rúbrica
+
+A partir de la versión 2, los pesos y criterios de la rúbrica se definen en
+archivos YAML dentro de `configs/`, en lugar de estar hardcodeados en el código.
+
+```bash
+# Usar la rúbrica por defecto
+python core/grading/grader.py --config configs/rubric_default.yaml --scores 7 8 6 7 8
+
+# Crear una rúbrica personalizada
+cp configs/rubric_default.yaml configs/mi-rubrica.yaml
+# Editar mi-rubrica.yaml: cambiar criterios, pesos y prompts
+```
+
+Estructura del YAML:
+
+```yaml
+version: "1.0"
+id: "entregable-1-uso"
+description: "Evaluación Entregable 1 - Casos de Uso"
+
+models:
+  text: "qwen3:32b"
+  vision: "qwen3-vl:30b"
+
+rubric:
+  criteria:
+    - id: "objetivos"
+      name: "Objetivos del Sistema"
+      weight: 0.20
+      prompt: "3_1_evaluacion_objetivos.md"
+    # ... más criterios
+
+options:
+  multimodal: true
+  skip_existing: false
+```
+
+Los pesos se validan automáticamente (deben sumar ~1.0). La validación usa
+Pydantic para garantizar la integridad del esquema.
 
 ---
 
