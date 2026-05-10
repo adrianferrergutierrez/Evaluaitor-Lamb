@@ -20,11 +20,13 @@ rubric:
       weight: 0.20
       prompt: "4_2_evaluacion_diagramas_clase.md"
       description: "Evalúa la calidad y completitud de los diagramas de clases del diseño"
+      requires_vision: true
     - id: "diagramas_secuencia"
       name: "Diagramas de Secuencia"
       weight: 0.15
       prompt: "4_3_evaluacion_diagramas_secuencia.md"
       description: "Evalúa la representación de las interacciones entre componentes del sistema"
+      requires_vision: true
     - id: "modelo_datos"
       name: "Modelo de Datos"
       weight: 0.20

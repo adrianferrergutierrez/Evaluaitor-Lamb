@@ -28,6 +28,8 @@ class CriterionConfig(BaseModel):
     name: str
     weight: float = Field(gt=0, le=1)
     prompt: str
+    description: str = ""
+    requires_vision: bool = False
 
 
 class ModelsConfig(BaseModel):
