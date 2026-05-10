@@ -1,0 +1,64 @@
+{
+  "criteria": [
+    {
+      "name": "portada",
+      "score": 7.0,
+      "weight": 0.04
+    },
+    {
+      "name": "tabla_de_contenidos",
+      "score": 0.0,
+      "weight": 0.04
+    },
+    {
+      "name": "estilo_del_documento",
+      "score": 7.0,
+      "weight": 0.04
+    },
+    {
+      "name": "objetivos",
+      "score": 7.0,
+      "weight": 0.08
+    },
+    {
+      "name": "requisitos_de_informacion",
+      "score": 4.0,
+      "weight": 0.1
+    },
+    {
+      "name": "requisitos_no_funcionales",
+      "score": 10.0,
+      "weight": 0.08
+    },
+    {
+      "name": "diagrama_de_casos_de_uso",
+      "score": 7.0,
+      "weight": 0.1
+    },
+    {
+      "name": "descripcion_de_actores",
+      "score": 7.0,
+      "weight": 0.1
+    },
+    {
+      "name": "descripcion_de_casos_de_uso",
+      "score": 10.0,
+      "weight": 0.25
+    },
+    {
+      "name": "matriz_de_rastreabilidad_objreq",
+      "score": 10.0,
+      "weight": 0.05
+    },
+    {
+      "name": "matriz_de_rastreabilidad_reqreq",
+      "score": 0.0,
+      "weight": 0.05
+    },
+    {
+      "name": "etica_informatica",
+      "score": 7.0,
+      "weight": 0.07
+    }
+  ]
+}

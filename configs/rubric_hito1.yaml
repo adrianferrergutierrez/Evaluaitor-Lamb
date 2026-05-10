@@ -1,0 +1,74 @@
+description: Rúbrica importada desde Markdown (12 criterios)
+id: hito1
+options:
+  detailed_scoring: false
+  multimodal: true
+  skip_existing: false
+provider:
+  region: singapore
+  text_model: qwen3.6-plus
+  type: dashscope
+  vision_model: qwen-vl-max
+rubric:
+  criteria:
+  - description: Evaluación de Portada según rúbrica importada.
+    id: portada
+    name: Portada
+    prompt: hito1/hito1_portada.md
+    weight: 0.04
+  - description: Evaluación de Tabla de contenidos según rúbrica importada.
+    id: tabla_de_contenidos
+    name: Tabla de contenidos
+    prompt: hito1/hito1_tabla_de_contenidos.md
+    weight: 0.04
+  - description: Evaluación de Estilo del documento según rúbrica importada.
+    id: estilo_del_documento
+    name: Estilo del documento
+    prompt: hito1/hito1_estilo_del_documento.md
+    weight: 0.04
+  - description: Evaluación de Objetivos según rúbrica importada.
+    id: objetivos
+    name: Objetivos
+    prompt: hito1/hito1_objetivos.md
+    weight: 0.08
+  - description: Evaluación de Requisitos de información según rúbrica importada.
+    id: requisitos_de_informacion
+    name: Requisitos de información
+    prompt: hito1/hito1_requisitos_de_informacion.md
+    weight: 0.1
+  - description: Evaluación de Requisitos no funcionales según rúbrica importada.
+    id: requisitos_no_funcionales
+    name: Requisitos no funcionales
+    prompt: hito1/hito1_requisitos_no_funcionales.md
+    weight: 0.08
+  - description: Evaluación de Diagrama de casos de uso según rúbrica importada.
+    id: diagrama_de_casos_de_uso
+    name: Diagrama de casos de uso
+    prompt: hito1/hito1_diagrama_de_casos_de_uso.md
+    weight: 0.1
+  - description: Evaluación de Descripción de actores según rúbrica importada.
+    id: descripcion_de_actores
+    name: Descripción de actores
+    prompt: hito1/hito1_descripcion_de_actores.md
+    weight: 0.1
+  - description: Evaluación de Descripción de casos de uso según rúbrica importada.
+    id: descripcion_de_casos_de_uso
+    name: Descripción de casos de uso
+    prompt: hito1/hito1_descripcion_de_casos_de_uso.md
+    weight: 0.25
+  - description: 'Evaluación de Matriz de rastreabilidad: obj-req según rúbrica importada.'
+    id: matriz_de_rastreabilidad_objreq
+    name: 'Matriz de rastreabilidad: obj-req'
+    prompt: hito1/hito1_matriz_de_rastreabilidad_objreq.md
+    weight: 0.05
+  - description: 'Evaluación de Matriz de rastreabilidad: req-req según rúbrica importada.'
+    id: matriz_de_rastreabilidad_reqreq
+    name: 'Matriz de rastreabilidad: req-req'
+    prompt: hito1/hito1_matriz_de_rastreabilidad_reqreq.md
+    weight: 0.05
+  - description: Evaluación de Ética informática según rúbrica importada.
+    id: etica_informatica
+    name: Ética informática
+    prompt: hito1/hito1_etica_informatica.md
+    weight: 0.07
+version: '1.0'

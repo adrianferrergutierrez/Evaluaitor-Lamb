@@ -18,25 +18,41 @@ con **privacidad por diseño** y máxima **trazabilidad**.
 | # | Herramienta | Módulo | Qué hace |
 |---|-------------|--------|----------|
 | 1 | `pdf_to_markdown` | `pdf_extract_skill.md` | Convierte PDF → Markdown + extrae imágenes |
-| 2 | `extract_objectives` | `core/extraction/objectives.py` | Extrae objetivos (OBJ-X) |
-| 3 | `extract_requirements` | `core/extraction/requirements.py` | Extrae IRQ y NFR |
-| 4 | `extract_use_cases` | `core/extraction/use_cases.py` | Extrae casos de uso (CU-XXX) |
-| 5 | `describe_diagrams` | `core/extraction/diagramlens/` | Describe diagramas con modelo de visión |
-| 6 | `analyze_traceability` | `core/analysis/traceability.py` | Matriz OBJ<->IRQ/NFR |
-| 7 | `analyze_completeness` | `core/analysis/completeness.py` | Completitud de requisitos |
-| 8 | `detect_orphans` | `core/analysis/orphans.py` | Detecta huérfanos (determinístico) |
-| 9 | `check_smart` | `core/analysis/smart.py` | Evalúa objetivos SMART (determinístico) |
-| 10 | `classify_iso25010` | `core/analysis/iso25010.py` | Clasifica NFR por ISO 25010 (determinístico) |
-| 11 | `evaluate_criteria` | `core/evaluation/criterion_evaluator.py` | Evalúa criterios de rúbrica con contexto opcional |
-| 12 | `grade` | `core/grading/grader.py` | Calcula nota ponderada (determinístico) |
-| 13 | `generate_report` | `core/evaluation/evaluator.py` | Genera informe final desde evaluaciones previas |
+| 2 | `docx_to_markdown` | `docx_extract_skill.md` | Convierte DOCX → Markdown + extrae imágenes y tablas |
+| 3 | `extract_objectives` | `core/extraction/objectives.py` | Extrae objetivos (OBJ-X) |
+| 4 | `extract_requirements` | `core/extraction/requirements.py` | Extrae IRQ y NFR |
+| 5 | `extract_use_cases` | `core/extraction/use_cases.py` | Extrae casos de uso (CU-XXX) |
+| 6 | `describe_diagrams` | `core/extraction/diagramlens/` | Describe diagramas con modelo de visión |
+| 7 | `analyze_traceability` | `core/analysis/traceability.py` | Matriz OBJ<->IRQ/NFR |
+| 8 | `analyze_completeness` | `core/analysis/completeness.py` | Completitud de requisitos |
+| 9 | `detect_orphans` | `core/analysis/orphans.py` | Detecta huérfanos (determinístico) |
+| 10 | `check_smart` | `core/analysis/smart.py` | Evalúa objetivos SMART (determinístico) |
+| 11 | `classify_iso25010` | `core/analysis/iso25010.py` | Clasifica NFR por ISO 25010 (determinístico) |
+| 12 | `evaluate_criteria` | `core/evaluation/criterion_evaluator.py` | Evalúa criterios de rúbrica con contexto opcional |
+| 13 | `grade` | `core/grading/grader.py` | Calcula nota ponderada (determinístico) |
+| 14 | `generate_report` | `core/evaluation/evaluator.py` | Genera informe final desde evaluaciones previas |
 
 ## Decisiones del agente
 
 Tú decides qué herramientas invocar y en qué orden. No hay un pipeline fijo.
 
+### ⚠️ PASO OBLIGATORIO: Convertir documento a Markdown
+
+**Antes de cualquier evaluación, el documento DEBE estar en formato Markdown.**
+
+| Formato | Herramienta |
+|---------|-------------|
+| `.pdf` | Usa `pdf_to_markdown` (`pdf_extract_skill.md`) |
+| `.docx` | Usa `docx_to_markdown` (`docx_extract_skill.md`) |
+| `.md` | Ya está listo, puedes proceder directamente |
+
+**NUNCA evalúes un documento sin convertirlo primero a Markdown.** Si el documento no es Markdown, conviértelo antes de usar cualquier otra herramienta.
+
 ### Si el input es un PDF
 → Usa `pdf_to_markdown` primero para tener Markdown estructurado.
+
+### Si el input es un DOCX
+→ Usa `docx_to_markdown` primero para tener Markdown estructurado.
 
 ### Patrón típico de evaluación completa
 
@@ -70,7 +86,7 @@ Construye contexto con extracción y análisis antes de evaluar criterios. El LL
 Incluye siempre estos análisis en el contexto si el documento tiene objetivos y requisitos.
 
 ### R4 — Cálculo determinístico
-Nunca calcules notas. Usa `grade` con las puntuaciones parciales.
+**NUNCA calcules notas manualmente.** Siempre usa `grade` (`core/grading/grader.py`) con las puntuaciones parciales. Si el LLM intenta calcular la nota ponderada directamente, deténle y delega en el grader.
 
 ### R5 — Formato del informe
 El informe final debe incluir: tabla de rúbrica, resumen ejecutivo, análisis por criterio con evidencias, huérfanos, SMART/ISO 25010, recomendaciones, y pie de página: *"Este informe es una herramienta de apoyo. La calificación final es responsabilidad exclusiva del profesorado."*
