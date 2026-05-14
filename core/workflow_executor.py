@@ -47,20 +47,31 @@ class WorkflowExecutor:
             def replacer(match):
                 var_path = match.group(1)
                 parts = var_path.split(".")
-                if len(parts) >= 3 and parts[1] == "output":
+                if len(parts) >= 3 and parts[1] in ("output", "result"):
                     step_id = parts[0]
                     key = ".".join(parts[2:])
                     if step_id in self.step_results:
+                        # First try result, then output
+                        val = self.step_results[step_id].get("result", {})
+                        for k in key.split("."):
+                            if isinstance(val, dict):
+                                val = val.get(k)
+                            else:
+                                val = None
+                                break
+                        if val is not None:
+                            return str(val)
+                        # Fallback to output mapping
                         val = self.step_results[step_id].get("output", {})
                         for k in key.split("."):
                             if isinstance(val, dict):
                                 val = val.get(k)
                             else:
-                                return match.group(0)  # Return unresolved if path invalid
+                                return match.group(0)
                         return str(val) if val is not None else match.group(0)
                 elif var_path in self.variables:
                     return str(self.variables[var_path])
-                return match.group(0)  # Return unresolved if not found
+                return match.group(0)
             return VAR_PATTERN.sub(replacer, value)
         elif isinstance(value, dict):
             return {k: self._resolve_variables(v) for k, v in value.items()}

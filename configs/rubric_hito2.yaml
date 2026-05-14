@@ -1,0 +1,30 @@
+description: Rúbrica importada desde Markdown (3 criterios)
+id: hito2
+options:
+  detailed_scoring: false
+  multimodal: true
+  skip_existing: false
+provider:
+  region: singapore
+  text_model: qwen3.6-plus
+  type: dashscope
+  vision_model: qwen-vl-max
+rubric:
+  criteria:
+  - description: Evaluación de Memoria técnica según rúbrica importada.
+    id: memoria_tecnica
+    name: Memoria técnica
+    prompt: hito2/hito2_memoria_tecnica.md
+    weight: 0.25
+  - description: Evaluación de Diagrama de clases del modelo de dominio según rúbrica
+      importada.
+    id: diagrama_de_clases_del_modelo_de_dominio
+    name: Diagrama de clases del modelo de dominio
+    prompt: hito2/hito2_diagrama_de_clases_del_modelo_de_dominio.md
+    weight: 0.65
+  - description: Evaluación de Glosario de clases según rúbrica importada.
+    id: glosario_de_clases
+    name: Glosario de clases
+    prompt: hito2/hito2_glosario_de_clases.md
+    weight: 0.1
+version: '1.0'

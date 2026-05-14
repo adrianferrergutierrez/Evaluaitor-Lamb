@@ -16,6 +16,7 @@ Usage:
 
 from __future__ import annotations
 
+import json
 import logging
 from abc import ABC, abstractmethod
 from pathlib import Path
@@ -347,8 +348,27 @@ class GraderTool(Tool):
 
     def execute(self, **kwargs: Any) -> Dict[str, Any]:
         from core.grading.grader import RubricGrader
+        scores = kwargs["scores"]
+        if isinstance(scores, str):
+            # Try loading as JSON first
+            try:
+                scores_data = json.loads(scores)
+                scores = scores_data.get("scores", scores_data)
+            except json.JSONDecodeError:
+                # Try loading as file path
+                if Path(scores).exists():
+                    with open(scores) as f:
+                        scores_data = json.load(f)
+                    scores = scores_data.get("scores", scores_data)
+                else:
+                    # Try parsing as Python dict string
+                    import ast
+                    try:
+                        scores = ast.literal_eval(scores)
+                    except (ValueError, SyntaxError):
+                        raise ValueError(f"Cannot parse scores: {scores}")
         grader = RubricGrader.from_config(kwargs["config"])
-        grading = grader.grade({}, scores=kwargs["scores"])
+        grading = grader.grade({}, scores=scores)
         return {"result": grading.as_dict()}
 
 
@@ -382,6 +402,23 @@ class ReportGeneratorTool(Tool):
         return {"result": {"report_path": kwargs["output"]}}
 
 
+class XlsxToMarkdownTool(Tool):
+    @property
+    def name(self) -> str: return "xlsx_to_markdown"
+    @property
+    def description(self) -> str: return "Convert Excel (.xlsx) rubric to Markdown"
+    @property
+    def category(self) -> str: return "extract"
+    @property
+    def params(self) -> Dict[str, str]: return {"input": "XLSX path", "output": "Markdown output path"}
+    @property
+    def output(self) -> Dict[str, str]: return {"markdown_path": "Markdown path"}
+
+    def execute(self, **kwargs: Any) -> Dict[str, Any]:
+        from core.extraction.xlsx_to_markdown import xlsx_to_markdown
+        return {"result": xlsx_to_markdown(kwargs["input"], kwargs["output"])}
+
+
 # ---------------------------------------------------------------------------
 # Auto-registration
 # ---------------------------------------------------------------------------
@@ -390,6 +427,7 @@ def register_all_tools() -> None:
     """Register all built-in tools."""
     tools = [
         DocxExtractTool(),
+        XlsxToMarkdownTool(),
         RubricImporterTool(),
         ExtractObjectivesTool(),
         ExtractRequirementsTool(),

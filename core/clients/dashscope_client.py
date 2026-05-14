@@ -110,7 +110,7 @@ class DashScopeClient:
         }
 
         url = f"{self.base_url}/chat/completions"
-        response = self.session.post(url, json=payload, timeout=120)
+        response = self.session.post(url, json=payload, timeout=300)
         response.raise_for_status()
         data = response.json()
 
