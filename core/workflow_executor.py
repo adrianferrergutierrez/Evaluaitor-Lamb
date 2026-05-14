@@ -1,0 +1,256 @@
+#!/usr/bin/env python3
+"""
+core/workflow_executor.py
+==========================
+Executes dynamically generated evaluation workflows.
+
+Loads a workflow JSON, executes each step in order, passes variables
+between steps, handles conditions and errors, and logs execution details.
+
+Usage:
+    python core/workflow_executor.py \
+        --workflow tests/test2/output/generated_workflow.json \
+        --output tests/test2/output/execution_log.json
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import logging
+import re
+import time
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+logger = logging.getLogger(__name__)
+
+REPO_ROOT = Path(__file__).parent.parent
+
+# Variable pattern: ${step_id.output.key} or ${variable_name}
+VAR_PATTERN = re.compile(r"\$\{([^}]+)\}")
+
+
+class WorkflowExecutor:
+    """Executes a workflow JSON definition."""
+
+    def __init__(self, workflow: Dict[str, Any], dry_run: bool = False):
+        self.workflow = workflow
+        self.variables: Dict[str, Any] = dict(workflow.get("variables", {}))
+        self.step_results: Dict[str, Dict[str, Any]] = {}
+        self.execution_log: List[Dict[str, Any]] = []
+        self.dry_run = dry_run
+
+    def _resolve_variables(self, value: Any) -> Any:
+        """Resolve variable references in a value."""
+        if isinstance(value, str):
+            def replacer(match):
+                var_path = match.group(1)
+                parts = var_path.split(".")
+                if len(parts) >= 3 and parts[1] == "output":
+                    step_id = parts[0]
+                    key = ".".join(parts[2:])
+                    if step_id in self.step_results:
+                        val = self.step_results[step_id].get("output", {})
+                        for k in key.split("."):
+                            if isinstance(val, dict):
+                                val = val.get(k)
+                            else:
+                                return match.group(0)  # Return unresolved if path invalid
+                        return str(val) if val is not None else match.group(0)
+                elif var_path in self.variables:
+                    return str(self.variables[var_path])
+                return match.group(0)  # Return unresolved if not found
+            return VAR_PATTERN.sub(replacer, value)
+        elif isinstance(value, dict):
+            return {k: self._resolve_variables(v) for k, v in value.items()}
+        elif isinstance(value, list):
+            return [self._resolve_variables(v) for v in value]
+        return value
+
+    def _evaluate_condition(self, condition: Optional[Dict]) -> bool:
+        """Evaluate a step condition."""
+        if not condition:
+            return True
+        expr = condition.get("if", "true")
+        resolved = self._resolve_variables(expr)
+        # Simple boolean evaluation
+        return resolved.lower() in ("true", "1", "yes") if isinstance(resolved, str) else bool(resolved)
+
+    def _execute_tool(self, tool_name: str, params: Dict[str, Any]) -> Dict[str, Any]:
+        """Execute a tool by name with resolved parameters."""
+        if self.dry_run:
+            logger.info("[DRY RUN] Would execute tool: %s with params: %s", tool_name, params)
+            return {"result": {"dry_run": True}}
+
+        # Import tool dynamically
+        try:
+            if tool_name == "docx_extract":
+                from core.extraction.docx_extract import extract_docx
+                return extract_docx(**params)
+            elif tool_name == "rubric_importer":
+                from core.config.rubric_importer import import_rubric
+                # Adapt params
+                import_rubric(params["input"], params["output"], str(Path(params["output"]).parent / "prompts"))
+                return {"result": {"config_path": params["output"]}}
+            elif tool_name == "extract_objectives":
+                from core.extraction.objectives import extract_objectives
+                from core.clients.dashscope_client import DashScopeClient
+                doc = Path(params["document"]).read_text(encoding="utf-8")
+                result = extract_objectives(doc, client=DashScopeClient())
+                return {"result": {"markdown": result}}
+            elif tool_name == "extract_requirements":
+                from core.extraction.requirements import extract_requirements
+                from core.clients.dashscope_client import DashScopeClient
+                doc = Path(params["document"]).read_text(encoding="utf-8")
+                result = extract_requirements(doc, client=DashScopeClient())
+                return {"result": {"markdown": result}}
+            elif tool_name == "extract_use_cases":
+                from core.extraction.use_cases import extract_use_cases
+                from core.clients.dashscope_client import DashScopeClient
+                doc = Path(params["document"]).read_text(encoding="utf-8")
+                result = extract_use_cases(doc, client=DashScopeClient())
+                return {"result": {"markdown": result}}
+            elif tool_name == "detect_orphans":
+                from core.analysis.orphans import detect_orphans
+                report = detect_orphans(params["objectives_md"], params["requirements_md"])
+                return {"result": {"markdown": report.as_markdown()}}
+            elif tool_name == "evaluate_smart":
+                from core.analysis.smart import evaluate_objectives_smart, smart_summary_markdown
+                scores = evaluate_objectives_smart(params["objectives_md"])
+                return {"result": {"markdown": smart_summary_markdown(scores)}}
+            elif tool_name == "classify_iso25010":
+                from core.analysis.iso25010 import classify_requirements_iso25010
+                report = classify_requirements_iso25010(params["requirements_md"])
+                return {"result": {"markdown": report.as_markdown()}}
+            elif tool_name == "build_context":
+                # Just concatenates reports
+                parts = []
+                for key, val in params.items():
+                    if val and Path(val).exists():
+                        parts.append(f"### {key}\n\n{Path(val).read_text(encoding='utf-8')}")
+                return {"result": {"markdown": "\n\n".join(parts)}}
+            elif tool_name == "criterion_evaluator":
+                from core.evaluation.criterion_evaluator import run_criterion_evaluation
+                eval_params = {
+                    "document_path": params["document"],
+                    "config_path": params["config"],
+                    "output_dir": params["output_dir"],
+                }
+                if params.get("context"):
+                    eval_params["context_path"] = params["context"]
+                elif params.get("full"):
+                    eval_params["full"] = True
+                result = run_criterion_evaluation(**eval_params)
+                return {"result": {"scores": result["scores"], "output_dir": params["output_dir"]}}
+            elif tool_name == "grader":
+                from core.grading.grader import RubricGrader
+                grader = RubricGrader.from_config(params["config"])
+                grading = grader.grade({}, scores=params["scores"])
+                return {"result": grading.as_dict()}
+            elif tool_name == "report_generator":
+                from core.evaluation.evaluator import run_report_generation
+                run_report_generation(
+                    document_path=params["document"],
+                    eval_dir=params["eval_dir"],
+                    config_path=params["config"],
+                    scores_path=params.get("scores"),
+                    output_dir=str(Path(params["output"]).parent),
+                )
+                return {"result": {"report_path": params["output"]}}
+            else:
+                raise ValueError(f"Unknown tool: {tool_name}")
+        except Exception as e:
+            logger.error("Tool %s failed: %s", tool_name, e)
+            raise
+
+    def execute(self) -> Dict[str, Any]:
+        """Execute the workflow and return the execution log."""
+        logger.info("Starting workflow: %s", self.workflow.get("name", "unknown"))
+        start_time = time.time()
+
+        for step in self.workflow.get("steps", []):
+            step_id = step["id"]
+            tool_name = step["tool"]
+            on_error = step.get("on_error", "abort")
+            max_retries = step.get("max_retries", 0)
+
+            # Check condition
+            if not self._evaluate_condition(step.get("condition")):
+                logger.info("Step %s skipped (condition not met)", step_id)
+                self.execution_log.append({"step": step_id, "status": "skipped", "reason": "condition_false"})
+                continue
+
+            # Resolve parameters
+            params = self._resolve_variables(step.get("params", {}))
+
+            # Execute with retries
+            success = False
+            for attempt in range(max_retries + 1):
+                try:
+                    logger.info("Executing step %s: %s (attempt %d)", step_id, tool_name, attempt + 1)
+                    result = self._execute_tool(tool_name, params)
+                    self.step_results[step_id] = {
+                        "output": self._resolve_variables(step.get("output", {})),
+                        "result": result.get("result", {})
+                    }
+                    self.execution_log.append({
+                        "step": step_id,
+                        "tool": tool_name,
+                        "status": "success",
+                        "attempt": attempt + 1,
+                        "duration": time.time() - start_time
+                    })
+                    success = True
+                    break
+                except Exception as e:
+                    logger.warning("Step %s failed (attempt %d): %s", step_id, attempt + 1, e)
+                    if attempt == max_retries:
+                        if on_error == "skip":
+                            logger.info("Step %s skipped after failure", step_id)
+                            self.execution_log.append({"step": step_id, "status": "skipped", "reason": str(e)})
+                            success = True  # Consider skipped as success for flow
+                        elif on_error == "abort":
+                            logger.error("Workflow aborted at step %s", step_id)
+                            self.execution_log.append({"step": step_id, "status": "aborted", "reason": str(e)})
+                            return {"status": "aborted", "log": self.execution_log}
+                        else:
+                            self.execution_log.append({"step": step_id, "status": "failed", "reason": str(e)})
+                            return {"status": "failed", "log": self.execution_log}
+                    time.sleep(1)  # Wait before retry
+
+            if not success and on_error == "skip":
+                self.execution_log.append({"step": step_id, "status": "skipped", "reason": "max_retries_exceeded"})
+
+        total_duration = time.time() - start_time
+        logger.info("Workflow completed in %.1fs", total_duration)
+        return {"status": "completed", "log": self.execution_log, "duration": total_duration}
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Execute a workflow JSON.")
+    parser.add_argument("--workflow", type=str, required=True, help="Path to workflow JSON")
+    parser.add_argument("--output", type=str, default=None, help="Path to write execution log")
+    parser.add_argument("--dry-run", action="store_true", help="Simulate execution without running tools")
+    args = parser.parse_args()
+
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
+
+    with open(args.workflow) as f:
+        workflow = json.load(f)
+
+    executor = WorkflowExecutor(workflow, dry_run=args.dry_run)
+    result = executor.execute()
+
+    if args.output:
+        out_path = Path(args.output)
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        out_path.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
+        logger.info("Execution log saved to %s", out_path)
+
+    print(f"\n✅ Workflow execution: {result['status']}")
+    print(f"   Steps executed: {len(result['log'])}")
+
+
+if __name__ == "__main__":
+    main()
