@@ -83,86 +83,8 @@ class WorkflowExecutor:
             logger.info("[DRY RUN] Would execute tool: %s with params: %s", tool_name, params)
             return {"result": {"dry_run": True}}
 
-        # Import tool dynamically
-        try:
-            if tool_name == "docx_extract":
-                from core.extraction.docx_extract import extract_docx
-                return extract_docx(**params)
-            elif tool_name == "rubric_importer":
-                from core.config.rubric_importer import import_rubric
-                # Adapt params
-                import_rubric(params["input"], params["output"], str(Path(params["output"]).parent / "prompts"))
-                return {"result": {"config_path": params["output"]}}
-            elif tool_name == "extract_objectives":
-                from core.extraction.objectives import extract_objectives
-                from core.clients.dashscope_client import DashScopeClient
-                doc = Path(params["document"]).read_text(encoding="utf-8")
-                result = extract_objectives(doc, client=DashScopeClient())
-                return {"result": {"markdown": result}}
-            elif tool_name == "extract_requirements":
-                from core.extraction.requirements import extract_requirements
-                from core.clients.dashscope_client import DashScopeClient
-                doc = Path(params["document"]).read_text(encoding="utf-8")
-                result = extract_requirements(doc, client=DashScopeClient())
-                return {"result": {"markdown": result}}
-            elif tool_name == "extract_use_cases":
-                from core.extraction.use_cases import extract_use_cases
-                from core.clients.dashscope_client import DashScopeClient
-                doc = Path(params["document"]).read_text(encoding="utf-8")
-                result = extract_use_cases(doc, client=DashScopeClient())
-                return {"result": {"markdown": result}}
-            elif tool_name == "detect_orphans":
-                from core.analysis.orphans import detect_orphans
-                report = detect_orphans(params["objectives_md"], params["requirements_md"])
-                return {"result": {"markdown": report.as_markdown()}}
-            elif tool_name == "evaluate_smart":
-                from core.analysis.smart import evaluate_objectives_smart, smart_summary_markdown
-                scores = evaluate_objectives_smart(params["objectives_md"])
-                return {"result": {"markdown": smart_summary_markdown(scores)}}
-            elif tool_name == "classify_iso25010":
-                from core.analysis.iso25010 import classify_requirements_iso25010
-                report = classify_requirements_iso25010(params["requirements_md"])
-                return {"result": {"markdown": report.as_markdown()}}
-            elif tool_name == "build_context":
-                # Just concatenates reports
-                parts = []
-                for key, val in params.items():
-                    if val and Path(val).exists():
-                        parts.append(f"### {key}\n\n{Path(val).read_text(encoding='utf-8')}")
-                return {"result": {"markdown": "\n\n".join(parts)}}
-            elif tool_name == "criterion_evaluator":
-                from core.evaluation.criterion_evaluator import run_criterion_evaluation
-                eval_params = {
-                    "document_path": params["document"],
-                    "config_path": params["config"],
-                    "output_dir": params["output_dir"],
-                }
-                if params.get("context"):
-                    eval_params["context_path"] = params["context"]
-                elif params.get("full"):
-                    eval_params["full"] = True
-                result = run_criterion_evaluation(**eval_params)
-                return {"result": {"scores": result["scores"], "output_dir": params["output_dir"]}}
-            elif tool_name == "grader":
-                from core.grading.grader import RubricGrader
-                grader = RubricGrader.from_config(params["config"])
-                grading = grader.grade({}, scores=params["scores"])
-                return {"result": grading.as_dict()}
-            elif tool_name == "report_generator":
-                from core.evaluation.evaluator import run_report_generation
-                run_report_generation(
-                    document_path=params["document"],
-                    eval_dir=params["eval_dir"],
-                    config_path=params["config"],
-                    scores_path=params.get("scores"),
-                    output_dir=str(Path(params["output"]).parent),
-                )
-                return {"result": {"report_path": params["output"]}}
-            else:
-                raise ValueError(f"Unknown tool: {tool_name}")
-        except Exception as e:
-            logger.error("Tool %s failed: %s", tool_name, e)
-            raise
+        from core.tool_registry import registry
+        return registry.execute(tool_name, **params)
 
     def execute(self) -> Dict[str, Any]:
         """Execute the workflow and return the execution log."""

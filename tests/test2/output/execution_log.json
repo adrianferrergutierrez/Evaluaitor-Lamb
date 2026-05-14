@@ -6,36 +6,36 @@
       "tool": "docx_extract",
       "status": "success",
       "attempt": 1,
-      "duration": 0.0002636909484863281
+      "duration": 0.0002999305725097656
     },
     {
       "step": "step_rubric_import",
       "tool": "rubric_importer",
       "status": "success",
       "attempt": 1,
-      "duration": 0.00042319297790527344
+      "duration": 0.0004813671112060547
     },
     {
       "step": "step_evaluate",
       "tool": "criterion_evaluator",
       "status": "success",
       "attempt": 1,
-      "duration": 0.0005588531494140625
+      "duration": 0.0006349086761474609
     },
     {
       "step": "step_grade",
       "tool": "grader",
       "status": "success",
       "attempt": 1,
-      "duration": 0.0006656646728515625
+      "duration": 0.0008089542388916016
     },
     {
       "step": "step_report",
       "tool": "report_generator",
       "status": "success",
       "attempt": 1,
-      "duration": 0.0007684230804443359
+      "duration": 0.0010063648223876953
     }
   ],
-  "duration": 0.0007700920104980469
+  "duration": 0.0010099411010742188
 }
