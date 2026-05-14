@@ -1,7 +1,7 @@
 {
   "version": "1.0",
-  "name": "workflow_hito2_eval",
-  "description": "Evaluación del Hito 2 centrada en diagrama de clases, glosario y memoria técnica con soporte multimodal.",
+  "name": "workflow_eval_hito2",
+  "description": "Evaluación de documento académico contra rúbrica de Hito 2 (Memoria técnica, Diagrama de clases, Glosario)",
   "variables": {
     "input_docx": "tests/test-1-hito-2/A1.1 Memoria trabajo final (2).docx",
     "input_rubric": "configs/rubric_hito2.yaml",
@@ -9,27 +9,27 @@
   },
   "steps": [
     {
-      "id": "step_extract_docx",
+      "id": "step_extract_doc",
       "tool": "docx_extract",
-      "description": "Convertir documento DOCX a Markdown y extraer imágenes para evaluación multimodal del diagrama.",
+      "description": "Convertir DOCX a Markdown y extraer imágenes para evaluación multimodal",
       "params": {
         "input": "${input_docx}",
-        "output_dir": "${output_dir}/extracted"
+        "output_dir": "${output_dir}"
       },
       "output": {
-        "document_md": "${step_extract_docx.result.contents_md}",
-        "images": "${step_extract_docx.result.images}"
+        "document_md": "${step_extract_doc.result.contents_md}",
+        "images": "${step_extract_doc.result.images}"
       },
       "on_error": "abort"
     },
     {
       "id": "step_evaluate",
       "tool": "criterion_evaluator",
-      "description": "Evaluar criterios de la rúbrica (memoria, diagrama, glosario) contra el documento extraído.",
+      "description": "Evaluar criterios de la rúbrica sobre el documento extraído",
       "params": {
-        "document": "${step_extract_docx.output.contents_md}",
+        "document": "${step_extract_doc.result.contents_md}",
         "config": "${input_rubric}",
-        "full": true,
+        "full": false,
         "output_dir": "${output_dir}/eval"
       },
       "output": {
@@ -41,7 +41,7 @@
     {
       "id": "step_grade",
       "tool": "grader",
-      "description": "Calcular la calificación final ponderada basada en los pesos de la rúbrica.",
+      "description": "Calcular la calificación final ponderada",
       "params": {
         "scores": "${step_evaluate.result.scores}",
         "config": "${input_rubric}"
@@ -56,12 +56,12 @@
     {
       "id": "step_report",
       "tool": "report_generator",
-      "description": "Generar informe final de evaluación consolidado.",
+      "description": "Generar informe final de evaluación",
       "params": {
-        "document": "${step_extract_docx.output.contents_md}",
-        "eval_dir": "${step_evaluate.output.output_dir}",
+        "document": "${step_extract_doc.result.contents_md}",
+        "eval_dir": "${output_dir}/eval",
         "config": "${input_rubric}",
-        "scores": "${step_evaluate.output.scores}",
+        "scores": "${step_evaluate.result.scores}",
         "output": "${output_dir}/report.md"
       },
       "output": {
