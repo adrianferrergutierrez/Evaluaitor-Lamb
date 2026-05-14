@@ -13,8 +13,12 @@ import re
 from pathlib import Path
 from typing import Dict, List, Optional
 
+from core.clients.dashscope_client import DashScopeClient
+
 _REPO_ROOT = Path(__file__).parent.parent.parent
 _PROMPT_FILE = _REPO_ROOT / "prompts" / "1_3_extraccion_casos_de_uso.md"
+
+DEFAULT_MODEL = "qwen3.6-plus"
 
 
 def _load_prompt(prompt_path: Optional[Path] = None) -> str:
@@ -32,20 +36,20 @@ def build_prompt(document: str, prompt_path: Optional[Path] = None) -> str:
 
 def extract_use_cases(
     document: str,
-    model: str = "qwen3",
-    ollama_url: str = "http://localhost:11434/api/chat",
+    client: Optional[DashScopeClient] = None,
+    model: str = DEFAULT_MODEL,
     prompt_path: Optional[Path] = None,
 ) -> str:
-    """Extract use cases from *document* using a local LLM.
+    """Extract use cases from *document* using DashScope API.
 
     Parameters
     ----------
     document:
         Full text of the requirements document.
+    client:
+        Optional DashScopeClient instance. Created automatically if None.
     model:
-        Ollama model tag.
-    ollama_url:
-        Ollama API endpoint.
+        DashScope model name (default: qwen3.6-plus).
     prompt_path:
         Optional alternative prompt template path.
 
@@ -53,25 +57,24 @@ def extract_use_cases(
     -------
     str
         Markdown-formatted use-case catalogue as produced by the LLM.
+
+    Raises
+    ------
+    RuntimeError
+        If the DashScope call fails or returns empty content.
     """
-    try:
-        import requests
-    except ImportError as exc:
-        raise ImportError("The 'requests' package is required.") from exc
+    if client is None:
+        client = DashScopeClient()
 
     prompt = build_prompt(document, prompt_path)
-    payload = {
-        "model": model,
-        "messages": [{"role": "user", "content": prompt}],
-        "options": {"temperature": 0.0},
-        "stream": False,
-    }
-    resp = requests.post(ollama_url, json=payload, timeout=300)
-    resp.raise_for_status()
-    data = resp.json()
-    content = data.get("message", {}).get("content", "").strip()
+    content = client.generate(
+        model=model,
+        prompt=prompt,
+        temperature=0.0,
+        max_tokens=4096,
+    )
     if not content:
-        raise RuntimeError("LLM returned an empty response for use-case extraction.")
+        raise RuntimeError("DashScope returned an empty response for use-case extraction.")
     return content
 
 

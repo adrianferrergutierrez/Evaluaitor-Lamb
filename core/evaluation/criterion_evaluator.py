@@ -42,6 +42,12 @@ load_dotenv()
 
 from core.clients.dashscope_client import DashScopeClient
 from core.config.config_manager import ConfigManager, CriterionConfig
+from core.extraction.objectives import extract_objectives, parse_objective_ids
+from core.extraction.requirements import extract_requirements, parse_requirement_ids
+from core.extraction.use_cases import extract_use_cases, parse_use_case_ids
+from core.analysis.orphans import detect_orphans
+from core.analysis.smart import evaluate_objectives_smart, smart_summary_markdown
+from core.analysis.iso25010 import classify_requirements_iso25010
 
 logger = logging.getLogger(__name__)
 
@@ -158,11 +164,74 @@ def evaluate_criterion(
     return result
 
 
+def build_context(
+    document: str,
+    client: DashScopeClient,
+    model: str = "qwen3.6-plus",
+) -> str:
+    """Run full extraction + analysis pipeline and return context Markdown.
+
+    Executes: objectives extraction, requirements extraction, use-case
+    extraction, orphan detection, SMART evaluation, and ISO 25010
+    classification.
+
+    Parameters
+    ----------
+    document:
+        Full Markdown document content.
+    client:
+        DashScopeClient instance for LLM calls.
+    model:
+        Model name to use for extractions.
+
+    Returns
+    -------
+    str
+        Markdown-formatted analysis context.
+    """
+    logger.info("Running full extraction pipeline...")
+
+    objectives_md = extract_objectives(document, client=client, model=model)
+    logger.info("Objectives extracted: %d chars", len(objectives_md))
+
+    requirements_md = extract_requirements(document, client=client, model=model)
+    logger.info("Requirements extracted: %d chars", len(requirements_md))
+
+    use_cases_md = extract_use_cases(document, client=client, model=model)
+    logger.info("Use cases extracted: %d chars", len(use_cases_md))
+
+    orphans = detect_orphans(objectives_md, requirements_md)
+    orphans_md = orphans.as_markdown()
+
+    smart_scores = evaluate_objectives_smart(objectives_md)
+    smart_md = smart_summary_markdown(smart_scores)
+
+    iso_report = classify_requirements_iso25010(requirements_md)
+    iso_md = iso_report.as_markdown()
+
+    context_parts = [
+        "### Objetivos Extraídos",
+        objectives_md,
+        "### Requisitos Extraídos",
+        requirements_md,
+        "### Casos de Uso Extraídos",
+        use_cases_md,
+        "### Detección de Huérfanos",
+        orphans_md,
+        "### Evaluación SMART",
+        smart_md,
+        "### Clasificación ISO/IEC 25010",
+        iso_md,
+    ]
+    return "\n\n".join(context_parts)
+
+
 def run_criterion_evaluation(
     document_path: str,
     config_path: str,
     output_dir: str,
     context_path: Optional[str] = None,
+    full: bool = False,
 ) -> Dict[str, Any]:
     """Evaluate all criteria from a rubric config.
 
@@ -177,6 +246,9 @@ def run_criterion_evaluation(
     context_path:
         Optional path to a Markdown file containing analysis context
         (objectives, requirements, orphans, SMART, ISO 25010).
+    full:
+        If True, run the full extraction + analysis pipeline to build
+        context automatically before evaluating criteria.
 
     Returns
     -------
@@ -190,22 +262,26 @@ def run_criterion_evaluation(
         raise FileNotFoundError(f"Document not found: {doc_path}")
     document = doc_path.read_text(encoding="utf-8")
 
+    client = DashScopeClient(region=cfg.provider.region if cfg.provider else "singapore")
+    model = cfg.provider.text_model if cfg.provider else "qwen3.6-plus"
+    vision_model = cfg.provider.vision_model if cfg.provider else "qwen-vl-max"
+
+    output_path = Path(output_dir)
+    output_path.mkdir(parents=True, exist_ok=True)
+
     context_str = None
-    if context_path:
+    if full:
+        context_str = build_context(document, client, model)
+        ctx_file = output_path / "analysis_context.md"
+        ctx_file.write_text(context_str, encoding="utf-8")
+        logger.info("Analysis context built and saved to %s", ctx_file)
+    elif context_path:
         ctx_path = Path(context_path)
         if ctx_path.exists():
             context_str = ctx_path.read_text(encoding="utf-8")
             logger.info("Loaded analysis context from %s", context_path)
         else:
             logger.warning("Context file not found: %s", context_path)
-
-    provider = cfg.provider
-    client = DashScopeClient(region=provider.region if provider else "singapore")
-    model = provider.text_model if provider else "qwen3.6-plus"
-    vision_model = provider.vision_model if provider else "qwen-vl-max"
-
-    output_path = Path(output_dir)
-    output_path.mkdir(parents=True, exist_ok=True)
 
     evaluations: Dict[str, str] = {}
     scores: Dict[str, float] = {}
@@ -217,7 +293,9 @@ def run_criterion_evaluation(
     print(f"Rúbrica: {cfg.id} - {cfg.description}")
     print(f"Modelo: {model}")
     print(f"Criterios: {len(cfg.criteria)}")
-    if context_str:
+    if full:
+        print(f"Contexto: ✅ Generado automáticamente (--full)")
+    elif context_str:
         print(f"Contexto: ✅ Inyectado desde {context_path}")
     else:
         print(f"Contexto: ❌ Sin análisis previo")
@@ -277,10 +355,14 @@ def main() -> None:
         "--context", type=str, default=None,
         help="Path to a Markdown file with pre-built analysis context (objectives, orphans, SMART, etc.)"
     )
+    parser.add_argument(
+        "--full", action="store_true",
+        help="Run full extraction + analysis pipeline before evaluating criteria"
+    )
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
-    run_criterion_evaluation(args.document, args.config, args.output, args.context)
+    run_criterion_evaluation(args.document, args.config, args.output, args.context, args.full)
 
 
 if __name__ == "__main__":
