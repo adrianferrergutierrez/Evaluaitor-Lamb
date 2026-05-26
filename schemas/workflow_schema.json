@@ -83,9 +83,7 @@
         "output": {
           "type": "object",
           "description": "Mapping of tool result fields to step output variables for use by subsequent steps",
-          "additionalProperties": {
-            "type": "string"
-          },
+          "additionalProperties": true,
           "default": {}
         },
         "condition": {

@@ -30,6 +30,9 @@ import logging
 import sys
 from pathlib import Path
 
+from dotenv import load_dotenv
+load_dotenv()
+
 # Ensure repo root is in path
 REPO_ROOT = Path(__file__).parent
 sys.path.insert(0, str(REPO_ROOT))
@@ -112,9 +115,11 @@ def cmd_evaluate(args: argparse.Namespace) -> None:
     workflow["variables"]["input_docx"] = str(input_doc)
     workflow["variables"]["output_dir"] = str(output_dir)
     
-    # If the workflow expects input_rubric but it's not in variables, try to infer or warn
-    if "input_rubric" not in workflow["variables"]:
-        logger.warning("Workflow does not define 'input_rubric'. Evaluation may fail if steps require it.")
+    # Override rubric path if provided or if it's generic
+    if args.rubric:
+        workflow["variables"]["input_rubric"] = str(args.rubric)
+    elif "path/to" in workflow["variables"].get("input_rubric", ""):
+        logger.warning("Workflow has generic rubric path. Use --rubric to specify the correct path.")
 
     logger.info("Executing workflow for document: %s", input_doc)
     logger.info("Output directory: %s", output_dir)
@@ -164,6 +169,7 @@ def main() -> None:
     parser_eval.add_argument("--workflow", type=str, required=True, help="Path to workflow JSON")
     parser_eval.add_argument("--input", type=str, required=True, help="Path to document to evaluate (DOCX/MD)")
     parser_eval.add_argument("--output", type=str, required=True, help="Directory for results")
+    parser_eval.add_argument("--rubric", type=str, default=None, help="Override rubric path in workflow")
     parser_eval.add_argument("--dry-run", action="store_true", help="Simulate execution without running tools")
     parser_eval.set_defaults(func=cmd_evaluate)
 

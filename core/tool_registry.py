@@ -419,6 +419,43 @@ class XlsxToMarkdownTool(Tool):
         return {"result": xlsx_to_markdown(kwargs["input"], kwargs["output"])}
 
 
+class DescribeDiagramsTool(Tool):
+    @property
+    def name(self) -> str: return "describe_diagrams"
+    @property
+    def description(self) -> str: return "Analyze diagram images and append textual descriptions"
+    @property
+    def category(self) -> str: return "extract"
+    @property
+    def params(self) -> Dict[str, str]: return {
+        "document_path": "Path to Markdown file with images",
+        "model": "Vision model (default: qwen-vl-max)",
+        "prompt": "Custom prompt for vision model"
+    }
+    @property
+    def output(self) -> Dict[str, str]: return {
+        "updated_md": "Path to updated Markdown",
+        "descriptions_count": "Number of images described"
+    }
+
+    def execute(self, **kwargs: Any) -> Dict[str, Any]:
+        from core.extraction.diagramlens_tool import describe_diagrams
+        
+        # Build kwargs for describe_diagrams, only including prompt if provided
+        call_kwargs = {
+            "model": kwargs.get("model", "qwen-vl-max"),
+        }
+        
+        # Only pass prompt if it's explicitly provided (not None)
+        if "prompt" in kwargs and kwargs["prompt"]:
+            call_kwargs["prompt"] = kwargs["prompt"]
+        
+        return {"result": describe_diagrams(
+            kwargs.get("document_path"),
+            **call_kwargs
+        )}
+
+
 # ---------------------------------------------------------------------------
 # Auto-registration
 # ---------------------------------------------------------------------------
@@ -428,6 +465,7 @@ def register_all_tools() -> None:
     tools = [
         DocxExtractTool(),
         XlsxToMarkdownTool(),
+        DescribeDiagramsTool(),
         RubricImporterTool(),
         ExtractObjectivesTool(),
         ExtractRequirementsTool(),
