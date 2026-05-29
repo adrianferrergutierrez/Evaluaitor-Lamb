@@ -1,104 +1,168 @@
-# 🔧 HOTFIX: Error 400/500 en describe_diagrams (Workflow Execution)
+# 🔧 HOTFIX: Error 400 en describe_diagrams - VALIDATED & RESOLVED
 
-## ⚡ Status Final: ✅ RESOLVED
+## ⚡ Status Final: ✅ RESOLVED - PRODUCTION READY
 
-**Fecha**: 2026-05-25  
-**Versión**: 2.0 (Actualizada con fix de compresión)  
-**Probado**: Manual tests ✓ + Workflow integration ✓
+**Fecha**: 2026-05-26  
+**Versión**: 3.0 (Root cause fix - VALIDATED with 2x successful executions)  
+**Estado**: 26/26 images processed successfully ✅
 
 ---
 
 ## 🎯 Problema Original
 
-Al ejecutar `describe_diagrams` en un workflow con ~26 imágenes del DOCX:
-- ❌ Error 400/500 sistemático en TODAS las imágenes
-- ❌ 0/26 descripciones agregadas
-- ❌ Sin reintentos visibles
+Al ejecutar `describe_diagrams` en un workflow con 26 imágenes del DOCX:
+- ❌ Error 400: "Invalid chat format. Expected 'text' field in text type content part to be a string"
+- ❌ Ocurría en TODAS las imágenes procesadas
+- ❌ 0/26 descripciones completadas
 
-**Error típico:**
+**Error específico:**
 ```
-ERROR: Failed to analyze img_34.jpg: 400 Client Error: Bad Request
-ERROR: Failed to analyze img_33.jpg: 500 Server Error: Internal Server Error
-...
+ERROR: 400 Client Error: Bad Request for url: https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation
+DashScope error response: Invalid chat format. Expected 'text' field in text type content part to be a string
 ```
 
 ---
 
-## 🔍 Root Cause Identificada (v2.0)
+## 🔍 Root Cause Identificada (VALIDATED - v3.0)
 
-El problema NO era sólo el payload size, sino que:
+**Ubicación:** `core/tool_registry.py` líneas 443-450 (DescribeDiagramsTool.execute)
 
-1. **Compresión NO se aplicaba en el workflow**
-   - Se había implementado en `diagramlens_tool.py`
-   - Pero sólo se usaba en algunos paths de ejecución
-   - En el workflow real: imágenes llegaban sin comprimir a la API
-
-2. **Retry logic existía pero no era visible en logs**
-   - Python caché (.pyc) cargaba versión antigua
-   - Los cambios se hacían pero Python no los veía
-
-3. **Payload demasiado grande llegaba a API**
-   - Sin compresión: 1.5-2 MB por imagen
-   - Con imágenes grandes: 39+ MB total
-   - API rechaza con 400/500
-
----
-
-## ✅ Solución v2.0
-
-### 1. **Mover compresión a `dashscope_client.py`** ⭐ CRITICAL FIX
-
-**Cambio:** Agregué compresión dentro del método `vision()`:
+**Problema real:** Parámetro `prompt=None` siendo pasado explícitamente
 
 ```python
-def vision(self, model, prompt, image_path, ...):
-    # NUEVO: Comprimir ANTES de codificar en base64
-    try:
-        from core.extraction.diagramlens_tool import compress_image_if_needed
-        processed_path = compress_image_if_needed(image_path)
-        if processed_path != image_path:
-            logger.info(f"Image compressed for API call: {image_path.name}")
-            image_path = processed_path
-    except ImportError:
-        logger.debug("Image compression not available")
+# ❌ ANTES (INCORRECTO)
+def execute(self, **kwargs: Any) -> Dict[str, Any]:
+    return {"result": describe_diagrams(
+        kwargs.get("document_path"),
+        prompt=kwargs.get("prompt"),  # ← Returns None if key doesn't exist
+        model=kwargs.get("model", "qwen-vl-max"),
+    )}
+```
+
+**Por qué fallaba:**
+1. `kwargs.get("prompt")` devuelve `None` cuando "prompt" no está en kwargs
+2. Pasar `prompt=None` explícitamente **anula** el valor por defecto de la función
+3. `describe_diagrams()` recibe `prompt=None` en lugar del default
+4. Vision API recibe `None` como prompt → Error 400
+
+**Flujo del error:**
+```
+Tool call sin prompt parameter
+  └─ DescribeDiagramsTool.execute()
+      └─ prompt=kwargs.get("prompt") → None
+          └─ describe_diagrams(..., prompt=None)
+              └─ API recibe None en lugar de string
+                  └─ Error 400: "Expected 'text' field to be a string"
+```
+
+---
+
+## ✅ Solución Implementada - VALIDATED
+
+### 1. **Fix Principal: Pasar prompt condicionalmente** ⭐ CRITICAL
+
+**Ubicación:** `core/tool_registry.py` líneas 443-456
+
+```python
+# ✅ DESPUÉS (CORRECTO)
+def execute(self, **kwargs: Any) -> Dict[str, Any]:
+    from core.extraction.diagramlens_tool import describe_diagrams
     
-    # Luego codifica en base64 con imagen comprimida
-    b64 = base64.b64encode(image_data)
-    # ... rest of method
+    # Build kwargs for describe_diagrams, only including prompt if provided
+    call_kwargs = {
+        "model": kwargs.get("model", "qwen-vl-max"),
+    }
+    
+    # Only pass prompt if it's explicitly provided (not None)
+    if "prompt" in kwargs and kwargs["prompt"]:
+        call_kwargs["prompt"] = kwargs["prompt"]
+    
+    return {"result": describe_diagrams(
+        kwargs.get("document_path"),
+        **call_kwargs
+    )}
 ```
 
-**Resultado:** 
-- ✅ Compresión se aplica SIEMPRE, independiente del path
-- ✅ Imágenes se reducen 70-99% ANTES de ser encodificadas
-- ✅ Payloads pequeños llegan a la API (95-200 KB vs 1.5 MB)
+**Resultado:**
+- ✅ Si "prompt" no está en kwargs, NO se pasa a la función
+- ✅ Permite que `describe_diagrams()` use su valor por defecto
+- ✅ API recibe prompt válido (string) en lugar de None
+- ✅ Error 400 eliminado completamente
 
-### 2. **Mejorar logging para errores 5xx**
+### 2. **Mejoras Secundarias: Rate Limiting** (preventivas)
 
-Agregué manejo específico:
+**Ubicación:** `core/clients/dashscope_client.py`
+
+a) **Aumentar base_delay:**
 ```python
-elif error_code >= 500:
-    logger.warning(f"[Attempt {attempt + 1}/{max_retries + 1}] HTTP {error_code} (Server Error)")
-    retryable = True
+RETRY_CONFIG = {
+    "base_delay": 3.0,  # ← Aumentado de 1.0s
+    "max_retries": 3,
+    "backoff_factor": 2.0,
+}
 ```
 
-### 3. **Limpiar caché de Python**
-
-```bash
-find . -type d -name __pycache__ -exec rm -rf {} +
+b) **Nueva sesión por reintento:**
+```python
+for attempt in range(max_retries + 1):
+    session = requests.Session()  # ← Fresh session
+    response = session.post(...)
 ```
 
----
+c) **Delay después de vision API:**
+```python
+# Después de respuesta exitosa
+time.sleep(2)  # Rate limit safety
+```
 
-## 📊 Comparación: Antes vs Después
+d) **Validación de prompt:**
+```python
+if not prompt:
+    prompt = "Describe this image in detail."
+    logger.warning(f"Invalid prompt type: {type(prompt)}. Using default.")
+```
 
-| Aspecto | Antes | Después |
+## 📊 Validación de Resultados
+
+### Test 1: results_hotfix_v5 (Primera ejecución completa)
+```
+Duración: 1663.8 segundos (27.7 minutos)
+Imágenes procesadas: 26/26 ✅
+Criterios evaluados: 3/3 ✅
+Score final: 7.0/10 "Bueno"
+Estado: COMPLETADO EXITOSAMENTE ✅
+```
+
+### Test 2: results_hotfix_v6 (Validación de reproducibilidad)
+```
+Duración: 1484.8 segundos (24.7 minutos) - ¡MÁS RÁPIDO!
+Imágenes procesadas: 26/26 ✅
+Criterios evaluados: 3/3 ✅
+Score final: 7.0/10 "Bueno" (IDÉNTICO) ✅
+Estado: COMPLETADO EXITOSAMENTE ✅
+```
+
+### Comparación: Antes vs Después
+
+| Métrica | Antes | Después |
 |---------|-------|---------|
-| **Payload por imagen** | 1.5-2 MB | 100-200 KB |
-| **Total 26 imágenes** | 39+ MB | 2.6-5.2 MB |
-| **Compresión aplicada** | No (workflow) | Sí (siempre) |
-| **Retry attempts** | ¿? (no visibles) | Visible en logs |
-| **Éxito rate** | 0/26 ❌ | 24-26/26 ✅ |
-| **Compresión visible en logs** | No | Sí: "Image compressed for API call" |
+| **Error 400** | ❌ Todas las imágenes | ✅ 0 ocurrencias |
+| **Imágenes procesadas** | 0/26 ❌ | 26/26 ✅ |
+| **Criterios evaluados** | 0/3 | 3/3 ✅ |
+| **Evaluación completada** | ❌ No | ✅ Sí |
+| **Tiempo de ejecución** | ~∞ (falló) | 24-27 minutos |
+| **Repetibilidad** | N/A | Validada 2x ✅ |
+
+### Logs de Éxito (Muestra)
+```
+[26/26] img_34.jpg: DashScope vision 'qwen-vl-max': 578 input, 1031 output ✓
+[25/26] img_33.jpg: DashScope vision 'qwen-vl-max': 353 input, 1188 output ✓
+[24/26] img_32.png: DashScope vision 'qwen-vl-max': 160 input, 658 output ✓
+...
+[1/26] img_0.jpg: DashScope vision 'qwen-vl-max': 553 input, 1014 output ✓
+
+✓ Updated contents.md: 26/26 descriptions added
+```
 
 ---
 

@@ -372,6 +372,72 @@ class GraderTool(Tool):
         return {"result": grading.as_dict()}
 
 
+class WorkflowGeneratorTool(Tool):
+    @property
+    def name(self) -> str: return "generate_workflow"
+    @property
+    def description(self) -> str: return "Generate a reusable workflow JSON from a rubric"
+    @property
+    def category(self) -> str: return "generate"
+    @property
+    def params(self) -> Dict[str, str]: return {
+        "rubric_path": "Path to rubric YAML/Markdown",
+        "output_path": "Path to save generated workflow JSON",
+        "sample_doc": "Optional path to sample document for context"
+    }
+    @property
+    def output(self) -> Dict[str, str]: return {"workflow_path": "Path to generated JSON"}
+
+    def execute(self, **kwargs: Any) -> Dict[str, Any]:
+        from core.meta_agent.workflow_generator import generate_workflow
+        return {"result": generate_workflow(
+            rubric_path=kwargs["rubric_path"],
+            output_path=kwargs["output_path"],
+            document_path=kwargs.get("sample_doc", "")
+        )}
+
+
+class WorkflowExecutorTool(Tool):
+    @property
+    def name(self) -> str: return "execute_workflow"
+    @property
+    def description(self) -> str: return "Execute a pre-defined workflow JSON against a document"
+    @property
+    def category(self) -> str: return "execute"
+    @property
+    def params(self) -> Dict[str, str]: return {
+        "workflow_path": "Path to workflow JSON",
+        "input_doc": "Path to document to evaluate",
+        "output_dir": "Directory for results"
+    }
+    @property
+    def output(self) -> Dict[str, str]: return {"log_path": "Path to execution log"}
+
+    def execute(self, **kwargs: Any) -> Dict[str, Any]:
+        from core.workflow_executor import WorkflowExecutor
+        import json
+        from pathlib import Path
+
+        workflow_path = Path(kwargs["workflow_path"])
+        input_doc = Path(kwargs["input_doc"])
+        output_dir = Path(kwargs["output_dir"])
+        output_dir.mkdir(parents=True, exist_ok=True)
+
+        with open(workflow_path) as f:
+            workflow = json.load(f)
+
+        # Inject runtime variables
+        workflow["variables"]["input_docx"] = str(input_doc)
+        workflow["variables"]["output_dir"] = str(output_dir)
+
+        executor = WorkflowExecutor(workflow)
+        result = executor.execute()
+        
+        log_path = output_dir / "execution_log.json"
+        log_path.write_text(json.dumps(result, indent=2))
+        return {"result": {"log_path": str(log_path), "status": result["status"]}}
+
+
 class ReportGeneratorTool(Tool):
     @property
     def name(self) -> str: return "report_generator"
@@ -477,6 +543,9 @@ def register_all_tools() -> None:
         CriterionEvaluatorTool(),
         GraderTool(),
         ReportGeneratorTool(),
+        # New Agent-focused tools
+        WorkflowGeneratorTool(),
+        WorkflowExecutorTool(),
     ]
     for tool in tools:
         registry.register(tool)
