@@ -1,0 +1,10 @@
+[
+  {
+    "role": "user",
+    "content": "Digues-me hola en català"
+  },
+  {
+    "role": "assistant",
+    "content": "Hola! 👋 Com et puc ajudar avui?"
+  }
+]

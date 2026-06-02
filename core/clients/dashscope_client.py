@@ -27,7 +27,7 @@ DASHSCOPE_ENDPOINTS = {
     "china": "https://dashscope.aliyuncs.com/compatible-mode/v1",
 }
 
-DEFAULT_MODEL = os.environ.get("DASHSCOPE_MODEL", "qwen3.7-max")
+DEFAULT_MODEL = os.environ.get("DASHSCOPE_MODEL", "qwen3.6-plus")
 DEFAULT_ENDPOINT = os.environ.get("DASHSCOPE_ENDPOINT", "singapore")
 
 # Retry configuration

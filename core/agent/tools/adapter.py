@@ -36,15 +36,28 @@ class ToolAdapter:
         schemas = []
         for tool in self._tools:
             if tool.name in self.security.allowed_tools:
-                schemas.append({
+                # Extract required fields from parameter descriptions
+                required = []
+                properties = {}
+                for param_name, param_desc in tool.params.items():
+                    properties[param_name] = {
+                        "type": "string",
+                        "description": param_desc
+                    }
+                    if param_desc.upper().startswith("REQUIRED"):
+                        required.append(param_name)
+                
+                schema = {
                     "name": tool.name,
                     "description": tool.description,
                     "parameters": {
                         "type": "object",
-                        "properties": tool.params,
-                        "required": list(tool.params.keys()),
+                        "properties": properties,
                     },
-                })
+                }
+                if required:
+                    schema["parameters"]["required"] = required
+                schemas.append(schema)
         return schemas
 
     def dispatch(self, tool_name: str, arguments: Dict[str, Any]) -> Any:

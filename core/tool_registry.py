@@ -106,6 +106,57 @@ registry = ToolRegistry()
 # Concrete Tool Implementations
 # ---------------------------------------------------------------------------
 
+class ReadFileTool(Tool):
+    @property
+    def name(self) -> str: return "read_file"
+    @property
+    def description(self) -> str: return "Read the contents of a file (text files only)"
+    @property
+    def category(self) -> str: return "utility"
+    @property
+    def params(self) -> Dict[str, str]: return {
+        "file_path": "Absolute or relative path to the file to read (must be a file, not a directory)"
+    }
+    @property
+    def output(self) -> Dict[str, str]: return {"content": "File contents as text"}
+
+    def execute(self, **kwargs: Any) -> Dict[str, Any]:
+        from pathlib import Path
+        file_path = Path(kwargs["file_path"])
+        if not file_path.exists():
+            raise FileNotFoundError(f"File not found: {file_path}")
+        if file_path.is_dir():
+            raise ValueError(f"Path is a directory, not a file: {file_path}")
+        content = file_path.read_text(encoding="utf-8")
+        return {"result": {"content": content, "size": len(content)}}
+
+
+class ListDirectoryTool(Tool):
+    @property
+    def name(self) -> str: return "list_directory"
+    @property
+    def description(self) -> str: return "List files and subdirectories in a directory"
+    @property
+    def category(self) -> str: return "utility"
+    @property
+    def params(self) -> Dict[str, str]: return {
+        "dir_path": "Absolute or relative path to the directory to list"
+    }
+    @property
+    def output(self) -> Dict[str, str]: return {"files": "List of files", "dirs": "List of subdirectories"}
+
+    def execute(self, **kwargs: Any) -> Dict[str, Any]:
+        from pathlib import Path
+        dir_path = Path(kwargs["dir_path"])
+        if not dir_path.exists():
+            raise FileNotFoundError(f"Directory not found: {dir_path}")
+        if not dir_path.is_dir():
+            raise ValueError(f"Path is not a directory: {dir_path}")
+        files = [f.name for f in dir_path.iterdir() if f.is_file()]
+        dirs = [d.name for d in dir_path.iterdir() if d.is_dir()]
+        return {"result": {"files": sorted(files), "dirs": sorted(dirs)}}
+
+
 class DocxExtractTool(Tool):
     @property
     def name(self) -> str: return "docx_extract"
@@ -128,30 +179,48 @@ class RubricImporterTool(Tool):
     @property
     def name(self) -> str: return "rubric_importer"
     @property
-    def description(self) -> str: return "Import Markdown rubric to YAML config"
+    def description(self) -> str: return "Import Markdown rubric table to YAML config format. Use this when you have a rubric in Markdown format and need to convert it to YAML for evaluation."
     @property
     def category(self) -> str: return "config"
     @property
-    def params(self) -> Dict[str, str]: return {"input": "Rubric MD path", "output": "YAML config path"}
+    def params(self) -> Dict[str, str]: return {
+        "input": "REQUIRED: Path to the rubric Markdown file (e.g., 'rubrics/hito1.md'). Must be a file, not a directory.",
+        "output": "REQUIRED: Path where the YAML config will be saved (e.g., 'configs/rubric_hito1.yaml'). Must end with .yaml extension."
+    }
     @property
-    def output(self) -> Dict[str, str]: return {"config_path": "YAML path"}
+    def output(self) -> Dict[str, str]: return {"config_path": "Path to the generated YAML config file"}
 
     def execute(self, **kwargs: Any) -> Dict[str, Any]:
         from core.config.rubric_importer import import_rubric
-        input_path = kwargs["input"]
-        output_path = kwargs["output"]
-        prompts_dir = str(Path(output_path).parent / "prompts")
-        import_rubric(input_path, output_path, prompts_dir)
+        input_path = kwargs.get("input")
+        output_path = kwargs.get("output")
+        
+        if not input_path:
+            raise ValueError("Parameter 'input' is required (path to rubric Markdown file)")
+        if not output_path:
+            raise ValueError("Parameter 'output' is required (path to save YAML config)")
+        
+        input_path = Path(input_path)
+        output_path = Path(output_path)
+        
+        if not input_path.exists():
+            raise FileNotFoundError(f"Rubric file not found: {input_path}")
+        if input_path.is_dir():
+            raise ValueError(f"'input' must be a file, not a directory: {input_path}")
+        
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        prompts_dir = str(output_path.parent / "prompts")
+        import_rubric(str(input_path), str(output_path), prompts_dir)
         # Fix prompt paths
         import yaml
         with open(output_path) as f:
             cfg = yaml.safe_load(f)
-        rubric_id = Path(output_path).stem.replace("rubric_", "").replace("rubrica_", "")
+        rubric_id = output_path.stem.replace("rubric_", "").replace("rubrica_", "")
         for criterion in cfg["rubric"]["criteria"]:
             criterion["prompt"] = f"{rubric_id}/" + criterion["prompt"]
         with open(output_path, "w") as f:
             yaml.dump(cfg, f, default_flow_style=False, allow_unicode=True)
-        return {"result": {"config_path": output_path}}
+        return {"result": {"config_path": str(output_path)}}
 
 
 class ExtractObjectivesTool(Tool):
@@ -376,25 +445,46 @@ class WorkflowGeneratorTool(Tool):
     @property
     def name(self) -> str: return "generate_workflow"
     @property
-    def description(self) -> str: return "Generate a reusable workflow JSON from a rubric"
+    def description(self) -> str: return "Generate a reusable workflow JSON from a rubric. Use this when you need to create a new evaluation workflow for a specific rubric. The generated workflow can be reused for multiple documents."
     @property
     def category(self) -> str: return "generate"
     @property
     def params(self) -> Dict[str, str]: return {
-        "rubric_path": "Path to rubric YAML/Markdown",
-        "output_path": "Path to save generated workflow JSON",
-        "sample_doc": "Optional path to sample document for context"
+        "rubric_path": "REQUIRED: Path to rubric YAML file (e.g., 'configs/rubric_hito1.yaml'). Must be a file, not a directory.",
+        "output_path": "REQUIRED: Path where the workflow JSON will be saved (e.g., 'workflows/hito1.json'). Must end with .json extension.",
+        "sample_doc": "OPTIONAL: Path to a sample document for context (e.g., 'docs/sample.md'). Helps the generator understand the document structure."
     }
     @property
-    def output(self) -> Dict[str, str]: return {"workflow_path": "Path to generated JSON"}
+    def output(self) -> Dict[str, str]: return {"workflow_path": "Path to the generated workflow JSON file"}
 
     def execute(self, **kwargs: Any) -> Dict[str, Any]:
         from core.meta_agent.workflow_generator import generate_workflow
-        return {"result": generate_workflow(
-            rubric_path=kwargs["rubric_path"],
-            output_path=kwargs["output_path"],
-            document_path=kwargs.get("sample_doc", "")
-        )}
+        
+        rubric_path = kwargs.get("rubric_path")
+        output_path = kwargs.get("output_path")
+        sample_doc = kwargs.get("sample_doc", "")
+        
+        if not rubric_path:
+            raise ValueError("Parameter 'rubric_path' is required (path to rubric YAML file)")
+        if not output_path:
+            raise ValueError("Parameter 'output_path' is required (path to save workflow JSON)")
+        
+        rubric_path = Path(rubric_path)
+        output_path = Path(output_path)
+        
+        if not rubric_path.exists():
+            raise FileNotFoundError(f"Rubric file not found: {rubric_path}")
+        if rubric_path.is_dir():
+            raise ValueError(f"'rubric_path' must be a file, not a directory: {rubric_path}")
+        
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        
+        result = generate_workflow(
+            rubric_path=str(rubric_path),
+            output_path=str(output_path),
+            document_path=sample_doc
+        )
+        return {"result": {"workflow_path": str(output_path)}}
 
 
 class WorkflowExecutorTool(Tool):
@@ -546,6 +636,9 @@ def register_all_tools() -> None:
         # New Agent-focused tools
         WorkflowGeneratorTool(),
         WorkflowExecutorTool(),
+        # Utility tools
+        ReadFileTool(),
+        ListDirectoryTool(),
     ]
     for tool in tools:
         registry.register(tool)
