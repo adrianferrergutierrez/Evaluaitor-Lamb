@@ -1,0 +1,10 @@
+[
+  {
+    "role": "user",
+    "content": "Crea"
+  },
+  {
+    "role": "assistant",
+    "content": "¡Hola! Veo que escribiste \"Crea\" pero la solicitud está incompleta. ¿Qué te gustaría que cree?\n\nBasado en mis capacidades, puedo ayudarte a:\n\n1. **Crear un workflow de evaluación** (JSON reutilizable) a partir de una rúbrica\n2. **Crear un reporte de evaluación** de un documento académico\n3. **Crear archivos Markdown** extrayendo contenido de DOCX o XLSX\n4. **Crear configuraciones YAML** importando rúbricas\n\nPor favor, indícame:\n- **¿Qué deseas crear?**\n- **¿Cuál es el archivo de entrada?** (rúbrica, documento DOCX, etc.)\n- **¿Dónde deseas guardar el resultado?**\n\nEjemplo: *\"Crea un workflow de evaluación usando la rúbrica `rubrics/hito1.md` y guárdalo en `workflows/hito1.json`\"*"
+  }
+]
