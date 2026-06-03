@@ -1,0 +1,24 @@
+{
+  "status": "aborted",
+  "log": [
+    {
+      "step": "step_extract_docx",
+      "tool": "docx_extract",
+      "status": "success",
+      "attempt": 1,
+      "duration": 1.2579803466796875
+    },
+    {
+      "step": "step_describe_diagrams",
+      "tool": "describe_diagrams",
+      "status": "success",
+      "attempt": 1,
+      "duration": 10.239546060562134
+    },
+    {
+      "step": "step_evaluate",
+      "status": "aborted",
+      "reason": "Config file not found: path/to/rubric.yaml"
+    }
+  ]
+}

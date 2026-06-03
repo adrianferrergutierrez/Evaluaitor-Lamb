@@ -128,6 +128,10 @@ def describe_diagrams(
     Large images (> 1 MB) are automatically compressed to reduce payload size
     and avoid 400 errors from the DashScope API. The tool includes retry logic
     for transient failures.
+    
+    If the vision API fails (e.g., no quota, API key missing), the function
+    returns the original document without descriptions instead of raising an
+    exception. This allows workflows to continue with text-only evaluation.
 
     Parameters
     ----------
@@ -143,18 +147,37 @@ def describe_diagrams(
     dict
         Keys: ``updated_md`` (path to updated file), ``descriptions_count``,
         ``total_images`` (total found), ``failed_images`` (list of failed image names).
+        If vision fails completely, returns original document with 0 descriptions.
     """
     doc_path = Path(document_path)
     if not doc_path.exists():
         raise FileNotFoundError(f"Document not found: {doc_path}")
 
     content = doc_path.read_text(encoding="utf-8")
-    client = DashScopeClient()
     
-    # Debug: Check if API key is loaded
-    if not client.api_key:
-        logger.error("DashScope API key is not set in describe_diagrams tool!")
-        raise ValueError("API Key missing")
+    # Try to initialize client, but don't fail if API key is missing
+    try:
+        client = DashScopeClient()
+        if not client.api_key:
+            logger.warning("DashScope API key not set. Skipping diagram descriptions.")
+            return {
+                "updated_md": str(doc_path),
+                "descriptions_count": 0,
+                "total_images": 0,
+                "failed_images": [],
+                "skipped": True,
+                "reason": "API key not set"
+            }
+    except Exception as e:
+        logger.warning(f"Failed to initialize DashScope client: {e}. Skipping diagram descriptions.")
+        return {
+            "updated_md": str(doc_path),
+            "descriptions_count": 0,
+            "total_images": 0,
+            "failed_images": [],
+            "skipped": True,
+            "reason": str(e)
+        }
     
     matches = list(IMAGE_PATTERN.finditer(content))
     descriptions_count = 0

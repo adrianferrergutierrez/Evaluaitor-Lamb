@@ -498,7 +498,8 @@ class WorkflowExecutorTool(Tool):
     def params(self) -> Dict[str, str]: return {
         "workflow_path": "Path to workflow JSON",
         "input_doc": "Path to document to evaluate",
-        "output_dir": "Directory for results"
+        "output_dir": "Directory for results",
+        "rubric_path": "Path to rubric YAML file (optional if workflow has metadata.rubric_id)"
     }
     @property
     def output(self) -> Dict[str, str]: return {"log_path": "Path to execution log"}
@@ -511,6 +512,8 @@ class WorkflowExecutorTool(Tool):
         workflow_path = Path(kwargs["workflow_path"])
         input_doc = Path(kwargs["input_doc"])
         output_dir = Path(kwargs["output_dir"])
+        rubric_path = kwargs.get("rubric_path")
+        
         output_dir.mkdir(parents=True, exist_ok=True)
 
         with open(workflow_path) as f:
@@ -519,6 +522,25 @@ class WorkflowExecutorTool(Tool):
         # Inject runtime variables
         workflow["variables"]["input_docx"] = str(input_doc)
         workflow["variables"]["output_dir"] = str(output_dir)
+        
+        # Inject rubric path if provided, otherwise try to infer from metadata
+        if rubric_path:
+            workflow["variables"]["input_rubric"] = str(rubric_path)
+        elif "metadata" in workflow and "rubric_id" in workflow["metadata"]:
+            # Try to find rubric in configs directory
+            rubric_id = workflow["metadata"]["rubric_id"]
+            inferred_path = Path(f"configs/rubric_{rubric_id}.yaml")
+            if inferred_path.exists():
+                workflow["variables"]["input_rubric"] = str(inferred_path)
+            else:
+                raise ValueError(
+                    f"Rubric path not provided and cannot infer from metadata. "
+                    f"Expected: {inferred_path}"
+                )
+        else:
+            raise ValueError(
+                "Rubric path not provided and workflow has no metadata.rubric_id"
+            )
 
         executor = WorkflowExecutor(workflow)
         result = executor.execute()
