@@ -43,21 +43,23 @@ Grau en Enginyeria Informàtica (Enginyeria del Software)
 
 [1.1.2 LMS (Learning Management System)	4](#1.1.2-lms-\(learning-management-system\))
 
-[1.1.3 Agent Loop	4](#1.1.3-agent-loop)
+[1.1.3 Skill	4](#1.1.3-skill)
 
-[1.1.4 LLM (Large Language Model)	5](#1.1.4-llm-\(large-language-model\))
+[1.1.4 Agent Loop	4](#1.1.4-agent-loop)
 
-[1.1.5 DashScope	5](#1.1.5-dashscope)
+[1.1.5 LLM (Large Language Model)	5](#1.1.5-llm-\(large-language-model\))
 
-[1.1.6 Workflow Generator/Executor	5](#1.1.6-workflow-generator/executor)
+[1.1.6 DashScope	5](#1.1.6-dashscope)
 
-[1.1.7 Tool Registry	5](#1.1.7-tool-registry)
+[1.1.7 Workflow Generator/Executor	5](#1.1.7-workflow-generator/executor)
 
-[1.1.8 Rúbrica d'Avaluació amb IA	5](#1.1.8-rúbrica-d'avaluació-amb-ia)
+[1.1.8 Tool Registry	5](#1.1.8-tool-registry)
 
-[1.1.9 Visió Multimodal	5](#1.1.9-visió-multimodal)
+[1.1.9 Rúbrica d'Avaluació amb IA	5](#1.1.9-rúbrica-d'avaluació-amb-ia)
 
-[1.1.10 RGPD (Reglament General de Protecció de Dades)	5](#1.1.10-rgpd-\(reglament-general-de-protecció-de-dades\))
+[1.1.10 Visió Multimodal	5](#1.1.10-visió-multimodal)
+
+[1.1.11 RGPD (Reglament General de Protecció de Dades)	5](#1.1.11-rgpd-\(reglament-general-de-protecció-de-dades\))
 
 [1.2 Identificació del problema	6](#1.2-identificació-del-problema)
 
@@ -221,7 +223,7 @@ Aquest treball de fi de grau es desenvolupa en el marc d'una beca d'aprenentatge
 
 Actualment, l'ecosistema LAMB compta amb diversos projectes relacionats amb l'avaluació assistida per IA, incloent-hi [SE-rubric-evaluAItor](https://github.com/Lamb-Project/SE-rubric-evaluAItor), un pipeline d'investigació per a l'avaluació de documents de requisits d'Enginyeria del Software, i [DiagramLens](https://github.com/Lamb-Project/DiagramLens), un mòdul de visió multimodal per a la descripció de diagrames tècnics.
 
-L'objectiu principal d'aquest TFG és el disseny i implementació de SE-Agentic-Evaluator, un **sistema meta-agèntic complet** que transforma el pipeline rígid de SE-rubric-evaluAItor en un assistent dinàmic, contextual i adaptatiu per a l'avaluació d'entregables acadèmics d'Enginyeria del Software. El sistema implementa un **agent loop propi** (~30 línies) seguint la metodologia "Agents All the Way Down" del professor Marc Alier, utilitza models d'IA de DashScope (Alibaba Cloud) per a tasques d'extracció i avaluació, i delega el càlcul de notes en scripts Python determinístics per evitar al·lucinacions numèriques dels LLMs.
+L'objectiu principal d'aquest TFG és el disseny i implementació de SE-Agentic-Evaluator, un **sistema meta-agèntic complet** que transforma el pipeline rígid de SE-rubric-evaluAItor en un assistent dinàmic, contextual i adaptatiu per a l'avaluació d'entregables acadèmics d'Enginyeria del Software. El sistema implementa un **agent loop propi** seguint la metodologia "Agents All the Way Down" del professor Marc Alier, utilitza models d'IA de DashScope (Alibaba Cloud) per a tasques d'extracció i avaluació, i delega el càlcul de notes en scripts Python determinístics per evitar al·lucinacions numèriques dels LLMs.
 
 El sistema disposa de **18 tools especialitzades** (extracció, anàlisi, visió multimodal, grading, gestió de sessions) i implementa un **workflow generator** que genera workflows JSON personalitzats per a cada rúbrica, permetent la seva reutilització amb múltiples documents. Aquesta arquitectura permet separar la generació de workflows de la seva execució, optimitzant costos i temps de processament.
 
@@ -237,35 +239,39 @@ Un agent d'IA és un sistema de programari capaç de percebre el seu entorn, pre
 
 Un LMS (Learning Management System) és una plataforma tecnològica o aplicació web dissenyada per crear, gestionar, distribuir i avaluar cursos en línia i programes de formació de forma centralitzada. Funciona com a aula virtual, facilitant el seguiment dels alumnes, la gestió de materials i la interacció entre usuaris. Per exemple Moodle.
 
-### 1.1.3 Agent Loop {#1.1.3-agent-loop}
+### 1.1.3 Skill {#1.1.3-skill}
 
-Un Agent Loop és el cicle fonamental d'execució d'un agent d'IA. Consisteix en un bucle que: (1) envia el context actual al LLM, (2) rep la resposta del LLM, (3) si la resposta inclou tool calls, executa les tools i afegeix els resultats al context, (4) repeteix el procés fins que el LLM no solicita més tool calls. En aquest projecte, l'agent loop s'implementa en ~30 línies de codi Python, seguint la metodologia "Agents All the Way Down" del professor Marc Alier, sense dependre de cap framework extern.
+Una "skill" (habilitat) a IA és un manual d'instruccions reutilitzable, estructurat en format Markdown, que ensenya a un agent d'intel·ligència artificial (com Claude, ChatGPT o Gemini) com executar una tasca específica. Permet encapsular el pas a pas, exemples i regles per evitar haver de repetir prompts llargs constantment. Les Skills permeten estendre les capacitats d'un agent d'IA per a dominis específics sense modificar el nucli del sistema.
 
-### 1.1.4 LLM (Large Language Model) {#1.1.4-llm-(large-language-model)}
+### 1.1.4 Agent Loop {#1.1.3-agent-loop}
+
+Un Agent Loop és el cicle fonamental d'execució d'un agent d'IA. Consisteix en un bucle que: (1) envia el context actual al LLM, (2) rep la resposta del LLM, (3) si la resposta inclou tool calls, executa les tools i afegeix els resultats al context, (4) repeteix el procés fins que el LLM no solicita més tool calls. En aquest projecte, l'agent loop s'implementa en un codi Python, seguint la metodologia "Agents All the Way Down" del professor Marc Alier, sense dependre de cap framework extern.
+
+### 1.1.5 LLM (Large Language Model) {#1.1.4-llm-(large-language-model)}
 
 Un Large Language Model (LLM) és un model d'intel·ligència artificial entrenat amb grans volums de text capaç de generar, comprendre i transformar llenguatge natural. En aquest projecte s'utilitzen LLMs de la família Qwen executats via DashScope (Alibaba Cloud) per a tasques d'extracció d'informació, anàlisi de qualitat i avaluació de documents.
 
-### 1.1.5 DashScope {#1.1.5-dashscope}
+### 1.1.6 DashScope {#1.1.5-dashscope}
 
 DashScope és la plataforma de serveis d'IA d'Alibaba Cloud que proporciona accés a models de llenguatge i visió de la família Qwen. A diferència d'Ollama (execució local), DashScope opera com a servei cloud, oferint models de major qualitat (qwen3.6-plus per a text, qwen-vl-max per a visió) sense requerir hardware especialitzat. En aquest projecte, DashScope s'utilitza per a totes les tasques que requereixen LLM, incloent-hi extracció estructurada, anàlisi de diagrames UML i avaluació de criteris.
 
-### 1.1.6 Workflow Generator/Executor {#1.1.6-workflow-generator/executor}
+### 1.1.7 Workflow Generator/Executor {#1.1.6-workflow-generator/executor}
 
 El Workflow Generator és un component que genera workflows JSON personalitzats per a cada rúbrica d'avaluació. Analitza la rúbrica i determina quines tools s'han d'executar i en quin ordre. El Workflow Executor és el component que executa aquests workflows amb documents específics. Aquesta separació permet generar un workflow una vegada i reutilitzar-lo amb múltiples documents, optimitzant costos i temps de processament.
 
-### 1.1.7 Tool Registry {#1.1.7-tool-registry}
+### 1.1.8 Tool Registry {#1.1.7-tool-registry}
 
 El Tool Registry és un registre centralitzat de totes les tools disponibles per a l'agent. Cada tool té un nom, descripció, categoria i funció d'execució. En aquest projecte, el registry conté 18 tools especialitzades en extracció (docx_extract, xlsx_to_markdown, describe_diagrams), anàlisi (extract_objectives, detect_orphans, evaluate_smart), avaluació (criterion_evaluator, grader) i gestió (session_store). L'agent consulta el registry per determinar quines tools pot utilitzar.
 
-### 1.1.8 Rúbrica d'Avaluació amb IA  {#1.1.8-rúbrica-d'avaluació-amb-ia}
+### 1.1.9 Rúbrica d'Avaluació amb IA  {#1.1.8-rúbrica-d'avaluació-amb-ia}
 
 Estratègia mitjançant la qual s'instrueix un model de llenguatge (LLM) per avaluar un document acadèmic basant-se en criteris predefinits (objectius, requisits, casos d'ús, traçabilitat), amb pesos configurables per a cada criteri. La nota final es calcula de manera determinística amb Python, no pel LLM.
 
-### 1.1.9 Visió Multimodal {#1.1.9-visió-multimodal}
+### 1.1.10 Visió Multimodal {#1.1.9-visió-multimodal}
 
 Capacitat d'un model d'IA de processar i comprendre tant text com imatges. En aquest projecte, el model `qwen-vl-max` de DashScope s'utilitza per categoritzar i descriure tècnicament diagrames UML i figures tècniques embebudes en documents Markdown, proporcionant evidència visual per a l'avaluació de consistència arquitectònica.
 
-### 1.1.10 RGPD (Reglament General de Protecció de Dades) {#1.1.10-rgpd-(reglament-general-de-protecció-de-dades)}
+### 1.1.11 RGPD (Reglament General de Protecció de Dades) {#1.1.10-rgpd-(reglament-general-de-protecció-de-dades)}
 
 Reglament europeu que estableix el marc legal per a la protecció de dades personals. En el context d'aquest projecte, el compliment del RGPD es garanteix mitjançant l'ús de DashScope (Alibaba Cloud), que compleix amb les normatives europees de protecció de dades. Addicionalment, el sistema implementa mesures de seguretat al scaffolding (allow-list) per evitar l'execució de codi maliciós o l'accés a dades no autoritzades.
 
@@ -340,9 +346,6 @@ Davant d'aquest context, es va prendre la decisió conjuntament amb el director 
 - **Afegeix valor diferencial:** integra visió multimodal local, evidència obligatòria i càlcul determinístic de notes.
 - **És més resilient als canvis:** en no dependre d'una arquitectura de microserveis específica, el projecte és menys vulnerable als canvis constants de LAMB.
 
-### Impacte en la memòria
-
-Aquesta reorientació afecta principalment les seccions de **Justificació**, **Abast**, **Planificació temporal** i **Pressupost**, que han estat actualitzades per reflectir el nou enfocament. Les seccions de **Definicions**, **Metodologia**, **Gestió del Risc** i **Sostenibilitat** s'han adaptat però mantenen l'estructura original.
 
 ### Segona reorientació: De Skill agèntica a sistema meta-agèntic (Març-Juny 2026)
 
@@ -362,7 +365,7 @@ Durant el desenvolupament de la Skill agèntica per a opencode.ai, es van identi
 
 Davant d'aquest context, es va prendre la decisió conjuntament amb el director del TFG de **evolucionar el projecte** cap a un **sistema meta-agèntic complet** amb les següents característiques:
 
-- **Agent loop propi:** Implementació d'un agent loop independent (~30 línies) que no depèn de cap plataforma externa, seguint la metodologia "Agents All the Way Down" del professor Marc Alier.
+- **Agent loop propi:** Implementació d'un agent loop independent que no depèn de cap plataforma externa, seguint la metodologia "Agents All the Way Down" del professor Marc Alier.
 
 - **Canvi a DashScope:** Migració d'Ollama (models locals) a DashScope (Alibaba Cloud) amb models qwen3.6-plus (text) i qwen-vl-max (visió), millorant significativament la qualitat d'extracció i avaluació.
 
@@ -425,7 +428,7 @@ La tercera alternativa era convertir el pipeline rígid en una **Skill agèntica
 
 La quarta alternativa, i finalment adoptada, consisteix en implementar un **sistema meta-agèntic complet** amb les següents característiques:
 
-- **Agent loop propi:** Implementació d'un agent loop independent (~30 línies) que no depèn de cap plataforma externa, seguint la metodologia "Agents All the Way Down" del professor Marc Alier.
+- **Agent loop propi:** Implementació d'un agent loop independent que no depèn de cap plataforma externa, seguint la metodologia "Agents All the Way Down" del professor Marc Alier.
 - **Workflow generator/executor:** Dos components independents que permeten generar workflows JSON personalitzats per a cada rúbrica i executar-los amb múltiples documents, optimitzant costos i temps.
 - **18 tools especialitzades:** Registry complet amb tools d'extracció (docx_extract, xlsx_to_markdown, describe_diagrams), anàlisi (extract_objectives, detect_orphans, evaluate_smart), avaluació (criterion_evaluator, grader) i gestió (session_store).
 - **DashScope en lloc d'Ollama:** Migració a models cloud de major qualitat (qwen3.6-plus per a text, qwen-vl-max per a visió) per millorar la qualitat d'extracció i avaluació.
@@ -448,7 +451,7 @@ L'objectiu principal d'aquest projecte és implementar un **sistema meta-agènti
 
 **Sub-objectius:**
 
-* **Agent loop propi:** Implementar un agent loop independent (~30 línies) que no depèn de cap plataforma externa, seguint la metodologia "Agents All the Way Down" del professor Marc Alier.  
+* **Agent loop propi:** Implementar un agent loop independent que no depèn de cap plataforma externa, seguint la metodologia "Agents All the Way Down" del professor Marc Alier.  
 * **Workflow generator:** Implementar un component que generi workflows JSON personalitzats per a cada rúbrica d'avaluació, analitzant la rúbrica i determinant quines tools s'han d'executar i en quin ordre.  
 * **Workflow executor:** Implementar un component que executi workflows existents amb documents específics, permetent la reutilització de workflows amb múltiples documents.  
 * **18 tools especialitzades:** Implementar un registry complet amb tools d'extracció (docx_extract, xlsx_to_markdown, describe_diagrams), anàlisi (extract_objectives, detect_orphans, evaluate_smart), avaluació (criterion_evaluator, grader) i gestió (session_store).  
@@ -476,7 +479,7 @@ L'objectiu principal d'aquest projecte és implementar un **sistema meta-agènti
 * Com a professor, vull poder avaluar múltiples documents d'un sol cop (mode batch), per a processar els entregables de tot un curs de manera eficient.
 * Com a sistema, vull generar workflows JSON personalitzats per a cada rúbrica, per a reutilitzar-los amb múltiples documents sense repetir el procés de configuració.
 * Com a sistema, vull executar workflows existents amb documents específics, permetent la continuació de sessions i la gestió d'estat.
-* Com a sistema, vull implementar un agent loop propi (~30 línies) que no depèn de cap plataforma externa, seguint la metodologia "Agents All the Way Down".
+* Com a sistema, vull implementar un agent loop propi que no depèn de cap plataforma externa, seguint la metodologia "Agents All the Way Down".
 * Com a sistema, vull implementar un tool registry amb 18 tools especialitzades (extracció, anàlisi, avaluació, visió, gestió).
 * Com a sistema, vull implementar seguretat al scaffolding amb allow-list, per a evitar l'execució de codi maliciós o l'accés a dades no autoritzades.
 
@@ -498,10 +501,10 @@ L'objectiu principal d'aquest projecte és implementar un **sistema meta-agènti
 * Impacte: L'autor del projecte no ha treballat prèviament amb opencode.ai o el concepte de Skills, cosa que pot alentir les fases inicials d'aprenentatge i integració.  
 * Mitigació: Realitzar reunions periòdiques amb el director i dedicar temps específic a l'estudi de la plataforma abans de començar el desenvolupament.
 
-**Qualitat insuficient del LLM local**
+**Dependència de serveis cloud (DashScope)**
 
-* Impacte: Els models locals (qwen3) poden no tenir la capacitat necessària per a tasques complexes d'extracció estructurada o raonament evaluatiu, especialment amb mides inferiors a 14B paràmetres.  
-* Mitigació: Definir models mínims recomanats (qwen3:14b per a text, qwen3-vl:7b per a visió) i implementar validació de models a l'inici de l'execució.
+* Impacte: El sistema depèn de la disponibilitat i quota de l'API de DashScope (Alibaba Cloud). Si el servei no està disponible o s'exhaureix la quota, el sistema no pot funcionar.  
+* Mitigació: Implementar retry logic amb exponential backoff per gestionar errors temporals. Monitoritzar el consum de tokens i establir límits per evitar l'esgotament de la quota. Utilitzar models eficients (qwen3.6-plus per a text, qwen-vl-max per a visió).
 
 **Calendari apretat**
 
@@ -535,9 +538,9 @@ El projecte ha completat les fases P1-P4 i actualment es troba en la fase P5 (va
 
 Com que el projecte és desenvolupat per un únic integrant dins del context de l'ecosistema LAMB, la metodologia àgil estàndard (tipus Scrum) s'adapta al projecte estructurant el treball en quatre fases iteratives (sprints llargs) de dues-tres setmanes de durada cadascuna:
 
-1. **Fase 1 (Fonaments):** Estudi de la plataforma opencode.ai, configuració de l'entorn Ollama amb models locals, i adaptació dels mòduls d'extracció existents de SE-rubric-evaluAItor.  
+1. **Fase 1 (Fonaments):** Estudi de la metodologia "Agents All the Way Down", configuració de l'entorn DashScope amb models cloud (qwen3.6-plus i qwen-vl-max), i adaptació dels mòduls d'extracció existents de SE-rubric-evaluAItor.  
 2. **Fase 2 (Anàlisi i Visió):** Implementació dels mòduls d'anàlisi (traçabilitat, completitud, huérfanos, SMART, ISO 25010) i integració del mòdul de visió multimodal de DiagramLens.  
-3. **Fase 3 (Skill Agèntica i MVP):** Definició de la Skill `evaluator_skill` amb regles de procés, integració del grading determinístic, i validació del flux complet amb documents de prova.  
+3. **Fase 3 (Agent Meta-Agèntic i MVP):** Implementació de l'agent loop independent, tool registry amb 18 tools especialitzades, workflow generator/executor, i validació del flux complet amb documents de prova.  
 4. **Fase 4 (Refinament i Documentació):** Implementació de millores identificades (configuració YAML, gestió de fitxers intermedios), proves amb múltiples documents, i redacció de la memòria final.
 
 Aquest enfocament permetrà tenir versions funcionals del sistema des de les primeres fases, facilitant l'adaptació a possibles canvis en els requisits de l'empresa. El control de versions del codi es gestionarà mitjançant Git, integrant els canvis progressivament per evitar trencaments en la branca principal, seguint el flux de treball de *GitFlow*.
@@ -595,7 +598,7 @@ El sistema implementa una arquitectura meta-agèntica amb els següents componen
 
 **Components principals:**
 
-1. **Agent Loop (`core/agent/agent.py`):** Implementació d'un agent loop independent (~30 línies) que gestiona el cicle de vida de l'agent: rebre input, cridar el LLM, executar tool calls, i retornar resultats. Segueix la disciplina KV-cache: tools i system estàtics, messages en append-only.
+1. **Agent Loop (`core/agent/agent.py`):** Implementació d'un agent loop independent que gestiona el cicle de vida de l'agent: rebre input, cridar el LLM, executar tool calls, i retornar resultats. Segueix la disciplina KV-cache: tools i system estàtics, messages en append-only.
 
 2. **Workflow Generator (`core/meta_agent/workflow_generator.py`):** Component que genera workflows JSON personalitzats per a cada rúbrica. Analitza la rúbrica i determina quines tools s'han d'executar i en quin ordre.
 
@@ -894,8 +897,8 @@ A continuació s'esmenten els recursos necessaris per tal que el desenvolupament
 | Codi | Nom | Descripció |
 | :---: | ----- | ----- |
 | **\[CP\]** | **Cap de projecte** | Planificació, seguiment, gestió de riscos i presa de decisions sobre l'abast. Manté el tauler Kanban i coordina les reunions. |
-| **\[AS\]** | **Analista de software** | Anàlisi de requeriments, estudi de SE-rubric-evaluAItor i DiagramLens, i disseny de l'arquitectura de la Skill. |
-| **\[DS\]** | **Desenvolupador de software** | Implementació de tots els components: mòduls d'extracció, anàlisi, visió, grading, definició de la Skill i integració amb Ollama. |
+| **\[AS\]** | **Analista de software** | Anàlisi de requeriments, estudi de SE-rubric-evaluAItor i DiagramLens, i disseny de l'arquitectura del sistema meta-agèntic. |
+| **\[DS\]** | **Desenvolupador de software** | Implementació de tots els components: mòduls d'extracció, anàlisi, visió, grading, agent loop, tool registry i integració amb DashScope. |
 | **\[T\]** | **Tester de software** | Redacció i execució de proves unitàries i d'integració, i validació de mètriques de qualitat. |
 | **\[MA\]** | **Marc Alier (Director TFG)** | Director del TFG. Proporciona feedback setmanal, valida decisions de disseny i orienta en bloquejos tècnics. |
 | **\[TGEP\]** | **Tutor de GEP** | Corregeix les entregues de l'assignatura de Gestió de Projectes. |
@@ -909,7 +912,7 @@ Per poder dur a terme el projecte i les reunions amb el director, es necessita:
 
 * Un espai de treball adequat a les instal·lacions de l'ICE–UPC (lloc on es realitzen les pràctiques), amb taula, cadira, teclat i ratolí.
 
-* L'ordinador portàtil personal de l'autor, que actua com a màquina de desenvolupament principal i sobre el qual s'executen els models d'IA locals via Ollama.
+* L'ordinador portàtil personal de l'autor, que actua com a màquina de desenvolupament principal i sobre el qual es desenvolupa el sistema meta-agèntic que utilitza DashScope per a l'execució dels models d'IA.
 
 ### 7.2.3 Recursos de software {#7.2.3-recursos-de-software}
 
@@ -917,7 +920,7 @@ Per poder dur a terme el projecte i les reunions amb el director, es necessita:
 | :---: | ----- | ----- |
 | **\[VSC\]** | **Visual Studio Code** | IDE principal per al desenvolupament (Python, prompts Markdown, YAML). |
 | **\[GIT\]** | **GitHub i Git** | Control de versions i gestió del repositori seguint GitFlow. GitHub Projects com a tauler Kanban. |
-| **\[OLL\]** | **Ollama** | Execució local dels models d'IA (qwen3 per a text, qwen3-vl per a visió). |
+| **\[DS\]** | **DashScope** | Plataforma d'Alibaba Cloud per a l'execució dels models d'IA (qwen3.6-plus per a text, qwen-vl-max per a visió). |
 | **\[GSUITE\]** | **Google Suite** | Gmail (comunicació), Google Drive (documentació) i Google Sheets (Gantt i taules). |
 | **\[EXCEL\]** | **Excel / Google Sheets** | Elaboració del diagrama de Gantt de la planificació temporal. |
 | **\[TG\]** | **Telegram** | Comunicació ràpida i informal amb el director i l'equip LAMB per resoldre dubtes entre reunions. |
@@ -1000,11 +1003,11 @@ Corresponen a la implementació tècnica de **SE-Agentic-Evaluator**, dividides 
 
 **Sprint 1: Fonaments (Setmanes 2-5, \~26/02 - 19/03/2026)**
 
-**T1.1 – Estudi de SE-rubric-evaluAItor i opencode.ai:** Lectura i comprensió del codi de SE-rubric-evaluAItor (prompts, lògica de parsing, generació de reportes) i de DiagramLens. Configuració de l'entorn Ollama amb els models qwen3 i qwen3-vl. Estudi de la plataforma opencode.ai i el concepte de Skills.
+**T1.1 – Estudi de SE-rubric-evaluAItor i metodologia "Agents All the Way Down":** Lectura i comprensió del codi de SE-rubric-evaluAItor (prompts, lògica de parsing, generació de reportes) i de DiagramLens. Configuració de l'entorn DashScope amb els models qwen3.6-plus i qwen-vl-max. Estudi de la metodologia "Agents All the Way Down" del professor Marc Alier.
 
 * Estimació: **30 hores**  
 * Dependències: cap  
-* Recursos: \[AS\] \+ \[VSC\] \+ \[OLL\]
+* Recursos: \[AS\] \+ \[VSC\] \+ \[DS\]
 
 **T1.2 – Adaptació dels mòduls d'extracció:** Refactorització dels mòduls d'extracció existents (objectives.py, requirements.py, use_cases.py) per funcionar com a tools independents. Implementació del parsing de documents Markdown i gestió d'errors.
 
@@ -1022,7 +1025,7 @@ Corresponen a la implementació tècnica de **SE-Agentic-Evaluator**, dividides 
 
 * Estimació: **15 hores**  
 * Dependències: T1.3  
-* Recursos: \[DS\] \+ \[T\] \+ \[VSC\] \+ \[OLL\]
+* Recursos: \[DS\] \+ \[T\] \+ \[VSC\] \+ \[DS\]
 
 **Sprint 2: Anàlisi i Visió (Setmanes 6-9, \~26/03 - 16/04/2026)**
 
@@ -1032,33 +1035,33 @@ Corresponen a la implementació tècnica de **SE-Agentic-Evaluator**, dividides 
 * Dependències: T1.4  
 * Recursos: \[DS\] \+ \[T\] \+ \[VSC\] \+ \[GIT\]
 
-**T2.2 – Mòduls d'anàlisi amb LLM:** Implementació de traceability.py (matriu OBJ ↔ IRQ/NFR) i completeness.py (avaluació de completitud) amb prompts de SE-rubric-evaluAItor i crides a Ollama.
+**T2.2 – Mòduls d'anàlisi amb LLM:** Implementació de traceability.py (matriu OBJ ↔ IRQ/NFR) i completeness.py (avaluació de completitud) amb prompts de SE-rubric-evaluAItor i crides a DashScope.
 
 * Estimació: **25 hores**  
 * Dependències: T2.1  
-* Recursos: \[DS\] \+ \[VSC\] \+ \[OLL\]
+* Recursos: \[DS\] \+ \[VSC\] \+ \[DS\]
 
-**T2.3 – Integració de visió multimodal (DiagramLens):** Adaptació del mòdul de visió de DiagramLens per funcionar com a tool de la Skill. Implementació de la detecció de diagrames en documents Markdown i la crida al model qwen3-vl.
+**T2.3 – Integració de visió multimodal (DiagramLens):** Adaptació del mòdul de visió de DiagramLens per funcionar com a tool del sistema. Implementació de la detecció de diagrames en documents Markdown i la crida al model qwen-vl-max.
 
 * Estimació: **25 hores**  
 * Dependències: T2.2  
-* Recursos: \[DS\] \+ \[VSC\] \+ \[OLL\]
+* Recursos: \[DS\] \+ \[VSC\] \+ \[DS\]
 
 **T2.4 – Proves d'anàlisi i visió:** Validació dels mòduls d'anàlisi amb documents de prova coneguts. Verificació de la qualitat de les descripcions de diagrames i de la detecció de huérfanos.
 
 * Estimació: **15 hores**  
 * Dependències: T2.3  
-* Recursos: \[T\] \+ \[VSC\] \+ \[OLL\]
+* Recursos: \[T\] \+ \[VSC\] \+ \[DS\]
 
-**Sprint 3: Skill Agèntica i MVP (Setmanes 10-12, \~23/04 - 07/05/2026)**
+**Sprint 3: Sistema Meta-Agèntic i MVP (Setmanes 10-12, \~23/04 - 07/05/2026)**
 
-**T3.1 – Definició de la Skill evaluator_skill:** Redacció de la definició completa de la Skill: rol, eines disponibles, regles de procés (R1-R7), i format de l'informe final. Implementació a `.opencode/skills/evaluator_skill.md`.
+**T3.1 – Implementació de l'agent loop i tool registry:** Implementació de l'agent loop independent que gestiona el cicle de vida de l'agent (recepció d'input, crida al LLM, execució de tool calls, retorn de resultats). Implementació del tool registry amb les 18 tools especialitzades. Implementació de la security policy al scaffolding amb allow-list.
 
 * Estimació: **25 hores**  
 * Dependències: T2.4  
 * Recursos: \[AS\] \+ \[DS\] \+ \[VSC\]
 
-**T3.2 – Integració dels prompts d'avaluació:** Adaptació dels prompts de SE-rubric-evaluAItor (3_1 a 3_5) per funcionar amb el sistema de la Skill, amb èmfasi en l'obligatorietat d'evidència.
+**T3.2 – Integració dels prompts d'avaluació:** Adaptació dels prompts de SE-rubric-evaluAItor (3_1 a 3_5) per funcionar amb el sistema meta-agèntic, amb èmfasi en l'obligatorietat d'evidència.
 
 * Estimació: **20 hores**  
 * Dependències: T3.1  
@@ -1068,13 +1071,13 @@ Corresponen a la implementació tècnica de **SE-Agentic-Evaluator**, dividides 
 
 * Estimació: **30 hores**  
 * Dependències: T3.2  
-* Recursos: \[DS\] \+ \[T\] \+ \[VSC\] \+ \[OLL\]
+* Recursos: \[DS\] \+ \[T\] \+ \[VSC\] \+ \[DS\]
 
-**T3.4 – Proves d'integració amb documents reals:** Avaluació de documents de prova (test1.md, test2.md) amb la Skill completa. Validació de l'informe final, evidències, i nota determinística.
+**T3.4 – Proves d'integració amb documents reals:** Avaluació de documents de prova (test1.md, test2.md) amb el sistema complet. Validació de l'informe final, evidències, i nota determinística.
 
 * Estimació: **20 hores**  
 * Dependències: T3.3  
-* Recursos: \[T\] \+ \[VSC\] \+ \[OLL\]
+* Recursos: \[T\] \+ \[VSC\] \+ \[DS\]
 
 **Sprint 4: Refinament i Documentació Final (Setmanes 13-15, \~14/05 - 28/05/2026)**
 
@@ -1123,18 +1126,18 @@ Corresponen a la implementació tècnica de **SE-Agentic-Evaluator**, dividides 
 | T0.1 | Reunions de seguiment setmanals | **15** | cap | \[CP\] \+ \[MA\] \+ \[TGEP\] |
 | T0.2 | Documentació contínua | **40** | cap (concurrent) | \[CP\] \+ \[AS\] \+ \[DS\] |
 | T0.3 | Gestió de tasques i Git/GitFlow | **15** | cap (concurrent) | \[CP\] \+ \[GIT\] |
-| T1.1 | Estudi SE-rubric-evaluAItor + opencode.ai | **30** | cap | \[AS\] \+ \[VSC\] \+ \[OLL\] |
+| T1.1 | Estudi SE-rubric-evaluAItor + metodologia "Agents All the Way Down" | **30** | cap | \[AS\] \+ \[VSC\] \+ \[DS\] |
 | T1.2 | Adaptació mòduls d'extracció | **25** | T1.1 | \[DS\] \+ \[VSC\] \+ \[GIT\] |
 | T1.3 | Grading determinístic amb config YAML | **15** | T1.2 | \[DS\] \+ \[VSC\] \+ \[GIT\] |
-| T1.4 | Estructura base i proves inicials | **15** | T1.3 | \[DS\] \+ \[T\] \+ \[VSC\] \+ \[OLL\] |
+| T1.4 | Estructura base i proves inicials | **15** | T1.3 | \[DS\] \+ \[T\] \+ \[VSC\] \+ \[DS\] |
 | T2.1 | Mòduls d'anàlisi determinístics | **30** | T1.4 | \[DS\] \+ \[T\] \+ \[VSC\] \+ \[GIT\] |
-| T2.2 | Mòduls d'anàlisi amb LLM | **25** | T2.1 | \[DS\] \+ \[VSC\] \+ \[OLL\] |
-| T2.3 | Visió multimodal (DiagramLens) | **25** | T2.2 | \[DS\] \+ \[VSC\] \+ \[OLL\] |
-| T2.4 | Proves d'anàlisi i visió | **15** | T2.3 | \[T\] \+ \[VSC\] \+ \[OLL\] |
-| T3.1 | Definició Skill evaluator_skill | **25** | T2.4 | \[AS\] \+ \[DS\] \+ \[VSC\] |
+| T2.2 | Mòduls d'anàlisi amb LLM | **25** | T2.1 | \[DS\] \+ \[VSC\] \+ \[DS\] |
+| T2.3 | Visió multimodal (DiagramLens) | **25** | T2.2 | \[DS\] \+ \[VSC\] \+ \[DS\] |
+| T2.4 | Proves d'anàlisi i visió | **15** | T2.3 | \[T\] \+ \[VSC\] \+ \[DS\] |
+| T3.1 | Implementació agent loop i tool registry | **25** | T2.4 | \[AS\] \+ \[DS\] \+ \[VSC\] |
 | T3.2 | Integració prompts d'avaluació | **20** | T3.1 | \[DS\] \+ \[VSC\] |
-| T3.3 | Flux agèntic complet | **30** | T3.2 | \[DS\] \+ \[T\] \+ \[VSC\] \+ \[OLL\] |
-| T3.4 | Proves integració documents reals | **20** | T3.3 | \[T\] \+ \[VSC\] \+ \[OLL\] |
+| T3.3 | Flux agèntic complet | **30** | T3.2 | \[DS\] \+ \[T\] \+ \[VSC\] \+ \[DS\] |
+| T3.4 | Proves integració documents reals | **20** | T3.3 | \[T\] \+ \[VSC\] \+ \[DS\] |
 | T4.1 | Configuració externa rúbriques YAML | **20** | T3.4 | \[DS\] \+ \[VSC\] \+ \[GIT\] |
 | T4.2 | Gestió fitxers intermedios i auditoria | **15** | T4.1 | \[DS\] \+ \[VSC\] |
 | T4.3 | Bateria proves unitàries i integració | **25** | T4.2 | \[T\] \+ \[VSC\] \+ \[GIT\] |
@@ -1189,13 +1192,13 @@ Corresponen a la implementació tècnica de **SE-Agentic-Evaluator**, dividides 
 
 **Pla B:** Si al final del Sprint 1 T1.2 no s'ha completat, es reduirà la dedicació a la documentació contínua (T0.2) de 4h/setmana a 2h/setmana durant les setmanes 4-5, alliberant 4 hores addicionals. Afectació sobre la durada total: nul·la, ja que la documentació es recupera al Sprint 5 (T5.1 té 60h reservades).
 
-**Risc 2 – Qualitat insuficient del LLM local**
+**Risc 2 – Dependència de serveis cloud (DashScope)**
 
-**Impacte:** Els models locals (qwen3) poden no tenir la capacitat necessària per a tasques complexes d'extracció estructurada, especialment amb mides inferiors a 14B paràmetres. 
+**Impacte:** El sistema depèn de la disponibilitat i quota de l'API de DashScope (Alibaba Cloud). Si el servei no està disponible o s'exhaureix la quota, el sistema no pot funcionar. 
 
-**Mitigació estàndard:** Definir models mínims recomanats (qwen3:14b per a text, qwen3-vl:7b per a visió) i implementar validació de models a l'inici. 
+**Mitigació estàndard:** Implementar retry logic amb exponential backoff per gestionar errors temporals. Monitoritzar el consum de tokens i establir límits per evitar l'esgotament de la quota. Utilitzar models eficients (qwen3.6-plus per a text, qwen-vl-max per a visió). 
 
-**Pla B:** Si la qualitat és insuficient, es pot augmentar la mida del model (si el hardware ho permet) o simplificar els prompts per a tasques més específiques i menys ambigües. Afectació: possible augment del temps de resposta, però no de la qualitat.
+**Pla B:** Si la quota s'exhaureix o el servei no està disponible, es pot implementar un mode de funcionament sense visió (utilitzant només qwen3.6-plus per a text) o simplificar els prompts per a tasques més específiques i menys ambigües. Afectació: possible reducció de la qualitat en l'avaluació de diagrames UML, però el sistema segueix sent funcional per a l'avaluació de text.
 
 **Risc 3 – Calendari apretat (15 setmanes)**
 
