@@ -13,7 +13,10 @@ import logging
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
+import os
+from core.clients.base import BaseLLMClient
 from core.clients.dashscope_client import DashScopeClient
+from core.clients.ollama_client import OllamaClient
 from core.agent.security import SecurityPolicy
 from core.agent.tools.adapter import ToolAdapter
 from core.agent.session_store import SessionStore
@@ -41,12 +44,19 @@ class Agent:
 
     def __init__(
         self,
-        llm: Optional[DashScopeClient] = None,
+        llm: Optional[BaseLLMClient] = None,
         skills_dir: Optional[str] = None,
         security: Optional[SecurityPolicy] = None,
     ):
         # 1. LLM Client
-        self.llm = llm or DashScopeClient()
+        if llm is None:
+            provider = os.environ.get("LLM_PROVIDER", "dashscope").lower()
+            if provider == "ollama":
+                self.llm = OllamaClient()
+            else:
+                self.llm = DashScopeClient()
+        else:
+            self.llm = llm
 
         # 2. Security & Tools
         self.security = security or SecurityPolicy()
