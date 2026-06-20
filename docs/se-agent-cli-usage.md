@@ -25,17 +25,11 @@ pip install -r requirements.txt
 
 ### Ejecutar una tarea
 
-Forma corta:
-
-```bash
-./se-agent "avalua aquesta memòria amb la rúbrica X"
-```
-
-Forma explícita:
-
 ```bash
 ./se-agent run "avalua aquesta memòria amb la rúbrica X"
 ```
+
+**Nota:** El subcomando `run` es obligatorio. La forma corta sin `run` no está soportada.
 
 ### Continuar una sesión
 
@@ -62,22 +56,6 @@ Esto devuelve un objeto con:
 - `session_id`
 - `response`
 
-## Comportamiento por defecto
-
-Si no indicas subcomando y el primer argumento no es una opción, el CLI lo interpreta como una ejecución de `run`.
-
-Ejemplo:
-
-```bash
-./se-agent "avalua aquest document"
-```
-
-equivale a:
-
-```bash
-./se-agent run "avalua aquest document"
-```
-
 ## Flujo interno
 
 El CLI realiza estos pasos:
@@ -93,19 +71,19 @@ El CLI realiza estos pasos:
 ### Evaluar una memoria
 
 ```bash
-./se-agent "avalua la memòria i destaca els punts febles"
+./se-agent run "avalua la memòria i destaca els punts febles"
 ```
 
 ### Continuar con correcciones manuales
 
 ```bash
-./se-agent 7c35a71a-3de4-4f5f-9777-4af9df3bba50 "aplica els canvis proposats a la secció d'arquitectura"
+./se-agent run --session-id 7c35a71a-3de4-4f5f-9777-4af9df3bba50 "aplica els canvis proposats a la secció d'arquitectura"
 ```
 
 ### Obtener una respuesta estructurada
 
 ```bash
-./se-agent --json "resumeix la rúbrica i proposa un workflow"
+./se-agent run --json "resumeix la rúbrica i proposa un workflow"
 ```
 
 ## Solución de problemas

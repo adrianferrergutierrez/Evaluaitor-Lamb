@@ -5,14 +5,14 @@ se-agent CLI
 Command-line interface for the SE-Agentic-Evaluator Agent.
 
 Implements the Turtle Pattern from the methodology:
-  se-agent "tasca"                    → nova sessió
-  se-agent <session-id> "tasca"       → continua sessió
-  se-agent --list-sessions            → llista sessions
-  se-agent --help                     → ajuda
+  se-agent run "tasca"                  → nova sessió
+  se-agent run <session-id> "tasca"     → continua sessió
+  se-agent --list-sessions              → llista sessions
+  se-agent --help                       → ajuda
 
 Usage:
-  se-agent "avalua aquest document amb la rúbrica X"
-  se-agent abc123 "genera l'informe final"
+  se-agent run "avalua aquest document amb la rúbrica X"
+  se-agent run abc123 "genera l'informe final"
   se-agent --list-sessions
 """
 
@@ -80,39 +80,29 @@ def main() -> None:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Exemples:
-  se-agent "avalua documents/test.docx amb rubriques/hito1.md"
-  se-agent abc123-def456 "genera l'informe en PDF"
+  se-agent run "avalua documents/test.docx amb rubriques/hito1.md"
+  se-agent run --session-id abc123-def456 "genera l'informe final"
   se-agent --list-sessions
         """,
     )
     
     subparsers = parser.add_subparsers(dest="command", help="Comandes disponibles")
     
-    # Run command (default)
     run_parser = subparsers.add_parser("run", help="Executa una tasca")
     run_parser.add_argument("message", help="Missatge o tasca a executar")
     run_parser.add_argument("--session-id", help="ID de sessió existent (opcional)")
     run_parser.add_argument("--json", action="store_true", help="Sortida en format JSON")
     run_parser.set_defaults(func=cmd_run)
     
-    # List sessions command
     list_parser = subparsers.add_parser("list-sessions", help="Llista sessions guardades")
     list_parser.set_defaults(func=cmd_list_sessions)
     
-    # Parse arguments
     args = parser.parse_args()
     
-    # If no command specified, treat as 'run' with message
     if args.command is None:
-        # Re-parse as if it were a run command
-        if len(sys.argv) > 1 and not sys.argv[1].startswith("-"):
-            sys.argv.insert(1, "run")
-            args = parser.parse_args()
-        else:
-            parser.print_help()
-            sys.exit(1)
+        parser.print_help()
+        sys.exit(1)
     
-    # Execute the command
     if hasattr(args, "func"):
         args.func(args)
     else:

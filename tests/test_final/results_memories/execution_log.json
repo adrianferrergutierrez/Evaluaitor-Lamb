@@ -1,0 +1,10 @@
+{
+  "status": "aborted",
+  "log": [
+    {
+      "step": "step_extract_docx",
+      "status": "aborted",
+      "reason": "Package not found at 'tests/test_final/EXCEL\u00b7LENT/mem\u00f2ria_2_25_TEC2_jonatan_argiz_varela.docx'"
+    }
+  ]
+}

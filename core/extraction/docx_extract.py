@@ -10,6 +10,7 @@ embedded images to a separate directory.
 from __future__ import annotations
 
 import logging
+import unicodedata
 from pathlib import Path
 from typing import Dict, Any
 
@@ -47,8 +48,15 @@ def extract_docx(input: str, output_dir: str) -> Dict[str, Any]:
         has_pil = False
         logger.warning("PIL not available. Tiny-image filtering will use blob-size fallback only.")
 
-    input_path = Path(input)
-    output_path = Path(output_dir)
+    input_str = unicodedata.normalize("NFC", input)
+    input_path = Path(input_str)
+    if not input_path.exists():
+        for norm_form in ("NFD", "NFKD", "NFKC"):
+            candidate = Path(unicodedata.normalize(norm_form, input_str))
+            if candidate.exists():
+                input_path = candidate
+                break
+    output_path = Path(unicodedata.normalize("NFC", output_dir))
     output_path.mkdir(parents=True, exist_ok=True)
     (output_path / "img").mkdir(exist_ok=True)
 

@@ -143,13 +143,32 @@ class DashScopeClient:
                     logger.error(f"Non-retryable error {error_code}. Not retrying.")
                     raise
                 
-                # Parse suggested retry delay from 429 responses (e.g. Gemini "Please retry in 30.4s")
+                # Parse suggested retry delay from 429 responses
                 suggested_delay = None
                 if error_code == 429:
                     import re as _re
-                    match = _re.search(r"retry in ([\d.]+)\s*s", error_text, _re.IGNORECASE)
-                    if match:
-                        suggested_delay = float(match.group(1))
+                    # 1) Try Retry-After header
+                    retry_after_header = e.response.headers.get("Retry-After")
+                    if retry_after_header:
+                        try:
+                            suggested_delay = float(retry_after_header)
+                        except ValueError:
+                            pass
+                    # 2) Try retry_after_seconds in JSON body
+                    if suggested_delay is None:
+                        try:
+                            err_json = e.response.json()
+                            meta = err_json.get("error", {}).get("metadata", {})
+                            raw_val = meta.get("retry_after_seconds_raw") or meta.get("retry_after_seconds")
+                            if raw_val:
+                                suggested_delay = float(raw_val)
+                        except Exception:
+                            pass
+                    # 3) Try text pattern (Gemini: "Please retry in 30.4s")
+                    if suggested_delay is None:
+                        match = _re.search(r"retry in ([\d.]+)\s*s", error_text, _re.IGNORECASE)
+                        if match:
+                            suggested_delay = float(match.group(1))
                 
                 if suggested_delay:
                     wait_time = suggested_delay + 2.0
@@ -205,7 +224,7 @@ class DashScopeClient:
             payload["tool_choice"] = "auto"
 
         url = f"{self.base_url}/chat/completions"
-        response = self._post_with_retry(url, payload, timeout=300, max_retries=2)
+        response = self._post_with_retry(url, payload, timeout=300)
         data = response.json()
 
         choice = data.get("choices", [{}])[0]

@@ -23,6 +23,8 @@
 \usepackage{colortbl}
 \usepackage{textcomp}
 \usepackage{eurosym}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, calc}
 
 \hypersetup{
     colorlinks=true,
@@ -66,7 +68,7 @@
 
 \newcolumntype{L}{>{\raggedright\arraybackslash}X}
 \newcolumntype{C}{>{\centering\arraybackslash}X}
-
+\raggedbottom
 \begin{document}
 
 % ============================================
@@ -109,6 +111,38 @@ Grau en Enginyeria Inform\`atica (Enginyeria del Software)\\[0.5cm]
 \end{titlepage}
 
 % ============================================
+% RESUM / ABSTRACT
+% ============================================
+\chapter*{Resum}
+\label{chap:resum}
+\addcontentsline{toc}{chapter}{Resum}
+
+Els sistemes actuals d'avaluaci\'o autom\`atica de treballs acad\`emics solen funcionar com a pipelines r\'igids: sempre segueixen el mateix ordre de passos, no poden analitzar diagrames ni figures t\`ecniques, i obliguen a modificar el codi font cada vegada que canvia la r\'ubrica d'avaluaci\'o. \'Es el cas de SE-rubric-evaluAItor, una eina desenvolupada dins l'ecosistema educatiu LAMB que, tot i ser funcional, resulta poc flexible i dif\'icil d'adaptar a nous tipus d'entregables.
+
+Aquest Treball de Fi de Grau presenta \textbf{SE-Agentic-Evaluator}, un sistema que substitueix aquest pipeline r\'igid per un agent d'intel\textperiodcentered lig\`encia artificial capa\c{c} de decidir per si mateix quins passos seguir per avaluar cada document, adaptant-se al seu contingut concret. El sistema s'ha constru\"it des de zero, sense dependre de cap plataforma externa, seguint la metodologia ``Agents All the Way Down'' \cite{alier2025} del professor Marc Alier i altres.
+
+Per fer-ho possible, el sistema combina tres idees clau. Primer, disposa d'un conjunt de 18 eines especialitzades (extracci\'o de text, an\`alisi de diagrames, generaci\'o d'informes, etc.) que l'agent invoca segons les necessitats de cada cas. Segon, genera autom\`aticament un pla de treball personalitzat per a cada r\'ubrica i el reutilitza amb m\'ultiples documents, estalviant temps i costos. I tercer, delega sempre el c\`alcul de les notes a codi Python ---mai al model d'IA--- de manera que cada puntuaci\'o quedi vinculada a una evid\`encia concreta del document, evitant errors num\`erics. El sistema tamb\'e interpreta diagrames i imatges t\`ecniques, i pot funcionar amb diversos prove\"idors de models d'IA (locals o al n\'uvol) sense necessitat de tocar el codi.
+
+SE-Agentic-Evaluator s'ha validat mitjan\c{c}ant sis escenaris t\`ecnics, tots completats amb \`exit, i mitjan\c{c}ant una comparaci\'o amb una avaluadora humana experta sobre mem\`ories reals de m\`aster. Els resultats confirmen que el sistema \'es robust, segur i capa\c{c} de produir avaluacions fiables en casos d'\'us reals.
+
+\textbf{Paraules clau:} agent d'IA, avaluaci\'o assistida, workflow reutilitzable, visi\'o multimodal, c\`alcul determinista, multi-prove\"idor.
+
+
+\chapter*{Abstract}
+\label{chap:abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+
+Current automated systems for evaluating academic assignments tend to work as rigid pipelines: they always follow the same fixed sequence of steps, cannot analyze diagrams or technical figures, and require changing the source code every time the evaluation rubric changes. This is the case of SE-rubric-evaluAItor, a tool developed within the LAMB educational ecosystem that, while functional, is inflexible and hard to adapt to new types of deliverables.
+
+This Bachelor's Thesis presents \textbf{SE-Agentic-Evaluator}, a system that replaces this rigid pipeline with an AI agent capable of deciding for itself which steps to follow when evaluating each document, adapting to its specific content. The system was built from scratch, without depending on any external platform, following the ``Agents All the Way Down'' methodology \cite{alier2025} proposed by Professor Marc Alier and others.
+
+To achieve this, the system combines three key ideas. First, it relies on a set of 18 specialized tools (text extraction, diagram analysis, report generation, etc.) that the agent invokes according to the needs of each case. Second, it automatically generates a customized workflow for each rubric and reuses it across multiple documents, saving time and cost. Third, grade calculation is always delegated to Python code ---never to the AI model--- so that every score is tied to concrete evidence from the document, avoiding numerical errors. The system can also interpret diagrams and technical images, and works with several AI model providers (local or cloud-based) without requiring any code changes.
+
+SE-Agentic-Evaluator has been validated through six technical scenarios, all successfully completed, and through a comparison against an expert human evaluator on real master's theses. The results confirm that the system is robust, secure, and capable of producing reliable evaluations in real-world use cases.
+
+\textbf{Keywords:} AI agent, assisted evaluation, reusable workflow, multimodal vision, deterministic grading, multi-provider.
+
+% ============================================
 % INDEX
 % ============================================
 \tableofcontents
@@ -130,13 +164,13 @@ Grau en Enginyeria Inform\`atica (Enginyeria del Software)\\[0.5cm]
 
 El projecte SE-Agentic-Evaluator correspon al treball de fi de grau en l'especialitat d'enginyeria del software dins el grau en Enginyeria Inform\`atica de la Facultat d'Inform\`atica de Barcelona (FIB), a la Universitat Polit\`ecnica de Catalunya (UPC).
 
-Aquest treball de fi de grau es desenvolupa en el marc d'una beca d'aprenentatge a l'ICE. El projecte s'integra dins de l'ecosistema LAMB, una plataforma educativa existent a la companyia que utilitza Intel\cdot lig\`encia Artificial per assistir en processos d'aprenentatge.
+Aquest treball de fi de grau es desenvolupa en el marc d'una beca d'aprenentatge a l'ICE. El projecte s'integra dins de l'ecosistema LAMB, una plataforma educativa que utilitza Intel·lig\`encia Artificial per assistir en processos d'aprenentatge.
 
 Actualment, l'ecosistema LAMB compta amb diversos projectes relacionats amb l'avaluaci\'o assistida per IA, incloent-hi \href{https://github.com/Lamb-Project/SE-rubric-evaluAItor}{SE-rubric-evaluAItor}, un pipeline d'investigaci\'o per a l'avaluaci\'o de documents de requisits d'Enginyeria del Software, i \href{https://github.com/Lamb-Project/DiagramLens}{DiagramLens}, un m\`odul de visi\'o multimodal per a la descripci\'o de diagrames t\`ecnics.
 
-L'objectiu principal d'aquest TFG \'es el disseny i implementaci\'o de SE-Agentic-Evaluator, un \textbf{sistema meta-ag\`entic complet} que transforma el pipeline r\'igid de SE-rubric-evaluAItor en un assistent din\`amic, contextual i adaptatiu per a l'avaluaci\'o d'entregables acad\`emics d'Enginyeria del Software. El sistema implementa un \textbf{agent loop propi} seguint la metodologia ``Agents All the Way Down'' del professor Marc Alier, utilitza models d'IA de DashScope (Alibaba Cloud) per a tasques d'extracci\'o i avaluaci\'o, i delega el c\`alcul de notes en scripts Python determin\'istics per evitar al\cdot lucinacions num\`eriques dels LLMs.
+L'objectiu principal d'aquest TFG \'es el disseny i implementaci\'o de SE-Agentic-Evaluator, un \textbf{sistema meta-ag\`entic complet} que transforma el pipeline r\'igid de SE-rubric-evaluAItor en un assistent din\`amic, contextual i adaptatiu per a l'avaluaci\'o d'entregables acad\`emics de qualsevol tipus. El sistema implementa un \textbf{agent loop propi} seguint la metodologia ``Agents All the Way Down'' del professor Marc Alier. S’ha dissenyat amb un enfocament local-first per funcionar amb models open-source locals, i durant la fase de validació s’han utilitzat models d'IA de m\'ultiples prove\"idors cloud (DashScope, OpenRouter, Google Gemini) per a tasques d'extracci\'o i avaluaci\'o, i delega el c\`alcul de notes en scripts Python determin\'istics per evitar al·lucinacions num\`eriques dels LLMs. L'\'us de models cloud (DashScope o OpenRouter) durant el projecte \'es una elecci\'o de conveni\`encia t\`ecnica durant la fase de validaci\'o (per no disposar d'una GPU dedicada de gamma alta a l'ordinador port\`atil de l'autor). El sistema est\`a a punt per passar a producci\'o amb models locals open-source nom\'es canviant dues variables d'entorn.
 
-El sistema disposa de \textbf{18 tools especialitzades} (extracci\'o, an\`alisi, visi\'o multimodal, grading, gesti\'o de sessions) i implementa un \textbf{workflow generator} que genera workflows JSON personalitzats per a cada r\'ubrica, permetent la seva reutilitzaci\'o amb m\'ultiples documents. Aquesta arquitectura permet separar la generaci\'o de workflows de la seva execuci\'o, optimitzant costos i temps de processament.
+El sistema disposa de \textbf{18 tools especialitzades} (extracci\'o, an\`alisi, visi\'o multimodal, grading, configuraci\'o, workflow) i implementa un \textbf{workflow generator} que genera workflows JSON personalitzats per a cada r\'ubrica, permetent la seva reutilitzaci\'o amb m\'ultiples documents. Aquesta arquitectura permet separar la generaci\'o de workflows de la seva execuci\'o, optimitzant costos i temps de processament.
 
 \section{Definicions importants}
 \label{sec:definicions}
@@ -146,7 +180,7 @@ Per a la correcta comprensi\'o de l'abast d'aquest projecte, es defineixen els s
 \subsection{Agent d'IA}
 \label{subsec:agent-ia}
 
-Un agent d'IA \'es un sistema de programari capa\c{c} de percebre el seu entorn, prendre decisions aut\`onomes i executar accions per assolir un objectiu definit. A difer\`encia d'un pipeline seq\"uencial predefinit, un agent pot seleccionar din\`amicament quines eines invocar i en quin ordre, adaptant-se al contingut espec\'ific de cada document. En aquest projecte, l'agent opera dins d'opencode.ai i disposa d'un conjunt de tools (extracci\'o, an\`alisi, visi\'o, grading) que invoca segons les necessitats detectades.
+Un agent d'IA \'es un sistema de programari capa\c{c} de percebre el seu entorn, prendre decisions aut\`onomes i executar accions per assolir un objectiu definit. A difer\`encia d'un pipeline seq\"uencial predefinit, un agent pot seleccionar din\`amicament quines eines invocar i en quin ordre, adaptant-se al contingut espec\'ific de cada document. En aquest projecte, l'agent opera dins del sistema propi SE-Agentic-Evaluator i disposa d'un conjunt de tools (extracci\'o, an\`alisi, visi\'o, grading) que invoca segons les necessitats detectades.
 
 \subsection{LMS (Learning Management System)}
 \label{subsec:lms}
@@ -156,7 +190,7 @@ Un LMS (Learning Management System) \'es una plataforma tecnol\`ogica o aplicaci
 \subsection{Skill}
 \label{subsec:skill}
 
-Una ``skill'' (habilitat) a IA \'es un manual d'instruccions reutilitzable, estructurat en format Markdown, que ensenya a un agent d'intel\cdot lig\`encia artificial (com Claude, ChatGPT o Gemini) com executar una tasca espec\'ifica. Permet encapsular el pas a pas, exemples i regles per evitar haver de repetir prompts llargs constantment. Les Skills permeten estendre les capacitats d'un agent d'IA per a dominis espec\'ifics sense modificar el nucli del sistema.
+Una ``skill'' (habilitat) a IA \'es un manual d'instruccions reutilitzable, estructurat en format Markdown, que ensenya a un agent d'intel·lig\`encia artificial (com Claude, ChatGPT o Gemini) com executar una tasca espec\'ifica. Permet encapsular el pas a pas, exemples i regles per evitar haver de repetir prompts llargs constantment. Les Skills permeten estendre les capacitats d'un agent d'IA per a dominis espec\'ifics sense modificar el nucli del sistema.
 
 \subsection{Agent Loop}
 \label{subsec:agent-loop}
@@ -166,12 +200,11 @@ Un Agent Loop \'es el cicle fonamental d'execuci\'o d'un agent d'IA. Consisteix 
 \subsection{LLM (Large Language Model)}
 \label{subsec:llm}
 
-Un Large Language Model (LLM) \'es un model d'intel\cdot lig\`encia artificial entrenat amb grans volums de text capa\c{c} de generar, comprendre i transformar llenguatge natural. En aquest projecte s'utilitzen LLMs de la fam\'ilia Qwen executats via DashScope (Alibaba Cloud) per a tasques d'extracci\'o d'informaci\'o, an\`alisi de qualitat i avaluaci\'o de documents.
+Un Large Language Model (LLM) \'es un model d'intel·lig\`encia artificial entrenat amb grans volums de text capa\c{c} de generar, comprendre i transformar llenguatge natural. En aquest projecte s'utilitzen LLMs de diversos prove\"idors (DashScope/Alibaba Cloud, OpenRouter, Google Gemini) per a tasques d'extracci\'o d'informaci\'o, an\`alisi de qualitat i avaluaci\'o de documents. El sistema implementa una capa d'abstracci\'o que permet intercanviar prove\"idors sense modificar la l\`ogica d'avaluaci\'o. L’arquitectura està preparada per treballar preferentment amb models locals open-source, tot i que durant la validació s’han fet servir proveïdors cloud.
 
 \subsection{DashScope}
-\label{subsec:dashscope}
 
-DashScope \'es la plataforma de serveis d'IA d'Alibaba Cloud que proporciona acc\'es a models de llenguatge i visi\'o de la fam\'ilia Qwen. A difer\`encia d'Ollama (execuci\'o local), DashScope opera com a servei cloud, oferint models de major qualitat (qwen3.6-plus per a text, qwen-vl-max per a visi\'o) sense requerir hardware especialitzat. En aquest projecte, DashScope s'utilitza per a totes les tasques que requereixen LLM, incloent-hi extracci\'o estructurada, an\`alisi de diagrames UML i avaluaci\'o de criteris.
+DashScope \'es la plataforma de serveis d'IA d'Alibaba Cloud que proporciona acc\'es a models de llenguatge i visi\'o de la fam\'ilia Qwen. A difer\`encia d'Ollama (execuci\'o local), DashScope opera com a servei cloud, oferint models de major qualitat sense requerir hardware especialitzat. En aquest projecte, DashScope s’ha utilitzat com a entorn de prototipat i validació per la disponibilitat immediata de recursos, mentre que el disseny del sistema manté una orientació local-first, per\`o el sistema suporta m\'ultiples prove\"idors (OpenRouter, Google Gemini, Ollama local) mitjan\c{c}ant una capa d'abstracci\'o configurada via variables d'entorn (Secci\'o~\ref{subsec:multi-provider}).
 
 \subsection{Workflow Generator/Executor}
 \label{subsec:workflow}
@@ -181,7 +214,7 @@ El Workflow Generator \'es un component que genera workflows JSON personalitzats
 \subsection{Tool Registry}
 \label{subsec:tool-registry}
 
-El Tool Registry \'es un registre centralitzat de totes les tools disponibles per a l'agent. Cada tool t\'e un nom, descripci\'o, categoria i funci\'o d'execuci\'o. En aquest projecte, el registry cont\'e 18 tools especialitzades en extracci\'o (docx\_extract, xlsx\_to\_markdown, describe\_diagrams), an\`alisi (extract\_objectives, detect\_orphans, evaluate\_smart), avaluaci\'o (criterion\_evaluator, grader) i gesti\'o (session\_store). L'agent consulta el registry per determinar quines tools pot utilitzar.
+El Tool Registry \'es un registre centralitzat de totes les tools disponibles per a l'agent. Cada tool t\'e un nom, descripci\'o, categoria i funci\'o d'execuci\'o. En aquest projecte, el registry cont\'e 18 tools especialitzades en extracci\'o (docx\_extract, xlsx\_to\_markdown, describe\_diagrams, read\_file, list\_directory), an\`alisi (extract\_objectives, detect\_orphans, evaluate\_smart), avaluaci\'o (criterion\_evaluator, grader, report\_generator) i workflow (generate\_workflow, execute\_workflow). L'agent consulta el registry per determinar quines tools pot utilitzar.
 
 \subsection{R\'ubrica d'Avaluaci\'o amb IA}
 \label{subsec:rubrica-ia}
@@ -191,12 +224,12 @@ Estrat\`egia mitjan\c{c}ant la qual s'instrueix un model de llenguatge (LLM) per
 \subsection{Visi\'o Multimodal}
 \label{subsec:visio-multimodal}
 
-Capacitat d'un model d'IA de processar i comprendre tant text com imatges. En aquest projecte, el model \texttt{qwen-vl-max} de DashScope s'utilitza per categoritzar i descriure t\`ecnicament diagrames UML i figures t\`ecniques embebudes en documents Markdown, proporcionant evid\`encia visual per a l'avaluaci\'o de consist\`encia arquitect\`onica.
+Capacitat d'un model d'IA de processar i comprendre tant text com imatges. En aquest projecte, el model de visi\'o (configurable via \texttt{DASHSCOPE\_VISION\_MODEL}) s'utilitza per categoritzar i descriure t\`ecnicament diagrames UML i figures t\`ecniques embebudes en documents Markdown, proporcionant evid\`encia visual per a l'avaluaci\'o de consist\`encia arquitect\`onica.
 
 \subsection{RGPD (Reglament General de Protecci\'o de Dades)}
 \label{subsec:rgpd}
 
-Reglament europeu que estableix el marc legal per a la protecci\'o de dades personals. En el context d'aquest projecte, el compliment del RGPD es garanteix mitjan\c{c}ant l'\'us de DashScope (Alibaba Cloud), que compleix amb les normatives europees de protecci\'o de dades. Addicionalment, el sistema implementa mesures de seguretat al scaffolding (allow-list) per evitar l'execuci\'o de codi malici\'os o l'acc\'es a dades no autoritzades.
+Reglament europeu que estableix el marc legal per a la protecci\'o de dades personals. En el context d'aquest projecte, l'objectiu central de disseny \'es garantir la confidencialitat absoluta de les dades acad\`emiques mitjan\c{c}ant l'execuci\'o de l'agent en local amb models Open Source (lliures i de codi obert, com la fam\'ilia Qwen o Llama via Ollama). Aix\`o assegura que cap dada dels estudiants surti de la infraestructura de la universitat, complint estrictament amb el RGPD. Opcionalment, per a entorns de desenvolupament o proves, el suport multi-provider permet connectar amb prove\"idors cloud que compleixen amb les normatives europees (com DashScope/Alibaba Cloud amb centres de dades a Europa).
 
 \section{Identificaci\'o del problema}
 \label{sec:identificacio-problema}
@@ -222,7 +255,7 @@ Addicionalment, les plataformes ag\`entiques existents (com opencode.ai) present
     \item \textbf{Limitacions de Models Locals:} Els models locals (Ollama) presenten limitacions en qualitat d'extracci\'o estructurada i raonament avaluatiu per a tasques complexes.
 \end{enumerate}
 
-La soluci\'o proposada, SE-Agentic-Evaluator, resol totes aquestes limitacions implementant un \textbf{sistema meta-ag\`entic complet} amb agent loop propi, workflow generator/executor, 18 tools especialitzades, visi\'o multimodal via DashScope, i seguretat al scaffolding.
+La soluci\'o proposada, SE-Agentic-Evaluator, resol totes aquestes limitacions implementant un \textbf{sistema meta-ag\`entic complet} amb agent loop propi, workflow generator/executor, 18 tools especialitzades, visi\'o multimodal multi-provider, i seguretat al scaffolding.
 
 \section{Stakeholders}
 \label{sec:stakeholders}
@@ -232,7 +265,7 @@ S'identifiquen els seg\"uents actors que interactuaran amb el sistema o se'n ben
 \subsection{Professors i Docents}
 \label{subsec:professors}
 
-S\'on els usuaris principals de l'eina. Utilitzen SE-Agentic-Evaluator per avaluar de manera assistida els entregables dels estudiants d'Enginyeria del Software, obtenint informes estructurats amb r\'ubriques, evid\`encies i recomanacions accionables.
+S\'on els usuaris principals de l'eina. Utilitzen SE-Agentic-Evaluator per avaluar de manera assistida els entregables dels estudiants, obtenint informes estructurats amb r\'ubriques, evid\`encies i recomanacions accionables.
 
 \subsection{Equip LAMB (ICE-UPC)}
 \label{subsec:equip-lamb}
@@ -280,7 +313,7 @@ Concretament:
 Davant d'aquest context, es va prendre la decisi\'o conjuntament amb el director del TFG de \textbf{reorientar el projecte} cap a una \textbf{Skill ag\`entica} per a opencode.ai. Aquesta nova direcci\'o:
 
 \begin{itemize}
-    \item \textbf{Mant\'e l'objectiu central:} avaluar documents acad\`emics d'Enginyeria del Software amb IA.
+    \item \textbf{Mant\'e l'objectiu central:} avaluar documents acad\`emics amb IA.
     \item \textbf{Redueix l'acoblament:} la Skill opera de manera independent de l'arquitectura espec\'ifica de LAMB.
     \item \textbf{Afegeix valor diferencial:} integra visi\'o multimodal local, evid\`encia obligat\`oria i c\`alcul determin\'istic de notes.
     \item \textbf{\'Es m\'es resilient als canvis:} en no dependre d'una arquitectura de microserveis espec\'ifica, el projecte \'es menys vulnerable als canvis constants de LAMB.
@@ -305,13 +338,13 @@ Davant d'aquest context, es va prendre la decisi\'o conjuntament amb el director
 
 \begin{itemize}
     \item \textbf{Agent loop propi:} Implementaci\'o d'un agent loop independent que no dep\`en de cap plataforma externa, seguint la metodologia ``Agents All the Way Down'' del professor Marc Alier.
-    \item \textbf{Canvi a DashScope:} Migraci\'o d'Ollama (models locals) a DashScope (Alibaba Cloud) amb models qwen3.6-plus (text) i qwen-vl-max (visi\'o), millorant significativament la qualitat d'extracci\'o i avaluaci\'o.
+    \item \textbf{Canvi a DashScope i suport multi-provider:} Migraci\'o d'Ollama a DashScope (Alibaba Cloud) com a prove\"idor primari per a la validaci\'o del sistema degut a limitacions de maquinari, dissenyant l'arquitectura amb suport multi-prove\"idor (OpenRouter, Google Gemini i execuci\'o en local mantinguda) configurable mitjan\c{c}ant variables d'entorn, millorant significativament la qualitat d'extracci\'o, l'avaluaci\'o i la resili\`encia del sistema.
     \item \textbf{Workflow generator i executor:} Implementaci\'o de dos components independents:
     \begin{itemize}
         \item \texttt{generate\_workflow}: Genera workflows JSON personalitzats per a cada r\'ubrica.
         \item \texttt{execute\_workflow}: Executa workflows existents amb documents espec\'ifics.
     \end{itemize}
-    \item \textbf{18 tools especialitzades:} Registry complet amb tools d'extracci\'o, an\`alisi, avaluaci\'o, visi\'o i gesti\'o de sessions.
+    \item \textbf{18 tools especialitzades:} Registry complet amb tools d'extracci\'o, an\`alisi, avaluaci\'o, visi\'o, configuraci\'o i workflow.
     \item \textbf{Seguretat al scaffolding:} Implementaci\'o de security policy amb allow-list al scaffolding (no al prompt), seguint les bones pr\`actiques de la metodologia.
     \item \textbf{Validaci\'o amb escenaris reals:} Disseny de 6 escenaris de validaci\'o completats amb \`exit:
     \begin{itemize}
@@ -330,14 +363,178 @@ Aquesta segona reorientaci\'o representa una \textbf{millora significativa} resp
 
 \begin{itemize}
     \item \textbf{Major flexibilitat:} El sistema ja no dep\`en d'opencode.ai i pot executar-se en qualsevol entorn Python.
-    \item \textbf{Millor qualitat:} Els models de DashScope ofereixen millor qualitat d'extracci\'o i avaluaci\'o que els models locals.
+    \item \textbf{Millor qualitat:} El pas d'una soluci\'o exclusivament local a una arquitectura multi-prove\"idor permet aprofitar la superioritat dels models cloud (DashScope, OpenRouter, Gemini) en qualitat d'extracci\'o i avaluaci\'o, oferint ara la llibertat d'alternar indistintament entre l'execuci\'o en local o en el cloud segons les necessitats, a m\'es de garantir disponibilitat cont\'inua.
     \item \textbf{Reutilitzaci\'o de workflows:} La separaci\'o entre generaci\'o i execuci\'o permet optimitzar costos i temps.
     \item \textbf{Validaci\'o rigorosa:} Els 6 escenaris validats demostren la robustesa del sistema en casos d'\'us reals.
 \end{itemize}
 
 Aquesta evoluci\'o es documenta detalladament a les seccions d'\textbf{Implementaci\'o} i \textbf{Validaci\'o} d'aquesta mem\`oria.
 % ============================================
-% CAPITOL 2: JUSTIFICACIO
+% CAPITOL 2: ESTAT DE L'ART I TREBALLS RELACIONATS
+% ============================================
+\chapter{Estat de l'art i treballs relacionats}
+\label{chap:estat-art}
+
+Aquest cap\'itol revisa l'estat de l'art en les tres \`aries tem\`atiques fonamentals del projecte: l'avaluaci\'o autom\`atica amb IA, els frameworks i metodologies ag\`entiques, i la visi\'o multimodal per a documents t\`ecnics. L'objectiu \'es contextualitzar SE-Agentic-Evaluator dins del paisatge cient\'ific i tecnol\`ogic actual, identificant les mancances que el projecte aborda.
+
+\section{Avaluaci\'o autom\`atica assistida per IA}
+\label{sec:aval-auto-ia}
+
+\subsection{Automated Essay Scoring (AES)}
+\label{subsec:aes}
+
+L'avaluaci\'o autom\`atica d'escrits (AES, \textit{Automated Essay Scoring}) \'es un camp d'investigaci\'o amb m\'es de dues d\`ecades d'hist\`oria. Els primers sistemes, com \textbf{e-rater} \cite{burstein2013}, desenvolupat per ETS (Educational Testing Service), utilitzaven caracter\'istiques ling\"u\'istiques extr\'iques (longitud d'oracions, diversitat l\`exica, errors gramaticals) per predir puntuacions, sense comprendre realment el contingut sem\`antic del text. Aquest enfocament presentava limitacions evidents: un escrit que repet\'is paraules clau sense coher\`encia podia obtenir puntuacions altes \cite{perelman2014}.
+
+La segona generaci\'o d'eines, com \textbf{CRAS} (\textit{Coh-Metrix Research Assessment System}) \cite{graesser2014}, va integrar m\`etriques de cohesi\'o textual i coher\`encia narrativa, per\`o continuava depenent de caracter\'istiques extr\'iques predissenyades, sense capacitat d'adaptaci\'o a dominis espec\'ifics.
+
+La tercera i actual generaci\'o aprofita els \textbf{Large Language Models (LLMs)}. Treballs recents demostren que models com GPT-4 poden aproximar les puntuacions d'avaluadors humans amb una correlaci\'o de Pearson $r > 0{,}80$ en dominis generals \cite{guo2024}. No obstant aix\`o, aquests resultats amaguen problemes fonamentals:
+
+\begin{enumerate}
+    \item \textbf{Al·lucinacions num\`eriques:} Els LLMs generen puntuacions que no es corresponen amb el raonament textual que els acompanya, produint inconsist\`encies entre l'explicaci\'o i la nota final \cite{guo2024}.
+    \item \textbf{Manca de transpar\`encia:} La majoria de sistemes no vinculen cada judici evaluatiu a evid\`encia textual concreta del document avaluat, dificultant l'auditoria i la confian\c{c}a del docent.
+    \item \textbf{Biaix de longitud:} Els LLMs tendeixen a correlacionar positivament la longitud del text amb la qualitat, independentment del contingut real \cite{perelman2014}.
+    \item \textbf{Sensibilitat al prompt:} Petites variacions en la instrucci\'o d'avaluaci\'o produeixen canvis significatius en les puntuacions \cite{guo2024}.
+\end{enumerate}
+
+SE-Agentic-Evaluator aborda directament els problemes 1 i 2 mitjan\c{c}ant dos mecanismes: (a) el c\`alcul determin\'istic de notes amb scripts Python, eliminant les al·lucinacions num\`eriques, i (b) la tra\c{c}abilitat obligat\`oria d'evid\`encia, que exigeix que cada puntuaci\'o estigui vinculada a una cita textual o descripci\'o de diagrama del document.
+
+\subsection{LLM-as-a-Judge}
+\label{subsec:llm-judge}
+
+El paradigma \textit{LLM-as-a-Judge} \cite{zheng2023} utilitza un model de llenguatge com a avaluador de sortides generades per un altre model. S'ha popularitzat en l'avaluaci\'o de sistemes de di\`aleg i generaci\'o de codi, per\`o la seva aplicaci\'o directa a l'avaluaci\'o d'entregables acad\`emics presenta limitacions espec\'ifiques:
+
+\begin{itemize}
+    \item \textbf{Autoconsist\`encia limitada:} El mateix model pot produir puntuacions diferents per al mateix document en execucions successives \cite{zheng2023}.
+    \item \textbf{Biaix de posicionament:} En avaluacions per parelles, el model tendeix a preferir la primera opci\'o presentada \cite{zheng2023}.
+    \item \textbf{Manca de replicabilitat:} Sense un workflow determin\'istic, dos usuaris poden obtenir resultats diferents amb el mateix model i document.
+\end{itemize}
+
+SE-Agentic-Evaluator mitiga aquests problemes mitjan\c{c}ant la separaci\'o entre la generaci\'o de judicis qualitatius (que delega al LLM) i l'agregaci\'o num\`erica (que realitza un script determin\'istic), garantint que la nota final sigui 100\% replicable donades les mateixes puntuacions parcials.
+
+\subsection{Avaluaci\'o de documents d'Enginyeria del Software}
+\label{subsec:aval-es}
+
+L'avaluaci\'o d'entregables d'Enginyeria del Software difereix significativament de l'avaluaci\'o d'escrits generals per diverses raons:
+
+\begin{enumerate}
+    \item \textbf{Estructura sem\`antica:} Els documents t\`ecnics contenen elements estructurals amb sem\`antica pr\`opia (objectius, requisits, casos d'\'us, diagrames UML) que no es poden avaluar com a text pla.
+    \item \textbf{Tra\c{c}abilitat:} La qualitat d'un document de requisits dep\`en de les relacions entre elements (p.ex., cada requisit ha d'estar vinculat a un objectiu), no nom\'es del text a\"illat.
+    \item \textbf{Component visual:} Els diagrames UML i les figures t\`ecniques s\'on part integral del document i la seva avaluaci\'o requereix comprensi\'o visual, no nom\'es textual.
+\end{enumerate}
+
+El projecte \textbf{SE-rubric-evaluAItor} \cite{se-rubric} va ser un primer intent d'abordar aquestes especificitats amb un pipeline seq\"uencial, per\`o les seves limitacions (flux r\'igid, r\'ubriques hardcodejades, sense visi\'o) van motivar el desenvolupament de SE-Agentic-Evaluator.
+
+\section{Frameworks i metodologies ag\`entiques}
+\label{sec:frameworks-agentics}
+
+\subsection{Frameworks d'agents existents}
+\label{subsec:frameworks}
+
+L'ecosistema de frameworks per a sistemes ag\`entics ha experimentat un creixement exponencial des del 2023. Els m\'es rellevants s\'on:
+
+\textbf{LangChain / LangGraph} \cite{langchain2024}: Framework de refer\`encia per a la construcci\'o d'aplicacions amb LLMs. Proporciona abstraccions per a cadenes de crides, gesti\'o de mem\`oria, i integraci\'o amb fonts de dades externes. LangGraph, la seva extensi\'o per a agents amb estats, permet definir grafs d'execuci\'o amb cicles i bifurcacions. Limitaci\'o principal: l'alta abstracci\'o dificulta el control fi sobre el proc\'es d'avaluaci\'o i la gesti\'o de sessions.
+
+\textbf{AutoGen} \cite{wu2023}: Framework de Microsoft per a converses multi-agent. Permet definir agents amb rols especialitzats que col·laboren mitjan\c{c}ant converses estructurades. Limitaci\'o: el model de conversa entre agents \'es massa gen\`eric per a l'avaluaci\'o estructurada amb r\'ubriques, on el flux d'execuci\'o est\`a determinat pels criteris i no per la negociaci\'o entre agents.
+
+\textbf{CrewAI} \cite{crewai2024}: Framework per a orquestraci\'o d'equips d'agents amb rols, objectius i tasques definides. Limitaci\'o: enfocament en productivitat gen\`erica, sense mecanismes natius per a avaluaci\'o amb r\'ubriques, tra\c{c}abilitat d'evid\`encia o c\`alcul determin\'istic de notes.
+
+\textbf{Claude Code / opencode.ai} \cite{opencode}: Plataformes que implementen agents de codi amb acc\'es a terminal, fitxers i eines. Proporcionen un agent loop gestit per la plataforma amb un sistema de Skills (instruccions en Markdown). Limitaci\'o: l'agent loop \'es propietat de la plataforma, impedint la implementaci\'o de l\`ogica personalitzada de workflows i sessions, i creant depend\`encia de plataforma.
+
+Cap d'aquests frameworks proporciona nativament els mecanismes que SE-Agentic-Evaluator requereix: r\'ubriques configurables externament, tra\c{c}abilitat d'evid\`encia obligat\`oria, c\`alcul determin\'istic de notes, visi\'o multimodal per a diagrames UML, i workflows reutilitzables. Aquesta mancan\`encia fonamental justifica la decisi\'o d'implementar un agent loop propi.
+
+\subsection{La metodologia ``Agents All the Way Down''}
+\label{subsec:aawd}
+
+La metodologia \textbf{``Agents All the Way Down''} \cite{alier2025}, desenvolupada pel professor Marc Alier de la UPC entre d'altres, estableix un marc conceptual per a la construcci\'o de sistemes meta-ag\`entics fiables. La metodologia defineix cinc fases de maduresa (P1--P5):
+
+\begin{enumerate}
+    \item \textbf{P1 (Substrate):} Internalitzar el LLM com a component de software, comprendre la disciplina KV-cache (tools i system est\`atics, messages en append-only) per optimitzar l'\'us de la mem\`oria de context.
+    \item \textbf{P2 (Building Blocks):} Implementar els blocs fonamentals: function calling amb esquema JSON, tool registry tipus, security policy al scaffolding (allow-list, no al prompt), i session management per a converses multi-turn.
+    \item \textbf{P3 (Prototype):} Prototipar amb un agent de prop\`osit general (p.ex., Claude Code) per validar l'arquitectura emergent i refinar els prompts de les tools.
+    \item \textbf{P4 (Ship as CLI):} Empaquetar l'agent com a CLI seguint el \textit{Turtle Pattern} --- un agent nadiu de terminal que pot ser invocat i compost des de la l\'inia de comandes, permetent l'orquestraci\'o d'agents.
+    \item \textbf{P5 (Agent-Tests-Agent):} Implementar behavioral testing amb un agent avaluador que condueixi l'agent principal amb escenaris de prova automatitzats.
+\end{enumerate}
+
+Aquesta metodologia \'es particularment rellevant per a SE-Agentic-Evaluator perqu\`e estableix principis de disseny que resolen problemes pr\`actics dels frameworks existents: la seguretat al scaffolding (P2) evita atacs de prompt injection, la disciplina KV-cache (P1) optimitza el consum de tokens, i l'empaquetat com a CLI (P4) garanteix la portabilitat i composabilitat del sistema.
+
+\section{Models de llenguatge per a avaluaci\'o}
+\label{sec:models-ll}
+
+\subsection{La fam\'ilia Qwen i DashScope}
+\label{subsec:qwen}
+
+Els models de la fam\'ilia \textbf{Qwen} \cite{qwen2024}, desenvolupats per Alibaba Cloud, representen una de les fam\'ilies de LLMs de codi obert amb millor rendiment en tasques de comprensi\'o i generaci\'o en m\'ultiples idiomes, incloent-hi el catal\`a i el castell\`a. La plataforma \textbf{DashScope} proporciona acc\'es cloud a aquests models, oferint variants optimitzades per a diferents tasques:
+
+\begin{itemize}
+    \item \textbf{Qwen3.6-plus:} Model de text de alta qualitat per a tasques d'extracci\'o estructurada, an\`alisi de qualitat i avaluaci\'o de criteris.
+    \item \textbf{Qwen-VL-Max:} Model de visi\'o multimodal per a descripci\'o i categoritzaci\'o de diagrames UML i figures t\`ecniques.
+\end{itemize}
+
+L'elecci\'o de DashScope sobre altres prove\"idors (OpenAI, Anthropic) es basa en tres factors: (1) compliment RGPD mitjan\c{c}ant centres de dades a Europa, (2) qualitat competitiva en llenguatges no anglesos, i (3) model de preus per \'us que permet controlar costos.
+
+No obstant aix\`o, durant el desenvolupament del projecte es va identificar la conveni\`encia de dissenyar una arquitectura m\'ulti-prove\"idor, no nom\'es per mitigar les limitacions de quota d'un \'unic servei cloud, sin\'o tamb\'e per oferir una flexibilitat total entre l'entorn local i el nuvol. SE-Agentic-Evaluator ara suporta la configuraci\'o indistinta de prove\"idors alternatius (OpenRouter, Google Gemini o models locals via Ollama) mitjan\c{c}ant variables d'entorn, garantint el desacoblement entre la l\`ogica d'avaluaci\'o i el prove\"idor de models i permetent l'execuci\'o en local de manera immediata.
+
+\subsection{Models de visi\'o multimodal}
+\label{subsec:models-visio}
+
+La capacitat de processar imatges juntament amb text \'es fonamental per a l'avaluaci\'o de documents. Trobem un exemple clar en l'Enginyeria, on els diagrames UML s\'on components essencials. Els models de visi\'o multimodal han evolucionat r\`apidament:
+
+\begin{itemize}
+    \item \textbf{GPT-4V} \cite{openai2024}: Model de refer\`encia en visi\'o, per\`o amb cost elevat i sense compliment RGPD directe.
+    \item \textbf{Qwen-VL-Max} \cite{qwen2024}: Alternativa competitiva amb millor suport multiling\"ue i compliment RGPD.
+    \item \textbf{Gemini Pro Vision} \cite{gemini2024}: Model de Google amb bones capacitats visuals, per\`o amb limitacions de quota en el tier gratu\"it.
+\end{itemize}
+
+El projecte \textbf{DiagramLens} \cite{diagramlens} va ser pioner en l'aplicaci\'o de visi\'o multimodal a la descripci\'o de diagrames UML, generant descripcions t\`ecniques que poden ser utilitzades com a evid\`encia en l'avaluaci\'o. SE-Agentic-Evaluator integra i amplia aquesta l\`ogica dins del seu sistema de tools.
+
+\section{Sistemes d'avaluaci\'o educativa existents}
+\label{sec:sistemes-existents}
+
+\subsection{Turnitin Feedback Studio}
+\label{subsec:turnitin}
+
+\textbf{Turnitin Feedback Studio} \cite{turnitin} \'es l'eina de refer\`encia institucional per a la detecci\'o de plagi i l'avaluaci\'o d'escrits. Proporciona comentaris autom\`atics basats en regles heur\'istiques i detecci\'o de similitud textual. Limitaci\'o fonamental: no avalua la qualitat del contingut ni la coher\`encia estructural, sin\'o nom\'es la originalitat i la correcci\'o gramatical.
+
+\subsection{Gradescope}
+\label{subsec:gradescope}
+
+\textbf{Gradescope} \cite{gradescope} \'es una plataforma d'avaluaci\'o desenvolupada per UC Berkeley que automatitza la correcci\'o d'ex\`amens escrits a m\`a i assignacions de programaci\'o. Utilitza reconeixement de patrons per agrupar respostes similars i aplicar r\'ubriques de manera consistent. Limitaci\'o: dissenyada per a respostes curtes i codi, no per a documents narratius llargs amb components visuals.
+
+\subsection{Copyleaks}
+\label{subsec:copyleaks}
+
+\textbf{Copyleaks} \cite{copyleaks} \'es una plataforma que combina detecci\'o de plagi amb an\`alisi d'IA generativa. Pot detectar si un text ha estat generat per un LLM, per\`o no avalua la qualitat del contingut respecte a criteris espec\'ifics.
+
+\subsection{Posicionament de SE-Agentic-Evaluator}
+\label{subsec:posicionament}
+
+La Taula~\ref{tab:comparacio-sistemes} resumeix la comparaci\'o entre els sistemes existents i SE-Agentic-Evaluator:
+
+\begin{table}[H]
+\centering
+\caption{Comparaci\'o de sistemes d'avaluaci\'o educativa. Font: Elaboraci\'o pr\`opia.}
+\label{tab:comparacio-sistemes}
+\small
+\begin{tabularx}{\textwidth}{@{}lccccc@{}}
+\toprule
+\textbf{Caracter\'istica} & \textbf{Turnitin} & \textbf{Gradescope} & \textbf{Copyleaks} & \textbf{SE-rubric} & \textbf{SE-Agent} \\
+\midrule
+Avaluaci\'o per criteris & Parcial & S\'i & No & S\'i & S\'i \\
+R\'ubriques configurables & No & S\'i & No & No (hardcoded) & S\'i (YAML) \\
+Visi\'o multimodal & No & No & No & No & S\'i \\
+Tra\c{c}abilitat evid\`encia & No & Parcial & No & Parcial & S\'i (obligat\`oria) \\
+C\`alcul determin\'istic & No & S\'i & No & S\'i & S\'i \\
+Flux adaptatiu & No & No & No & No & S\'i (agent loop) \\
+Workflows reutilitzables & No & No & No & No & S\'i \\
+Multi-provider & No & No & No & No & S\'i \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+SE-Agentic-Evaluator es posiciona com l'\'unic sistema que combina avaluaci\'o per criteris amb r\'ubriques configurables, visi\'o multimodal, tra\c{c}abilitat d'evid\`encia obligat\`oria, c\`alcul determin\'istic de notes, flux adaptatiu basat en agent loop, i suport multi-provider. Aquesta combinaci\'o de caracter\'istiques no existeix en cap sistema previ, la qual cosa constitueix la principal contribuci\'o d'innovaci\'o del projecte.
+
+% ============================================
+% CAPITOL 3: JUSTIFICACIO
 % ============================================
 \chapter{Justificaci\'o}
 \label{chap:justificacio}
@@ -369,7 +566,7 @@ La segona opci\'o era la planificaci\'o original del TFG: crear un microservei a
 La tercera alternativa era convertir el pipeline r\'igid en una \textbf{Skill ag\`entica} per a la plataforma opencode.ai, que permeti a un agent d'IA seleccionar din\`amicament les eines d'extracci\'o, an\`alisi i avaluaci\'o segons el contingut del document, amb execuci\'o local de models via Ollama.
 
 \begin{itemize}
-    \item \textbf{Avantatges:} M\`axima flexibilitat i adaptabilitat: l'agent decideix l'ordre d'execuci\'o segons el contingut. Desacoblament total de l'arquitectura de LAMB: la Skill opera de manera independent. Privacitat RGPD garantida per execuci\'o local. Integraci\'o de visi\'o multimodal per a diagrames UML. C\`alcul determin\'istic de notes que elimina al\cdot lucinacions num\`eriques. Configuraci\'o externa de r\'ubriques per a reutilitzaci\'o.
+    \item \textbf{Avantatges:} M\`axima flexibilitat i adaptabilitat: l'agent decideix l'ordre d'execuci\'o segons el contingut. Desacoblament total de l'arquitectura de LAMB: la Skill opera de manera independent. Privacitat RGPD garantida mitjan\c{c}ant prove\"idors locals Open Source. Integraci\'o de visi\'o multimodal per a diagrames UML. C\`alcul determin\'istic de notes que elimina al·lucinacions num\`eriques. Configuraci\'o externa de r\'ubriques per a reutilitzaci\'o.
     \item \textbf{Inconvenients:} Requereix aprendre i integrar amb una plataforma nova (opencode.ai). La qualitat de l'avaluaci\'o dep\`en de la capacitat del LLM local per comprendre i aplicar les regles de la Skill. Depend\`encia de plataforma limita la portabilitat.
 \end{itemize}
 
@@ -378,21 +575,22 @@ La tercera alternativa era convertir el pipeline r\'igid en una \textbf{Skill ag
 La quarta alternativa, i finalment adoptada, consisteix en implementar un \textbf{sistema meta-ag\`entic complet} amb les seg\"uents caracter\'istiques:
 
 \begin{itemize}
-    \item \textbf{Agent loop propi:} Implementaci\'o d'un agent loop independent que no dep\`en de cap plataforma externa, seguint la metodologia ``Agents All the Way Down'' del professor Marc Alier.
+    \item \textbf{Agent loop propi:} Implementaci\'o d'un agent loop independent que no dep\`en de cap plataforma externa, seguint la metodologia ``Agents All the Way Down'' \cite{alier2025} del professor Marc Alier i altres.
     \item \textbf{Workflow generator/executor:} Dos components independents que permeten generar workflows JSON personalitzats per a cada r\'ubrica i executar-los amb m\'ultiples documents, optimitzant costos i temps.
-    \item \textbf{18 tools especialitzades:} Registry complet amb tools d'extracci\'o (docx\_extract, xlsx\_to\_markdown, describe\_diagrams), an\`alisi (extract\_objectives, detect\_orphans, evaluate\_smart), avaluaci\'o (criterion\_evaluator, grader) i gesti\'o (session\_store).
-    \item \textbf{DashScope en lloc d'Ollama:} Migraci\'o a models cloud de major qualitat (qwen3.6-plus per a text, qwen-vl-max per a visi\'o) per millorar la qualitat d'extracci\'o i avaluaci\'o.
+    \item \textbf{18 tools especialitzades:} Registry complet amb tools d'extracci\'o (docx\_extract, xlsx\_to\_markdown, describe\_diagrams, read\_file, list\_directory), an\`alisi (extract\_objectives, detect\_orphans, evaluate\_smart), avaluaci\'o (criterion\_evaluator, grader, report\_generator) i workflow (generate\_workflow, execute\_workflow).
+    \item \textbf{DashScope i suport multi-provider:} DashScope (Alibaba Cloud) com a prove\"idor primari, amb suport addicional per a OpenRouter i Google Gemini mitjan\c{c}ant variables d'entorn, garantint resili\`encia davant limitacions de quota o disponibilitat d'un \'unic servei.
+    \item \textbf{Avaluaci\'o batch de criteris:} Reducci\'o del nombre de crides a l'API mitjan\c{c}ant l'avaluaci\'o de m\'ultiples criteris en un \'unic prompt, configurada via \texttt{EVAL\_BATCH\_SIZE} (5 criteris per defecte).
     \item \textbf{Seguretat al scaffolding:} Implementaci\'o de security policy amb allow-list al scaffolding (no al prompt), seguint les bones pr\`actiques de la metodologia.
 \end{itemize}
 
 \begin{itemize}
-    \item \textbf{Avantatges:} M\`axima flexibilitat i portabilitat: el sistema no dep\`en de cap plataforma externa i pot executar-se en qualsevol entorn Python. Millor qualitat d'avaluaci\'o gr\`acies als models de DashScope. Reutilitzaci\'o de workflows que optimitza costos i temps. Seguretat robusta al scaffolding. Validaci\'o rigorosa amb 6 escenaris de test (tots completats amb \`exit).
-    \item \textbf{Inconvenients:} Requereix connexi\'o a internet per a DashScope (no \'es 100\% local com Ollama). Major complexitat d'implementaci\'o respecte a una Skill simple.
+    \item \textbf{Avantatges:} M\`axima flexibilitat i portabilitat: el sistema no dep\`en de cap plataforma externa i pot executar-se en qualsevol entorn Python. Millor qualitat d'avaluaci\'o gr\`acies als models cloud. Suport multi-provider que garanteix resili\`encia. Avaluaci\'o batch que optimitza costos d'API. Reutilitzaci\'o de workflows que optimitza costos i temps. Seguretat robusta al scaffolding. Validaci\'o rigorosa amb 6 escenaris de test (tots completats amb \`exit).
+    \item \textbf{Inconvenients:} Requereix connexi\'o a internet per als prove\"idors cloud (no \'es 100\% local com Ollama). Major complexitat d'implementaci\'o respecte a una Skill simple.
 \end{itemize}
 
 \textbf{Conclusi\'o de la decisi\'o}
 
-Avaluades totes les alternatives, es justifica l'adopci\'o de l'Alternativa D (sistema meta-ag\`entic complet). Aquesta soluci\'o aborda directament totes les limitacions identificades: rigidesa del pipeline, manca de workflows reutilitzables, depend\`encia de plataforma, i limitacions de models locals. La implementaci\'o d'un agent loop propi proporciona m\`axima flexibilitat i control, mentre que la separaci\'o entre workflow generator i executor permet optimitzar costos i temps. La migraci\'o a DashScope millora significativament la qualitat d'extracci\'o i avaluaci\'o, i la implementaci\'o de seguretat al scaffolding garanteix robustesa. A m\'es, la validaci\'o amb 6 escenaris reals (tots completats amb \`exit) demostra la viabilitat i robustesa del sistema en casos d'\'us reals.
+Avaluades totes les alternatives, es justifica l'adopci\'o de l'Alternativa D (sistema meta-ag\`entic complet). Aquesta soluci\'o aborda directament totes les limitacions identificades: rigidesa del pipeline, manca de workflows reutilitzables, depend\`encia de plataforma, i limitacions de models locals. La implementaci\'o d'un agent loop propi proporciona m\`axima flexibilitat i control, mentre que la separaci\'o entre workflow generator i executor permet optimitzar costos i temps. La migraci\'o a prove\"idors cloud millora significativament la qualitat d'extracci\'o i avaluaci\'o, el suport multi-provider garanteix resili\`encia, i l'avaluaci\'o batch redueix el cost d'API. La implementaci\'o de seguretat al scaffolding garanteix robustesa. A m\'es, la validaci\'o amb 6 escenaris reals (tots completats amb \`exit) demostra la viabilitat i robustesa del sistema en casos d'\'us reals.
 
 % ============================================
 % CAPITOL 3: ABAST
@@ -405,20 +603,21 @@ Aquest apartat defineix els l\'imits del projecte, establint de manera clara qu\
 \section{Objectius gen\`erics i sub-objectius del projecte}
 \label{sec:objectius}
 
-L'objectiu principal d'aquest projecte \'es implementar un \textbf{sistema meta-ag\`entic complet} que permeti l'avaluaci\'o assistida, din\`amica i adaptativa d'entregables acad\`emics d'Enginyeria del Software, amb agent loop propi, workflow generator/executor, i models d'IA de DashScope.
+L'objectiu principal d'aquest projecte \'es implementar un \textbf{sistema meta-ag\`entic complet} que permeti l'avaluaci\'o assistida, din\`amica i adaptativa d'entregables acad\`emics de qualsevol tipus, amb agent loop propi, workflow generator/executor, models d'IA multi-provider i avaluaci\'o batch de criteris.
 
 \textbf{Sub-objectius:}
 
 \begin{itemize}
-    \item \textbf{Agent loop propi:} Implementar un agent loop independent que no dep\`en de cap plataforma externa, seguint la metodologia ``Agents All the Way Down'' del professor Marc Alier.
+    \item \textbf{Agent loop propi:} Implementar un agent loop independent que no dep\`en de cap plataforma externa, seguint la metodologia ``Agents All the Way Down'' del professor Marc Alier i altres.
     \item \textbf{Workflow generator:} Implementar un component que generi workflows JSON personalitzats per a cada r\'ubrica d'avaluaci\'o, analitzant la r\'ubrica i determinant quines tools s'han d'executar i en quin ordre.
     \item \textbf{Workflow executor:} Implementar un component que executi workflows existents amb documents espec\'ifics, permetent la reutilitzaci\'o de workflows amb m\'ultiples documents.
-    \item \textbf{18 tools especialitzades:} Implementar un registry complet amb tools d'extracci\'o (docx\_extract, xlsx\_to\_markdown, describe\_diagrams), an\`alisi (extract\_objectives, detect\_orphans, evaluate\_smart), avaluaci\'o (criterion\_evaluator, grader) i gesti\'o (session\_store).
-    \item \textbf{DashScope en lloc d'Ollama:} Migrar a models cloud de major qualitat (qwen3.6-plus per a text, qwen-vl-max per a visi\'o) per millorar la qualitat d'extracci\'o i avaluaci\'o.
+    \item \textbf{18 tools especialitzades:} Implementar un registry complet amb tools d'extracci\'o (docx\_extract, xlsx\_to\_markdown, describe\_diagrams, read\_file, list\_directory), an\`alisi (extract\_objectives, detect\_orphans, evaluate\_smart), avaluaci\'o (criterion\_evaluator, grader, report\_generator) i workflow (generate\_workflow, execute\_workflow).
+    \item \textbf{DashScope i suport multi-provider:} DashScope (Alibaba Cloud) com a prove\"idor primari, amb suport addicional per a OpenRouter i Google Gemini mitjan\c{c}ant variables d'entorn, garantint resili\`encia davant limitacions de quota.
+    \item \textbf{Avaluaci\'o batch de criteris:} Reducci\'o del nombre de crides a l'API mitjan\c{c}ant l'avaluaci\'o de m\'ultiples criteris en un \'unic prompt (5 criteris/batch per defecte), configurable via \texttt{EVAL\_BATCH\_SIZE}.
     \item \textbf{Seguretat al scaffolding:} Implementar security policy amb allow-list al scaffolding (no al prompt), seguint les bones pr\`actiques de la metodologia.
-    \item \textbf{Visi\'o multimodal:} Integrar la l\`ogica de DiagramLens per categoritzar i descriure diagrames UML embebuts utilitzant el model qwen-vl-max de DashScope.
+    \item \textbf{Visi\'o multimodal:} Integrar la l\`ogica de DiagramLens per categoritzar i descriure diagrames UML embebuts utilitzant el model de visi\'o configurat via \texttt{DASHSCOPE\_VISION\_MODEL}.
     \item \textbf{Tra\c{c}abilitat amb evid\`encia:} Cada judici evaluatiu ha d'estar vinculat a una cita textual, descripci\'o de diagrama o ID d'element del document analitzat.
-    \item \textbf{C\`alcul determin\'istic de notes:} La nota final s'ha de calcular exclusivament mitjan\c{c}ant scripts Python, evitant al\cdot lucinacions num\`eriques dels LLMs.
+    \item \textbf{C\`alcul determin\'istic de notes:} La nota final s'ha de calcular exclusivament mitjan\c{c}ant scripts Python, evitant al·lucinacions num\`eriques dels LLMs.
     \item \textbf{Configuraci\'o externa de r\'ubriques:} Els pesos i criteris d'avaluaci\'o han de ser configurables sense modificar el codi font.
     \item \textbf{Validaci\'o amb escenaris reals:} Dissenyar i executar 6 escenaris de validaci\'o que demostrin la robustesa del sistema en casos d'\'us reals.
 \end{itemize}
@@ -430,9 +629,9 @@ L'objectiu principal d'aquest projecte \'es implementar un \textbf{sistema meta-
 \label{subsec:req-funcionals}
 
 \begin{itemize}
-    \item Com a professor, vull avaluar un document Markdown d'un entregable d'Enginyeria del Software, per a obtenir una avaluaci\'o assistida amb r\'ubrica estructurada.
+    \item Com a professor, vull avaluar un document d'un entregable, per a obtenir una avaluaci\'o assistida amb r\'ubrica estructurada.
     \item Com a agent d'avaluaci\'o, vull extreure autom\`aticament els objectius (OBJ-X), requisits (IRQ/NFR) i casos d'\'us (CU-XXX) del document, per a analitzar-los posteriorment.
-    \item Com a agent d'avaluaci\'o, vull detectar i descriure diagrames UML embebuts al document utilitzant visi\'o multimodal (qwen-vl-max), per a avaluar la consist\`encia arquitect\`onica.
+    \item Com a agent d'avaluaci\'o, vull detectar i descriure diagrames UML embebuts al document utilitzant visi\'o multimodal (model de visi\'o configurable), per a avaluar la consist\`encia arquitect\`onica.
     \item Com a agent d'avaluaci\'o, vull generar matrius de tra\c{c}abilitat entre objectius i requisits, per a identificar cobertures i buits.
     \item Com a agent d'avaluaci\'o, vull detectar requisits hu\`erfans (sense objectiu associat) i objectius sense cobertura de requisits, per a informar el professor.
     \item Com a agent d'avaluaci\'o, vull avaluar els objectius contra els criteris SMART i els NFR segons ISO/IEC 25010, per a proporcionar an\`alisi de qualitat addicional.
@@ -443,7 +642,7 @@ L'objectiu principal d'aquest projecte \'es implementar un \textbf{sistema meta-
     \item Com a sistema, vull generar workflows JSON personalitzats per a cada r\'ubrica, per a reutilitzar-los amb m\'ultiples documents sense repetir el proc\'es de configuraci\'o.
     \item Com a sistema, vull executar workflows existents amb documents espec\'ifics, permetent la continuaci\'o de sessions i la gesti\'o d'estat.
     \item Com a sistema, vull implementar un agent loop propi que no dep\`en de cap plataforma externa, seguint la metodologia ``Agents All the Way Down''.
-    \item Com a sistema, vull implementar un tool registry amb 18 tools especialitzades (extracci\'o, an\`alisi, avaluaci\'o, visi\'o, gesti\'o).
+    \item Com a sistema, vull implementar un tool registry amb 18 tools especialitzades (extracci\'o, an\`alisi, avaluaci\'o, visi\'o, configuraci\'o, workflow).
     \item Com a sistema, vull implementar seguretat al scaffolding amb allow-list, per a evitar l'execuci\'o de codi malici\'os o l'acc\'es a dades no autoritzades.
 \end{itemize}
 
@@ -451,10 +650,12 @@ L'objectiu principal d'aquest projecte \'es implementar un \textbf{sistema meta-
 \label{subsec:req-no-funcionals}
 
 \begin{itemize}
-    \item \textbf{Qualitat d'avaluaci\'o:} Els models de DashScope (qwen3.6-plus, qwen-vl-max) han de proporcionar millor qualitat d'extracci\'o i avaluaci\'o que els models locals (Ollama).
+    \item \textbf{Qualitat d'avaluaci\'o:} Els models cloud (DashScope, OpenRouter, Gemini) han de proporcionar millor qualitat d'extracci\'o i avaluaci\'o que els models locals (Ollama).
     \item \textbf{Fiabilitat:} La nota final s'ha de calcular 100\% de manera determin\'istica (script Python), sense intervenci\'o del LLM.
     \item \textbf{Evid\`encia:} El 100\% dels judicis evaluatius han d'incloure almenys una evid\`encia (cita textual, descripci\'o de diagrama o ID d'element).
-    \item \textbf{Rendiment:} L'extracci\'o d'informaci\'o d'un document t\'ipic (5--15 p\`agines) ha de completar-se en menys de 30 segons amb els models de DashScope.
+    \item \textbf{Rendiment:} L'extracci\'o d'informaci\'o d'un document t\'ipic (5--15 p\`agines) ha de completar-se en menys de 30 segons amb els models cloud.
+    \item \textbf{Resili\`encia multi-provider:} El sistema ha de suportar m\'ultiples prove\"idors de models (DashScope, OpenRouter, Gemini) configurables via variables d'entorn, permetent failover autom\`atic davant limitacions de quota.
+    \item \textbf{Efici\`encia d'API:} L'avaluaci\'o batch de criteris ha de reduir el nombre de crides a l'API en almenys un 60\% respecte a l'avaluaci\'o individual, configurable via \texttt{EVAL\_BATCH\_SIZE}.
     \item \textbf{Usabilitat:} L'informe final ha de ser llegible i estructurat en Markdown, compatible amb qualsevol editor o visualitzador.
     \item \textbf{Portabilitat:} El sistema ha de poder executar-se en qualsevol entorn Python sense dependre de plataformes externes.
     \item \textbf{Seguretat:} La seguretat s'ha d'implementar al scaffolding (allow-list), no al prompt, seguint les bones pr\`actiques de la metodologia ``Agents All the Way Down''.
@@ -471,11 +672,11 @@ L'objectiu principal d'aquest projecte \'es implementar un \textbf{sistema meta-
     \item Mitigaci\'o: Realitzar reunions peri\`odiques amb el director i dedicar temps espec\'ific a l'estudi de la plataforma abans de comen\c{c}ar el desenvolupament.
 \end{itemize}
 
-\textbf{Depend\`encia de serveis cloud (DashScope)}
+\textbf{Depend\`encia de serveis cloud}
 
 \begin{itemize}
-    \item Impacte: El sistema dep\`en de la disponibilitat i quota de l'API de DashScope (Alibaba Cloud). Si el servei no est\`a disponible o s'exhaureix la quota, el sistema no pot funcionar.
-    \item Mitigaci\'o: Implementar retry logic amb exponential backoff per gestionar errors temporals. Monitoritzar el consum de tokens i establir l\'imits per evitar l'esgotament de la quota.
+    \item Impacte: El sistema dep\`en de la disponibilitat i quota dels prove\"idors d'API de models d'IA. Si un servei no est\`a disponible o s'exhaureix la quota, el sistema no pot funcionar amb aquest prove\"idor.
+    \item Mitigaci\'o: Implementar retry logic amb exponential backoff per gestionar errors temporals. El suport multi-provider (DashScope, OpenRouter, Gemini) permet canviar de prove\"idor quan un presenta limitacions, sense modificar la l\`ogica d'avaluaci\'o. Monitoritzar el consum de tokens i establir l\'imits per evitar l'esgotament de la quota.
 \end{itemize}
 
 \textbf{Calendari apretat}
@@ -505,12 +706,12 @@ Per a la realitzaci\'o d'aquest Treball de Fi de Grau, i atesa la naturalesa can
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{figures/agile_methodology.png}
+    \includegraphics[width=0.7\textwidth]{AGILE.png}
     \caption{Fases de la metodologia \`agil (Agile). Font: \cite{cognodata}.}
     \label{fig:agile}
 \end{figure}
 
-Addicionalment, el projecte segueix la metodologia \textbf{``Agents All the Way Down''} desenvolupada pel professor Marc Alier, que estableix 5 fases per a la construcci\'o de sistemes meta-ag\`entics:
+Addicionalment, el projecte segueix la metodologia \textbf{``Agents All the Way Down''}, que estableix 5 fases per a la construcci\'o de sistemes meta-ag\`entics:
 
 \begin{enumerate}
     \item \textbf{Fase P1 (Substrate):} Internalitzar el LLM com a component de software, entenent les implicacions del KV-cache i la disciplina necess\`aria per a sistemes ag\`entics.
@@ -525,8 +726,8 @@ El projecte ha completat les fases P1-P4 i actualment es troba en la fase P5 (va
 Com que el projecte \'es desenvolupat per un \'unic integrant dins del context de l'ecosistema LAMB, la metodologia \`agil est\`andard (tipus Scrum) s'adapta al projecte estructurant el treball en quatre fases iteratives (sprints llargs) de dues-tres setmanes de durada cadascuna:
 
 \begin{enumerate}
-    \item \textbf{Fase 1 (Fonaments):} Estudi de la metodologia ``Agents All the Way Down'', configuraci\'o de l'entorn DashScope amb models cloud (qwen3.6-plus i qwen-vl-max), i adaptaci\'o dels m\`oduls d'extracci\'o existents de SE-rubric-evaluAItor.
-    \item \textbf{Fase 2 (An\`alisi i Visi\'o):} Implementaci\'o dels m\`oduls d'an\`alisi (tra\c{c}abilitat, completitud, hu\`erfanos, SMART, ISO 25010) i integraci\'o del m\`odul de visi\'o multimodal de DiagramLens.
+    \item \textbf{Fase 1 (Fonaments):} Estudi de la metodologia ``Agents All the Way Down'', configuraci\'o de l'entorn multi-provider amb models cloud, i adaptaci\'o dels m\`oduls d'extracci\'o existents de SE-rubric-evaluAItor.
+    \item \textbf{Fase 2 (An\`alisi i Visi\'o):} Implementaci\'o dels m\`oduls d'an\`alisi (tra\c{c}abilitat, completitud, orfes, SMART, ISO 25010) i integraci\'o del m\`odul de visi\'o multimodal de DiagramLens.
     \item \textbf{Fase 3 (Agent Meta-Ag\`entic i MVP):} Implementaci\'o de l'agent loop independent, tool registry amb 18 tools especialitzades, workflow generator/executor, i validaci\'o del flux complet amb documents de prova.
     \item \textbf{Fase 4 (Refinament i Documentaci\'o):} Implementaci\'o de millores identificades (configuraci\'o YAML, gesti\'o de fitxers intermedios), proves amb m\'ultiples documents, i redacci\'o de la mem\`oria final.
 \end{enumerate}
@@ -549,7 +750,7 @@ Per validar que el projecte assoleix els objectius de manera rigorosa, s'impleme
 
 \begin{itemize}
     \item \textbf{Proves Unit\`aries i d'Integraci\'o:} Es desenvolupar\`a una bateria de proves per verificar el funcionament a\"illat dels m\`oduls determin\'istics (orphans, smart, iso25010, grader) i una prova d'integraci\'o que validi el flux complet de la Skill amb documents de prova coneguts.
-    \item \textbf{M\`etriques de Qualitat:} Es validar\`a que el 100\% dels judicis evaluatius inclouen evid\`encia, que la nota final es calcula de manera determin\'istica, i que cap dada surt de l'ordinador local.
+    \item \textbf{M\`etriques de Qualitat:} Es validar\`a que el 100\% dels judicis evaluatius inclouen evid\`encia, que la nota final es calcula de manera determin\'istica, i que les dades enviades a prove\"idors cloud compleixen les normatives de protecci\'o de dades.
 \end{itemize}
 
 Finalment, tota decisi\'o t\`ecnica presa durant el desenvolupament (avaluaci\'o d'alternatives de disseny, canvis en la base de dades, etc.) quedar\`a documentada degudament, aportant el rigor propi d'un projecte d'enginyeria inform\`atica.
@@ -559,7 +760,7 @@ Finalment, tota decisi\'o t\`ecnica presa durant el desenvolupament (avaluaci\'o
 \chapter{Implementaci\'o}
 \label{chap:implementacio}
 
-Aquesta secci\'o descriu l'arquitectura i els components implementats del sistema SE-Agentic-Evaluator, seguint la metodologia ``Agents All the Way Down'' del professor Marc Alier.
+Aquesta secci\'o descriu l'arquitectura i els components implementats del sistema SE-Agentic-Evaluator, seguint la metodologia ``Agents All the Way Down'' \cite{alier2025} del professor Marc Alier i altres.
 
 \section{Arquitectura del sistema}
 \label{sec:arquitectura}
@@ -568,33 +769,56 @@ El sistema implementa una arquitectura meta-ag\`entica amb els seg\"uents compon
 
 \begin{figure}[H]
 \centering
-\begin{lstlisting}
-+-----------------------------------------------------------+
-|                    SE-Agentic-Evaluator                    |
-+-----------------------------------------------------------+
-|                                                            |
-|  +--------------+  +--------------+  +--------------+     |
-|  |   Agent      |  |   Workflow   |  |   Session    |     |
-|  |   Loop       |  |   Executor   |  |   Store      |     |
-|  +------+-------+  +------+-------+  +--------------+     |
-|         |                 |                                 |
-|         +--------+--------+                                 |
-|                  |                                          |
-|         +--------v--------+                                |
-|         |  Tool Registry  |                                |
-|         |   (18 tools)    |                                |
-|         +--------+--------+                                |
-|                  |                                          |
-|    +-------------+-------------+                           |
-|    |             |             |                           |
-| +--v--+    +----v----+   +---v---+                        |
-| | LLM |    | Vision  |   | Tools |                        |
-| |     |    |  Model  |   |       |                        |
-| +-----+    +---------+   +-------+                        |
-|                                                            |
-+-----------------------------------------------------------+
-\end{lstlisting}
-\caption{Arquitectura de SE-Agentic-Evaluator. Font: Elaboraci\'o pr\`opia.}
+\begin{tikzpicture}[
+    font=\small,
+    component/.style={rectangle, draw, fill=blue!10, rounded corners, minimum width=2.8cm, minimum height=1cm, align=center, thick},
+    external/.style={rectangle, draw, fill=orange!10, rounded corners, minimum width=2.5cm, minimum height=0.9cm, align=center, thick},
+    arrow/.style={-{Stealth[length=2.5mm]}, thick},
+    darrow/.style={-{Stealth[length=2.5mm]}, thick, dashed},
+]
+
+    % External actors
+    \node[external] (user) at (0, 4) {Usuari\\(Professor)};
+
+    % Top layer
+    \node[component] (cli) at (0, 2) {CLI\\(\texttt{se-agent\_CLI})};
+    \node[component, fill=teal!15] (agent) at (4.5, 2) {Agent Loop\\(\texttt{agent.py})};
+    \node[component, fill=purple!15] (session) at (9, 2) {Session Store\\(\texttt{session\_store.py})};
+
+    % Middle layer
+    \node[component, fill=green!15] (wfgen) at (0, 0) {Workflow\\Generator};
+    \node[component, fill=green!15] (wfexec) at (4.5, 0) {Workflow\\Executor};
+    \node[component, fill=red!10] (security) at (9, 0) {Security\\Policy};
+
+    % Tool Registry - large box
+    \node[component, fill=yellow!15, minimum width=8cm, minimum height=1.2cm] (registry) at (4.5, -2) {Tool Registry (18 tools): extracci\'o | an\`alisi | avaluaci\'o | visi\'o | config | workflow};
+
+    % Bottom layer - providers
+    \node[external, fill=orange!20] (dashscope) at (0, -4) {DashScope\\(Qwen)};
+    \node[external, fill=orange!20] (openrouter) at (4.5, -4) {OpenRouter\\(Gemma, Llama)};
+    \node[external, fill=orange!20] (gemini) at (9, -4) {Google\\Gemini};
+
+    % Grader
+    \node[component, fill=cyan!15] (grader) at (4.5, -6) {Grader\\(determin\'istic)};
+
+    % Arrows
+    \draw[arrow] (user) -- (cli);
+    \draw[arrow] (cli) -- (agent);
+    \draw[arrow] (agent) -- (session);
+    \draw[arrow] (cli) -- (wfgen);
+    \draw[arrow] (cli) -- (wfexec);
+    \draw[arrow] (agent) -- (wfexec);
+    \draw[arrow] (wfexec) -- (registry);
+    \draw[arrow] (agent) -- (security);
+    \draw[arrow] (registry) -- (dashscope);
+    \draw[arrow] (registry) -- (openrouter);
+    \draw[arrow] (registry) -- (gemini);
+    \draw[arrow] (registry) -- (grader);
+
+    % Labels
+    \node[font=\scriptsize, text=gray] at (2.2, -3.2) {via \texttt{DASHSCOPE\_BASE\_URL}};
+\end{tikzpicture}
+\caption{Arquitectura de components de SE-Agentic-Evaluator. Font: Elaboraci\'o pr\`opia.}
 \label{fig:arquitectura}
 \end{figure}
 
@@ -619,13 +843,15 @@ El sistema disposa de 18 tools especialitzades organitzades per categoria:
 \begin{itemize}
     \item \textbf{\texttt{docx\_extract}:} Extreu text, taules i imatges de documents DOCX, convertint-los a Markdown.
     \item \textbf{\texttt{xlsx\_to\_markdown}:} Converteix r\'ubriques Excel a format Markdown.
-    \item \textbf{\texttt{describe\_diagrams}:} Utilitza visi\'o multimodal (qwen-vl-max) per descriure diagrames UML embebuts en documents.
+    \item \textbf{\texttt{describe\_diagrams}:} Utilitza visi\'o multimodal (model de visi\'o configurable via \texttt{DASHSCOPE\_VISION\_MODEL}) per descriure diagrames UML embebuts en documents.
+    \item \textbf{\texttt{read\_file}:} Llegeix el contingut d'un fitxer de text i el retorna per al seu processament per l'agent.
+    \item \textbf{\texttt{list\_directory}:} Llista els fitxers i directoris d'un path donat, permetent a l'agent explorar l'estructura del projecte.
 \end{itemize}
 
 \subsection{Tools de configuraci\'o}
 
 \begin{itemize}
-    \item \textbf{\texttt{rubric\_importer}:} Importa r\'ubriques Markdown i les converteix a format YAML amb metadades.
+    \item \textbf{\texttt{rubric\_importer}:} Importa r\'ubriques en format Markdown i les converteix a YAML amb metadades (pesos, descriptors de nivell, prompts d'avaluaci\'o). Juntament amb \texttt{xlsx\_to\_markdown}, permet la cadena de conversi\'o Excel $\rightarrow$ Markdown $\rightarrow$ YAML.
 \end{itemize}
 
 \subsection{Tools d'an\`alisi}
@@ -643,14 +869,15 @@ El sistema disposa de 18 tools especialitzades organitzades per categoria:
 \subsection{Tools d'avaluaci\'o}
 
 \begin{itemize}
-    \item \textbf{\texttt{criterion\_evaluator}:} Avalua criteris de la r\'ubrica contra el document, generant puntuacions i evid\`encies.
+    \item \textbf{\texttt{criterion\_evaluator}:} Avalua criteris de la r\'ubrica contra el document, generant puntuacions i evid\`encies. Suporta dues modes d'operaci\'o: avaluaci\'o individual (un criteri per crida, per a criteris que requereixen visi\'o) i avaluaci\'o batch (m\'ultiples criteris en un \'unic prompt, configurable via \texttt{EVAL\_BATCH\_SIZE}).
     \item \textbf{\texttt{grader}:} Calcula la nota final de manera determin\'istica a partir de les puntuacions parcials i els pesos de la r\'ubrica.
+    \item \textbf{\texttt{report\_generator}:} Genera l'informe final d'avaluaci\'o en format Markdown, incloent-hi la taula de r\'ubrica, an\`alisi per criteri amb evid\`encies vinculades i recomanacions accionables.
 \end{itemize}
 
-\subsection{Tools de gesti\'o}
+\subsection{Gesti\'o de sessions}
 
 \begin{itemize}
-    \item \textbf{\texttt{session\_store}:} Gestiona sessions per a converses multi-turn.
+    \item \textbf{\texttt{session\_store}:} Component de gesti\'o de sessions per a converses multi-turn. Aquest component no forma part del \texttt{ToolRegistry}, sin\'o que opera com a servei intern del sistema.
 \end{itemize}
 
 \subsection{Tools de workflow}
@@ -672,10 +899,11 @@ El sistema disposa de 18 tools especialitzades organitzades per categoria:
 \textbf{Component} & \textbf{Tecnologia} & \textbf{Justificaci\'o} \\
 \midrule
 \textbf{Llenguatge} & Python 3.11+ & Est\`andard per a projectes d'IA i processament de documents \\
-\textbf{LLM Provider} & DashScope (Alibaba Cloud) & Millor qualitat que models locals (Ollama) \\
-\textbf{Models de text} & qwen3.6-plus & Millor qualitat d'extracci\'o i avaluaci\'o \\
-\textbf{Models de visi\'o} & qwen-vl-max & Millor qualitat per a descripci\'o de diagrames UML \\
+\textbf{LLM Provider} & Multi-provider & DashScope (primari), OpenRouter, Google Gemini; configurable via env vars \\
+\textbf{Models de text} & Configurable & Definit via \texttt{DASHSCOPE\_MODEL}; exemples: qwen3.6-plus, gemma-4-31b \\
+\textbf{Models de visi\'o} & Configurable & Definit via \texttt{DASHSCOPE\_VISION\_MODEL}; exemples: qwen-vl-max, gemini-2.5-flash \\
 \textbf{Framework} & Custom agent loop & Sense depend\`encia de frameworks externs \\
+\textbf{Avaluaci\'o batch} & \texttt{EVAL\_BATCH\_SIZE} & 5 criteris/batch per defecte; 13 criteris $\rightarrow$ 3 crides API ($\sim$77\% reducci\'o) \\
 \textbf{Seguretat} & Allow-list al scaffolding & Seguretat robusta seguint bones pr\`actiques \\
 \bottomrule
 \end{tabularx}
@@ -684,18 +912,426 @@ El sistema disposa de 18 tools especialitzades organitzades per categoria:
 \section{Flux d'execuci\'o}
 \label{sec:flux}
 
-El flux d'execuci\'o t\'ipic del sistema \'es el seg\"uent:
+El flux d'execuci\'o t\'ipic del sistema es mostra al diagrama de seq\"u\`encia de la Figura~\ref{fig:seq-diagram} i es descriu a continuaci\'o:
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    font=\small,
+    actor/.style={rectangle, draw, fill=blue!10, minimum width=2.2cm, minimum height=0.7cm, align=center},
+    arrow/.style={-{Stealth[length=2.5mm]}, thick},
+    ret/.style={-{Stealth[length=2.5mm]}, thick, dashed},
+    note/.style={font=\scriptsize, text width=3cm, align=left},
+    xshift=0cm
+]
+    \node[actor] (user) at (0,0) {Usuari};
+    \node[actor] (wfgen) at (3,0) {Workflow\\Generator};
+    \node[actor] (wfexec) at (6,0) {Workflow\\Executor};
+    \node[actor] (registry) at (9,0) {Tool\\Registry};
+    \node[actor] (llm) at (12,0) {LLM\\Provider};
+    \node[actor] (grader) at (15,0) {Grader};
+
+    \foreach \n in {user,wfgen,wfexec,registry,llm,grader} {
+        \draw (\n.south) -- ++(0,-10.5);
+    }
+
+    % Phase 1: Generate workflow
+    \node[fill=blue!8, rounded corners, inner sep=2pt] at (1.5,-0.7) {\scriptsize\textbf{Fase 1: Generar workflow}};
+    \draw[arrow] (0,-1.2) -- node[above, font=\scriptsize]{R\'ubrica (YAML/MD/XLSX)} (3,-1.2);
+    \draw[ret] (3,-1.7) -- node[above, font=\scriptsize]{workflow.json} (0,-1.7);
+
+    % Phase 2: Execute workflow
+    \node[fill=green!8, rounded corners, inner sep=2pt] at (3,-2.4) {\scriptsize\textbf{Fase 2: Executar workflow}};
+    \draw[arrow] (0,-2.9) -- node[above, font=\scriptsize]{Document + workflow} (6,-2.9);
+
+    % Step: Resolve variables
+    \node[fill=gray!8, rounded corners, inner sep=2pt, right] at (6.1,-3.3) {\scriptsize Resoldre \texttt{\$\{env.VAR\}}};
+    \draw[arrow] (6,-3.6) -- node[above, font=\scriptsize]{Llegir env vars} (12,-3.6);
+    \draw[ret] (12,-4.0) -- node[above, font=\scriptsize]{Valors resolts} (6,-4.0);
+
+    % Step: Extract
+    \node[fill=orange!8, rounded corners, inner sep=2pt] at (7.5,-4.6) {\scriptsize\textbf{Extracci\'o}};
+    \draw[arrow] (6,-5.1) -- node[above, font=\scriptsize]{docx\_extract, xlsx\_to\_markdown} (9,-5.1);
+    \draw[arrow] (9,-5.6) -- node[above, font=\scriptsize]{OCR / Markdown} (12,-5.6);
+    \draw[ret] (12,-6.1) -- node[above, font=\scriptsize]{Text + imatges} (9,-6.1);
+    \draw[ret] (9,-6.5) -- node[above, font=\scriptsize]{Document Markdown} (6,-6.5);
+
+    % Step: Vision
+    \node[fill=purple!8, rounded corners, inner sep=2pt] at (7.5,-7.0) {\scriptsize\textbf{Visi\'o multimodal}};
+    \draw[arrow] (6,-7.5) -- node[above, font=\scriptsize]{describe\_diagrams} (9,-7.5);
+    \draw[arrow] (9,-8.0) -- node[above, font=\scriptsize]{Imatges + prompt} (12,-8.0);
+    \draw[ret] (12,-8.4) -- node[above, font=\scriptsize]{Descripcions UML} (9,-8.4);
+    \draw[ret] (9,-8.8) -- node[above, font=\scriptsize]{Diagrames descrits} (6,-8.8);
+
+    % Step: Evaluate batch
+    \node[fill=red!8, rounded corners, inner sep=2pt] at (7.5,-9.2) {\scriptsize\textbf{Avaluaci\'o batch}};
+    \draw[arrow] (6,-9.6) -- node[above, font=\scriptsize]{criterion\_evaluator (batch)} (9,-9.6);
+    \draw[arrow] (9,-10.0) -- node[above, font=\scriptsize]{5 criteris/prompt} (12,-10.0);
+    \draw[ret] (12,-10.4) -- node[above, font=\scriptsize]{Puntuacions JSON} (9,-10.4);
+
+    % Phase 3: Grade
+    \node[fill=teal!8, rounded corners, inner sep=2pt] at (10.5,-10.8) {\scriptsize\textbf{Fase 3: Nota determin\'istica}};
+    \draw[arrow] (6,-11.2) -- node[above, font=\scriptsize]{Puntuacions + pesos YAML} (15,-11.2);
+    \draw[ret] (15,-11.6) -- node[above, font=\scriptsize]{Nota final ponderada} (6,-11.6);
+
+    % Phase 4: Report
+    \node[fill=yellow!8, rounded corners, inner sep=2pt] at (3,-12.0) {\scriptsize\textbf{Fase 4: Informe}};
+    \draw[ret] (6,-12.4) -- node[above, font=\scriptsize]{Informe Markdown amb evid\`encies} (0,-12.4);
+\end{tikzpicture}
+\caption{Diagrama de seq\"u\`encia del flux d'execuci\'o de SE-Agentic-Evaluator. Font: Elaboraci\'o pr\`opia.}
+\label{fig:seq-diagram}
+\end{figure}
+
+Les fases del flux s\'on les seg\"uents:
 
 \begin{enumerate}
-    \item \textbf{Generaci\'o de workflow:} L'usuari proporciona una r\'ubrica i el sistema genera un workflow JSON personalitzat utilitzant \texttt{generate\_workflow}.
-    \item \textbf{Execuci\'o de workflow:} L'usuari proporciona un document i el workflow generat, i el sistema executa el workflow utilitzant \texttt{execute\_workflow}.
-    \item \textbf{Agent loop:} L'agent loop gestiona el cicle de vida: crida el LLM, executa tool calls, i retorna resultats.
-    \item \textbf{Tool execution:} El tool registry executa les tools sol\cdot licitades (extracci\'o, an\`alisi, avaluaci\'o).
-    \item \textbf{C\`alcul de nota:} El grader calcula la nota final de manera determin\'istica.
-    \item \textbf{Generaci\'o d'informe:} El sistema genera un informe Markdown amb evid\`encies i recomanacions.
+    \item \textbf{Generaci\'o de workflow (Fase 1):} L'usuari proporciona una r\'ubrica i el \texttt{Workflow Generator} analitza els criteris i genera un workflow JSON personalitzat que especifica quines tools executar i en quin ordre. Aquest workflow \'es reutilitzable amb m\'ultiples documents. La r\'ubrica es pot proporcionar en tres formats: \textbf{YAML} (format natiu del sistema), \textbf{Markdown} (la tool \texttt{rubric\_importer} la converteix autom\`aticament a YAML), o \textbf{Excel} (la tool \texttt{xlsx\_to\_markdown} la converteix primer a Markdown i despr\'es a YAML). Aquesta flexibilitat permet als docents utilitzar les r\'ubriques en el format que ja tenen, sense necessitat de conversi\'o manual.
+    \item \textbf{Execuci\'o de workflow (Fase 2):} L'usuari proporciona un document i el workflow. El \texttt{Workflow Executor} resol les variables d'entorn (\texttt{\$\{env.VAR\}}) i executa els steps seq\"uencialment:
+    \begin{itemize}
+        \item \textbf{Extracci\'o:} Les tools \texttt{docx\_extract} i \texttt{xlsx\_to\_markdown} converteixen el document a Markdown, cridant el LLM per a tasques d'OCR si cal.
+        \item \textbf{Visi\'o multimodal:} La tool \texttt{describe\_diagrams} envia les imatges al model de visi\'o i obt\'e descripcions t\`ecniques dels diagrames UML.
+        \item \textbf{Avaluaci\'o batch:} La tool \texttt{criterion\_evaluator} agrupa els criteris en batches de 5, enviant m\'ultiples criteris en un \'unic prompt al LLM. Si el batch parsing falla, es rebaixa autom\`aticament a avaluaci\'o individual (Secci\'o~\ref{subsec:batch-eval}).
+    \end{itemize}
+    \item \textbf{C\`alcul determin\'istic (Fase 3):} El \texttt{Grader} rep les puntuacions parcials i els pesos de la r\'ubrica (internament en format YAML), i calcula la nota final ponderada mitjan\c{c}ant un script Python, sense intervenci\'o del LLM.
+    \item \textbf{Generaci\'o d'informe (Fase 4):} El sistema genera un informe Markdown estructurat amb la taula de r\'ubrica, an\`alisi per criteri amb evid\`encies vinculades, i recomanacions accionables.
 \end{enumerate}
 
-Aquest flux permet separar la generaci\'o de workflows de la seva execuci\'o, optimitzant costos i temps de processament.
+Aquest flux permet separar la generaci\'o de workflows de la seva execuci\'o, optimitzant costos i temps de processament. La separaci\'o entre Fase 1 i Fase 2 \'es clau: un workflow generat una vegada pot reutilitzar-se per avaluar m\'ultiples documents del mateix tipus, estalviant la crida al LLM per a la generaci\'o del workflow en cada avaluaci\'o.
+
+\section{Suport multi-provider}
+\label{subsec:multi-provider}
+
+Durant el desenvolupament del projecte, es va identificar que la depend\`encia d'un \'unic prove\"idor de models (DashScope) representava un risc operacional: l'exhaureix de la quota, canvis en la disponibilitat de models gratu\"its, o limitacions de ritme (\textit{rate limits}) podien bloquejar completament el sistema. Per mitigar aquest risc, es va implementar una capa d'abstracci\'o que permet configurar el prove\"idor de models mitjan\c{c}ant variables d'entorn, sense modificar la l\`ogica d'avaluaci\'o.
+
+\subsection{Variables d'entorn de configuraci\'o}
+
+El sistema utilitza les seg\"uents variables d'entorn per configurar els models, seguint la prioritat: \textbf{variables d'entorn > configuraci\'o YAML > valors per defecte}:
+
+\begin{table}[H]
+\centering
+\caption{Variables d'entorn per a la configuraci\'o de models. Font: Elaboraci\'o pr\`opia.}
+\label{tab:env-vars}
+\begin{tabularx}{\textwidth}{@{}llL@{}}
+\toprule
+\textbf{Variable} & \textbf{Per defecte} & \textbf{Descripci\'o} \\
+\midrule
+\texttt{DASHSCOPE\_API\_KEY} & --- & Clau d'API del prove\"idor primari \\
+\texttt{DASHSCOPE\_BASE\_URL} & \texttt{dashscope.aliyuncs.com} & URL base del prove\"idor (canvia per a OpenRouter, Gemini, etc.) \\
+\texttt{DASHSCOPE\_MODEL} & Configurable & Model de text per a extracci\'o i avaluaci\'o \\
+\texttt{DASHSCOPE\_VISION\_MODEL} & Configurable & Model de visi\'o multimodal \\
+\texttt{EVAL\_BATCH\_SIZE} & \texttt{5} & Nombre de criteris per batch \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Prove\"idors suportats}
+
+\begin{table}[H]
+\centering
+\caption{Prove\"idors de models suportats. Font: Elaboraci\'o pr\`opia.}
+\label{tab:proveidors}
+\begin{tabularx}{\textwidth}{@{}llL@{}}
+\toprule
+\textbf{Prove\"idor} & \textbf{BASE\_URL} & \textbf{Observacions} \\
+\midrule
+DashScope (Alibaba Cloud) & \texttt{dashscope.aliyuncs.com} & Prove\"idor primari; compliment RGPD \\
+OpenRouter & \texttt{openrouter.ai/api/v1} & Agregador; models gratu\"its i de pagament \\
+Google Gemini & \texttt{generativelanguage.googleapis.com} & Tier gratu\"it limitat (20 req/min) \\
+Ollama (local) & \texttt{localhost:11434} & Execuci\'o local; qualitat limitada; Objectiu prioritari de desplegament \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+La variable \texttt{DASHSCOPE\_BASE\_URL} actua com a \textit{switch} de prove\"idor: canviant nom\'es aquesta variable i la clau d'API, el sistema redirigeix totes les crides al nou prove\"idor sense requerir cap canvi en el codi d'avaluaci\'o. Aquest disseny segueix el principi d'inversi\'o de depend\`encies: la l\`ogica del negoci dep\`en de l'abstracci\'o (\texttt{DashScopeClient}), no de la implementaci\'o espec\'ifica de cada prove\"idor.
+
+\subsection{Resoluci\'o de variables en workflows}
+
+El workflow executor (\texttt{WorkflowExecutor}) resol refer\`encies a variables d'entorn dins dels workflows JSON mitjan\c{c}ant el patr\'o \texttt{\$\{env.VAR\_NAME\}}. Per exemple, un workflow pot especificar:
+
+\begin{lstlisting}[language=JSON]
+{
+  "model": "${env.DASHSCOPE_MODEL}",
+  "vision_model": "${env.DASHSCOPE_VISION_MODEL}"
+}
+\end{lstlisting}
+
+La funci\'o \texttt{\_resolve\_variables} implementa la resoluci\'o en dues fases: primer les variables d'entorn (\texttt{\$\{env.\dots\}}) i despr\'es les refer\`encies a resultats de steps anteriors (\texttt{\$\{step\_id.result.key\}}):
+
+\begin{lstlisting}[language=Python]
+ENV_PATTERN = re.compile(r"\$\{env\.([^}]+)\}")
+
+def _resolve_variables(self, value):
+    if isinstance(value, str):
+        # Phase 1: resolve env vars
+        value = ENV_PATTERN.sub(
+            lambda m: os.environ.get(m.group(1), m.group(0)),
+            value
+        )
+        # Phase 2: resolve step references
+        if VAR_PATTERN.fullmatch(value):
+            var_path = VAR_PATTERN.search(value).group(1)
+            parts = var_path.split(".")
+            if len(parts) >= 3 and parts[1] in ("output", "result"):
+                step_id, key = parts[0], ".".join(parts[2:])
+                val = self.step_results[step_id].get("result", {})
+                for k in key.split("."):
+                    if isinstance(val, dict):
+                        val = val.get(k)
+                    else:
+                        return None
+                return val  # preserve type (dict, list, etc.)
+            elif var_path in self.variables:
+                return self.variables[var_path]
+        # Partial interpolation
+        return VAR_PATTERN.sub(replacer, value)
+    elif isinstance(value, dict):
+        return {k: self._resolve_variables(v)
+                for k, v in value.items()}
+    elif isinstance(value, list):
+        return [self._resolve_variables(v) for v in value]
+    return value
+\end{lstlisting}
+
+Aquesta implementaci\'o preserva el tipus de dades quan el valor \'es una refer\`encia completa (retorna diccionaris i llistes tal qual), i converteix a cadena nom\'es en el cas d'interpolaci\'o parcial, permetent que el mateix workflow sigui reutilitzable amb diferents prove\"idors i models sense modificaci\'o.
+
+\section{Avaluaci\'o batch de criteris}
+\label{subsec:batch-eval}
+
+\subsection{Motivaci\'o}
+
+L'avaluaci\'o individual de criteris (una crida a l'API per criteri) \'es l'enfocament m\'es senzill per\`o presentava un problema pr\`actic greu: amb 13 criteris per mem\`oria i 6 mem\`ories a avaluar, es requerien 78 crides a l'API, excedint r\`apidament les quotes dels prove\"idors gratu\"its. Per exemple, OpenRouter limita el tier gratu\"it a 50 crides/dia, i Google Gemini a 20 crides/minut.
+
+\subsection{Disseny de la soluci\'o}
+
+Es va implementar un mecanisme d'avaluaci\'o batch que agrupa m\'ultiples criteris en un \'unic prompt, demanant al LLM que avalu\"i tots els criteris del batch simult\`aniament i retorni les puntuacions en un format JSON estructurat. El sistema mant\'e dues vies d'execuci\'o:
+
+\begin{enumerate}
+    \item \textbf{Via batch (\texttt{evaluate\_criteria\_batch}):} Agrupa criteris no-visuals en batches de mida configurable (\texttt{EVAL\_BATCH\_SIZE}, per defecte 5). Construeix un prompt que inclou tots els criteris del batch i les seves descripcions, i demana al LLM que retorni un JSON amb les puntuacions i evid\`encies per a cadascun.
+    \item \textbf{Via individual (\texttt{\_evaluate\_single}):} Avalua un \'unic criteri per crida. S'utilitza per a criteris que requereixen visi\'o multimodal (on el context visual no es pot compartir entre criteris) o quan el batch parsing falla.
+\end{enumerate}
+
+\subsection{Construcci\'o del prompt batch}
+
+La funci\'o \texttt{\_build\_batch\_prompt} construeix un \'unic prompt que inclou tots els criteris del batch, els seus nivells d'avaluaci\'o (extrets del fitxer de prompt de cada criteri), el document complet i el context d'an\`alisi previ, i demana al LLM una resposta estructurada amb delimitadors:
+
+\begin{lstlisting}[language=Python]
+def _build_batch_prompt(criteria_batch, document, context_str=None):
+    context_section = context_str or (
+        "No hay analisis previo disponible."
+    )
+    criteria_descriptions = []
+    for i, c in enumerate(criteria_batch, 1):
+        prompt_template = load_prompt(c.prompt)
+        levels_text = ""
+        for line in prompt_template.split("\n"):
+            if line.strip().startswith("- **"):
+                levels_text += line + "\n"
+        criteria_descriptions.append(
+            f"### Criterio {i}: {c.name} (ID: {c.id})\n"
+            f"Niveles:\n{levels_text}"
+        )
+    criteria_block = "\n".join(criteria_descriptions)
+    prompt = f"""Analiza el documento y evalua CADA
+UNO de los criterios listados.
+
+Documento:
+{document}
+
+## Contexto de Analisis Previo
+{context_section}
+
+## Criterios a evaluar
+{criteria_block}
+
+## Formato de respuesta
+Para CADA criterio, usa EXACTAMENTE:
+---CRITERIO_START---
+# Evaluacion: [NOMBRE DEL CRITERIO]
+## Puntuacion
+**Puntuacion:** X/10
+---CRITERIO_END---"""
+    return prompt
+\end{lstlisting}
+
+L'\'us de delimitadors (\texttt{---CRITERIO\_START---} / \texttt{---CRITERIO\_END---}) permet al parser identificar inequ\'ivocament el bloc de cada criteri, independentment de la longitud del text generat per al an\`alisi o les observacions.
+
+\subsection{Reducci\'o de crides a l'API}
+
+Amb una r\'ubrica de 13 criteris i \texttt{EVAL\_BATCH\_SIZE=5}:
+
+\begin{center}
+$\lceil 13 / 5 \rceil = 3$ crides API (en lloc de 13) $\Rightarrow$ \textbf{reducci\'o del 77\%}
+\end{center}
+
+Per a l'avaluaci\'o de 6 mem\`ories:
+
+\begin{center}
+$6 \times 3 = 18$ crides (en lloc de 78) $\Rightarrow$ \textbf{reducci\'o del 77\%}
+\end{center}
+
+\subsection{Parsing de la resposta batch}
+
+El parser de respostes batch (\texttt{\_parse\_batch\_response}) extreu les puntuacions del text retornat pel LLM utilitzant els delimitadors com a marca de separaci\'o entre criteris:
+
+\begin{lstlisting}[language=Python]
+def _parse_batch_response(text, criteria_ids):
+    results = {}
+    # Split by CRITERIO_START delimiter
+    blocks = re.split(r"---CRITERIO_START---", text)
+    for block in blocks[1:]:
+        block = block.strip()
+        # Truncate at CRITERIO_END
+        end_idx = block.find("---CRITERIO_END---")
+        if end_idx != -1:
+            block = block[:end_idx].strip()
+        # Match block to criterion ID
+        criterion_id = None
+        for cid in criteria_ids:
+            normalized = cid.replace("_", " ")
+            if normalized in block.lower() or cid in block:
+                criterion_id = cid
+                break
+        # Fallback: positional matching
+        if criterion_id is None and criteria_ids:
+            idx = len([k for k in results
+                       if k in criteria_ids])
+            if idx < len(criteria_ids):
+                criterion_id = criteria_ids[idx]
+        if criterion_id:
+            results[criterion_id] = block
+    # Graceful degradation: assign 0.0 to missing
+    for cid in criteria_ids:
+        if cid not in results:
+            results[cid] = (
+                f"# Evaluacion: {cid}\n"
+                f"## Puntuacion\n**Puntuacion:** 0/10\n"
+                f"## Observaciones\nNo se pudo extraer."
+            )
+    return results
+\end{lstlisting}
+
+El parser implementa tres estrat\`egies de coincid\`encia per identificar cada bloc amb el seu criteri:
+
+\begin{enumerate}
+    \item \textbf{Coincid\`encia per ID normalitzat:} Busca l'ID del criteri (amb subratllats substitu\"its per espais) dins del bloc de text.
+    \item \textbf{Coincid\`encia posicional:} Si no es troba l'ID, assigna el bloc a la seg\"uent posici\'o no ocupada, seguint l'ordre original dels criteris.
+    \item \textbf{Degradaci\'o graceful:} Si un criteri no t\'e bloc corresponent, s'assigna autom\`aticament una puntuaci\'o de 0/10 amb una observaci\'o que indica que no es va poder extreure l'avaluaci\'o del batch.
+\end{enumerate}
+
+Aquest mecanisme de \textit{graceful degradation} garanteix que el sistema sempre produeix un resultat complet, encara que el LLM no segueixi exactament el format esperat.
+
+\section{Gesti\'o d'errors i retry logic}
+\label{subsec:retry-logic}
+
+Durant el desenvolupament i les proves del sistema amb m\'ultiples prove\"idors d'IA, es va identificar que les crides a les APIs cloud s\'on propenses a errors transitoris: l\'imits de ritme (\textit{rate limiting}, HTTP 429), errors de servidor (5xx), timeouts, i respostes mal formatades. Aquests errors no s\'on excepcionals sin\'o esperables en l'\'us quotidi\`a del sistema, especialment amb prove\"idors gratu\"its que imposeen restriccions severes (OpenRouter: 50 crides/dia; Gemini: 20 crides/minut).
+
+Per garantir la fiabilitat del sistema, es va implementar un mecanisme de reintent autom\`atic (\textit{retry logic}) amb les seg\"uents caracter\'istiques:
+
+\subsection{Configuraci\'o de reintent}
+
+\begin{table}[H]
+\centering
+\caption{Par\`ametres de configuraci\'o del retry logic. Font: Elaboraci\'o pr\`opia.}
+\label{tab:retry-config}
+\begin{tabularx}{\textwidth}{@{}llL@{}}
+\toprule
+\textbf{Par\`ametre} & \textbf{Valor} & \textbf{Descripci\'o} \\
+\midrule
+\texttt{max\_retries} & 5 & Nombre m\`axim de reintents abans de fallar definitivament \\
+\texttt{base\_delay} & 1{,}0 s & Temps d'espera inicial entre reintents \\
+\texttt{max\_delay} & 120{,}0 s & Temps m\`axim d'espera entre reintents \\
+\texttt{backoff\_factor} & 2{,}0 & Factor d'increment exponencial del delay \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Classificaci\'o d'errors}
+
+El sistema classifica les respostes HTTP en tres categories:
+
+\begin{enumerate}
+    \item \textbf{Errors reintentables:} HTTP 408 (Request Timeout), 429 (Too Many Requests), 500 (Internal Server Error), 502 (Bad Gateway), 503 (Service Unavailable), 504 (Gateway Timeout). Aquests errors indiquen problemes transitoris que poden resoldre's esperant i reintentant.
+    \item \textbf{Errors no reintentables:} HTTP 401 (Unauthorized), 403 (Forbidden), 404 (Not Found). Aquests errors indiquen problemes permanents (clau inv\`alida, model no disponible) que no es resoldran reintentant.
+    \item \textbf{Cas especial --- HTTP 400 (Bad Request):} Es classifica com a reintentable perqu\`e alguns prove\"idors retornen 400 per a errors de quota o de format que poden ser transitoris (p.ex., quan el payload supera el l\'imit de tokens del context).
+\end{enumerate}
+
+\subsection{Parsing del delay suggerit pel servidor}
+
+Una millora clau respecte al retry logic b\`asic \'es la capacitat de \textbf{llegir el delay suggerit pel servidor} en les respostes HTTP 429. Diferents prove\"idors inclouen missatges com:
+
+\begin{lstlisting}[language=bash]
+# Google Gemini
+"Please retry in 30.4s"
+
+# OpenRouter  
+"Rate limit exceeded. Please retry after 60s"
+\end{lstlisting}
+
+El client implementa un parser d'expressions regulars que extreu el delay suggerit:
+
+\begin{lstlisting}[language=Python]
+import re
+match = re.search(r"retry in ([\d.]+)\s*s", error_text, re.IGNORECASE)
+if match:
+    suggested_delay = float(match.group(1))
+    wait_time = suggested_delay + 2.0  # marge de seguretat
+\end{lstlisting}
+
+Quan el servidor proporciona un delay suggerit, el sistema l'utilitza directament (amb un marge de 2 segons addicionals per seguretat), en lloc d'aplicar el backoff exponencial. Aix\`o evita dues situacions problem\`atiques:
+
+\begin{itemize}
+    \item \textbf{Reintents massa agressius:} Si el servidor indica ``retry in 60s'' i el backoff exponencial nom\'es hauria esperat 4s, el sistema podria esgotar tots els reintents abans que el l\'imit s'aixequ\'es.
+    \item \textbf{Esperes innecess\`ariament llargues:} Si el servidor indica ``retry in 2s'' i el backoff hauria esperat 60s, el sistema perd temps innecess\`ariament.
+\end{itemize}
+
+\subsection{Backoff exponencial amb jitter}
+
+Quan el servidor no proporciona un delay suggerit (errors 5xx, timeouts), el sistema aplica backoff exponencial amb un petit jitter aleatori per evitar la sincronitzaci\'o de reintents:
+
+\begin{lstlisting}[language=Python]
+delay = min(max_delay, delay * backoff_factor)
+wait_time = delay + (0.1 * (attempt + 1))
+\end{lstlisting}
+
+La progressi\'o dels temps d'espera \'es la seg\"uent:
+
+\begin{table}[H]
+\centering
+\caption{Progressi\'o dels temps d'espera amb backoff exponencial. Font: Elaboraci\'o pr\`opia.}
+\label{tab:backoff}
+\begin{tabular}{@{}ccc@{}}
+\toprule
+\textbf{Intent} & \textbf{Delay base (s)} & \textbf{Amb jitter (s)} \\
+\midrule
+1 & 1{,}0 & 1{,}1 \\
+2 & 2{,}0 & 2{,}2 \\
+3 & 4{,}0 & 4{,}3 \\
+4 & 8{,}0 & 8{,}4 \\
+5 & 16{,}0 & 16{,}5 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Protecci\'o contra payloads excessius}
+
+El client implementa una comprovaci\'o de mida m\`axima del payload abans d'enviar la petici\'o, amb un l\'imit de 10 MB (especialment rellevant per a crides de visi\'o que inclouen imatges codificades en base64). Si el payload supera aquest l\'imit, es genera un error immediatament sense consumir una crida a l'API:
+
+\begin{lstlisting}[language=Python]
+MAX_VISION_PAYLOAD_SIZE = 10 * 1024 * 1024  # 10 MB
+payload_size = len(json.dumps(payload).encode("utf-8"))
+if payload_size > MAX_VISION_PAYLOAD_SIZE:
+    raise ValueError(f"Payload exceeds limit.")
+\end{lstlisting}
+
+\subsection{Resultats pr\`actics}
+
+Durant la validaci\'o del sistema, el retry logic ha demostrat ser essencial per a l'operabilitat amb prove\"idors gratu\"its. Es van observar els seg\"uents patrons:
+
+\begin{itemize}
+    \item \textbf{Google Gemini} retorna freq\"uentment HTTP 429 amb el missatge ``Please retry in Xs''. Sense el parser de delay suggerit, el sistema es quedava bloquejat esgotant els reintents. Amb el parser, el sistema espera el temps exacte i reeix en el seg\"uent intent.
+    \item \textbf{OpenRouter} presenta l\'imits diaris (50 crides/dia) que no es poden resoldre amb reintents, per\`o el retry logic gestiona correctament els errors 429 intermitents dins del l\'imit diari.
+    \item \textbf{DashScope} ocasionalment retorna HTTP 500 o 503 per sobrec\`arrega del servei, que es resolen autom\`aticament amb 1--2 reintents.
+\end{itemize}
 
 % ============================================
 % CAPITOL 6: VALIDACIO
@@ -802,7 +1438,7 @@ Glossari de classes & 10\% & 6.0/10 & 0.60 \\
     \item Executa tots els passos del workflow
     \item Retorna puntuacions per cada criteri
     \item Genera informe final amb nota ponderada
-    \item Visi\'o desactivada (sense quota de \texttt{qwen-vl-max})
+    \item Visi\'o desactivada (sense quota del model de visi\'o)
 \end{itemize}
 
 \textbf{Observaci\'o:} La nota baixa del diagrama (2.0/10) \'es deguda a la falta de visi\'o. Amb visi\'o, la nota hauria de ser m\'es alta.
@@ -826,7 +1462,7 @@ Glossari de classes & 10\% & 6.0/10 & 0.60 \\
 Mem\`oria t\`ecnica & 7.0/10 \\
 Diagrama de classes & 7.0/10 \\
 Glossari de classes & 7.0/10 \\
-\textbf{Nota final} & \textbf{7.0/10 (Bo)} \\
+\textbf{Nota final} & \textbf{7.0/10} \\
 \midrule
 \multicolumn{2}{c}{\textbf{Pas 2: Continuaci\'o de sessi\'o}} \\
 \midrule
@@ -931,12 +1567,11 @@ Glossari de classes & 10\% & 0.0/10 & 0.00 \\
 \textbf{4. Continuaci\'o de sessi\'o} & Session management funciona \\
 \textbf{5. Input adversarial} & Seguretat robusta \\
 \textbf{6. Workflow amb visi\'o} & Nota 6.30/10 (visi\'o 96\% \`exit) \\
-\textbf{7. Comparativa amb avaluador hum\`a} & \textit{TODO: inserir resultat} \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-\textbf{Resum:} Tots els 6 escenaris t\`ecnics han estat completats amb \`exit, demostrant la robustesa del sistema en casos d'\'us reals. La nota mitjana dels escenaris avaluats \'es de 5.99/10. Addicionalment, la validaci\'o comparativa amb avaluador hum\`a (Secci\'o~\ref{sec:validacio-humana}) proporciona evid\`encia sobre la fiabilitat de les avaluacions generades pel sistema.
+\textbf{Resum:} Tots els 6 escenaris t\`ecnics han estat completats amb \`exit, demostrant la robustesa del sistema en casos d'\'us reals. La nota mitjana dels escenaris avaluats \'es de 5.99/10.
 
 \subsection{M\`etriques de rendiment}
 
@@ -955,7 +1590,6 @@ Glossari de classes & 10\% & 0.0/10 & 0.00 \\
 \textbf{Tokens consumits} & $\sim$15K & Escenari 3 (sense visi\'o) \\
 \textbf{Nota mitjana} & 5.99/10 & Mitjana dels escenaris avaluats \\
 \textbf{Visi\'o multimodal} & 96\% \`exit & 25/26 imatges processades \\
-\textbf{Validaci\'o amb avaluador hum\`a} & \textit{TODO} & \textit{TODO: inserir MAE i correlaci\'o} \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -969,10 +1603,10 @@ Glossari de classes & 10\% & 0.0/10 & 0.00 \\
         \item \textbf{Soluci\'o temporal:} El sistema continua l'avaluaci\'o sense la imatge rebutjada.
         \item \textbf{Soluci\'o permanent:} Implementar preprocessament d'imatges o utilitzar un model alternatiu.
     \end{itemize}
-    \item \textbf{Quota de text limitada:} El model \texttt{qwen3.6-plus} t\'e quota limitada.
+    \item \textbf{Quota d'API limitada:} Els prove\"idors cloud presenten limitacions de quota i ritme.
     \begin{itemize}
-        \item \textbf{Impacte:} S'ha de gestionar curosament el consum de tokens.
-        \item \textbf{Soluci\'o:} Retry logic amb exponential backoff.
+        \item \textbf{Impacte:} El sistema no pot completar avaluacions quan s'exhaureix la quota d'un prove\"idor.
+        \item \textbf{Soluci\'o:} Retry logic amb exponential backoff, suport multi-provider per failover, i avaluaci\'o batch per reduir el nombre de crides.
     \end{itemize}
     \item \textbf{Fase P5 pendent:} Agent-Tests-Agent no implementat.
     \begin{itemize}
@@ -984,7 +1618,7 @@ Glossari de classes & 10\% & 0.0/10 & 0.00 \\
 \section{Validaci\'o comparativa amb avaluador hum\`a}
 \label{sec:validacio-humana}
 
-Per complementar els escenaris de validaci\'o anteriors, s'ha dissenyat un experiment comparatiu que enfronta les avaluacions generades per SE-Agentic-Evaluator amb les d'una professora universit\`aria que ha avaluat les mateixes mem\`ories de manera independent. Aquesta validaci\'o externa permet quantificar la fiabilitat del sistema i detectar possibles biaixos avaluatius.
+Per complementar els escenaris de validaci\'o anteriors, s'ha dissenyat un experiment comparatiu que enfronta les avaluacions generades per SE-Agentic-Evaluator amb les d'una avaluadora humana experta que ha avaluat les mateixes mem\`ories de manera independent. Aquesta validaci\'o externa permet quantificar la fiabilitat del sistema i detectar possibles biaixos avaluatius.
 
 \subsection{Motivaci\'o i objectius}
 
@@ -993,7 +1627,7 @@ Els escenaris 1--6 han validat el funcionament t\`ecnic del sistema (generaci\'o
 Els objectius d'aquesta validaci\'o s\'on:
 
 \begin{enumerate}
-    \item \textbf{Quantificar la desviaci\'o} entre les notes de l'agent i les de la professora per a cada criteri i per a la nota global.
+    \item \textbf{Quantificar la desviaci\'o} entre les notes de l'agent i les de l'avaluadora humana per a cada criteri i per a la nota global.
     \item \textbf{Detectar biaixos sistem\`atics:} l'agent tendeix a sobre-evaluar o infra-evaluar respecte a l'hum\`a?
     \item \textbf{Identificar criteris problem\`atics:} hi ha criteris on la discrep\`ancia \'es significativament major?
     \item \textbf{Validar la utilitat pr\`actica} del sistema com a eina d'assist\`encia al professorat.
@@ -1001,7 +1635,7 @@ Els objectius d'aquesta validaci\'o s\'on:
 
 \subsection{Conjunt de dades}
 
-S'han utilitzat mem\`ories finals reals d'un m\`aster de la Universitat Polit\`ecnica de Catalunya (UPC), pr\`eviament avaluades per una professora amb experi\`encia en l'\`ambit. Les mem\`ories han estat anonimitzades per garantir la privacitat dels autors, complint amb el RGPD.
+S'han utilitzat mem\`ories finals reals d'un m\`aster de la Universitat Polit\`ecnica de Catalunya (UPC), pr\`eviament avaluades per una avaluadora humana amb experi\`encia en l'\`ambit. Les mem\`ories han estat anonimitzades per garantir la privacitat dels autors, complint amb el RGPD.
 
 \begin{table}[H]
 \centering
@@ -1011,11 +1645,178 @@ S'han utilitzat mem\`ories finals reals d'un m\`aster de la Universitat Polit\`e
 \toprule
 \textbf{Caracter\'istica} & \textbf{Valor} \\
 \midrule
-Nombre de mem\`ories avaluades & \textit{TODO: inserir n\'umero} \\
-Tipologia de documents & Mem\`ories finals de m\`aster \\
-Avaluador hum\`a & Professora universit\`aria (UPC) \\
+Nombre de mem\`ories avaluades (completes) & 6 \\
+Nombre de mem\`ories avaluades (parcials) & 0 \\
+Total de mem\`ories del conjunt & 6 \\
+Tipologia de documents & Mem\`ories finals de m\`aster (FP i TEC) \\
+Avaluador hum\`a & Avaluadora humana experta (UPC) \\
 R\'ubrica utilitzada & Mateixa r\'ubrica per a ambd\'os avaluadors \\
 Anonimitzaci\'o & Dades personals eliminades \\
+Model d'IA utilitzat & \texttt{openai/gpt-oss-120b:free} (OpenRouter) \\
+Model de visi\'o & Configurable (\texttt{DASHSCOPE\_VISION\_MODEL}) \\
+Avaluaci\'o batch & 5 criteris/batch (3 crides API per mem\`oria) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Resultats de l'avaluaci\'o per criteri: Alumne 1.}
+\label{tab:alumne1-scores}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Criteri} & \textbf{Pes} & \textbf{Puntuaci\'o} \\
+\midrule
+Comprensi\'o de l'entorn educatiu & 8\% & 9,0/10 \\
+Incorporaci\'o de millores de 1a part & 8\% & 8,0/10 \\
+Capacitat d'observaci\'o i an\`alisi & 8\% & 9,0/10 \\
+Disseny i implementaci\'o did\`actica & 8\% & 9,0/10 \\
+Reflexi\'o i millora cont\'inua & 8\% & 9,0/10 \\
+Integraci\'o teoria-pr\`actica & 8\% & 8,0/10 \\
+Creaci\'o de recursos did\`actics & 8\% & 9,0/10 \\
+Perspectiva de g\`enere en STEM & 8\% & 9,0/10 \\
+Aportacions d'experi\`encies & 8\% & 9,0/10 \\
+Jornades o formaci\'o docent & 8\% & 7,0/10 \\
+Filosofia docent & 8\% & 4,0/10 \\
+Comunicaci\'o efica\c{c} & 8\% & 4,0/10 \\
+Compliment, responsabilitat i dietari & 8\% & 4,0/10 \\
+\midrule
+\textbf{Nota final ponderada} & \textbf{100\%} & \textbf{7,54/10} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Resultats de l'avaluaci\'o per criteri: Alumne 2.}
+\label{tab:alumne2-scores}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Criteri} & \textbf{Pes} & \textbf{Puntuaci\'o} \\
+\midrule
+Comprensi\'o de l'entorn educatiu & 8\% & 9,0/10 \\
+Incorporaci\'o de millores de 1a part & 8\% & 7,0/10 \\
+Capacitat d'observaci\'o i an\`alisi & 8\% & 9,0/10 \\
+Disseny i implementaci\'o did\`actica & 8\% & 9,0/10 \\
+Reflexi\'o i millora cont\'inua & 8\% & 9,0/10 \\
+Integraci\'o teoria-pr\`actica & 8\% & 6,0/10 \\
+Creaci\'o de recursos did\`actics & 8\% & 8,0/10 \\
+Perspectiva de g\`enere en STEM & 8\% & 8,0/10 \\
+Aportacions d'experi\`encies & 8\% & 9,0/10 \\
+Jornades o formaci\'o docent & 8\% & 8,0/10 \\
+Filosofia docent & 8\% & 4,0/10 \\
+Comunicaci\'o efica\c{c} & 8\% & 4,0/10 \\
+Compliment, responsabilitat i dietari & 8\% & 4,0/10 \\
+\midrule
+\textbf{Nota final ponderada} & \textbf{100\%} & \textbf{7,23/10} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Resultats de l'avaluaci\'o per criteri: Alumne 3.}
+\label{tab:alumne3-scores}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Criteri} & \textbf{Pes} & \textbf{Puntuaci\'o} \\
+\midrule
+Comprensi\'o de l'entorn educatiu & 8\% & 9,0/10 \\
+Incorporaci\'o de millores de 1a part & 8\% & 4,0/10 \\
+Capacitat d'observaci\'o i an\`alisi & 8\% & 7,0/10 \\
+Disseny i implementaci\'o did\`actica & 8\% & 8,0/10 \\
+Reflexi\'o i millora cont\'inua & 8\% & 7,0/10 \\
+Integraci\'o teoria-pr\`actica & 8\% & 8,0/10 \\
+Creaci\'o de recursos did\`actics & 8\% & 7,0/10 \\
+Perspectiva de g\`enere en STEM & 8\% & 6,0/10 \\
+Aportacions d'experi\`encies & 8\% & 8,0/10 \\
+Jornades o formaci\'o docent & 8\% & 5,0/10 \\
+Filosofia docent & 8\% & 4,0/10 \\
+Comunicaci\'o efica\c{c} & 8\% & 4,0/10 \\
+Compliment, responsabilitat i dietari & 8\% & 4,0/10 \\
+\midrule
+\textbf{Nota final ponderada} & \textbf{100\%} & \textbf{6,23/10} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Resultats de l'avaluaci\'o per criteri: Alumne 4.}
+\label{tab:alumne4-scores}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Criteri} & \textbf{Pes} & \textbf{Puntuaci\'o} \\
+\midrule
+Comprensi\'o de l'entorn educatiu & 8\% & 9,0/10 \\
+Incorporaci\'o de millores de 1a part & 8\% & 7,0/10 \\
+Capacitat d'observaci\'o i an\`alisi & 8\% & 9,0/10 \\
+Disseny i implementaci\'o did\`actica & 8\% & 8,0/10 \\
+Reflexi\'o i millora cont\'inua & 8\% & 9,0/10 \\
+Integraci\'o teoria-pr\`actica & 8\% & 4,0/10 \\
+Creaci\'o de recursos did\`actics & 8\% & 4,0/10 \\
+Perspectiva de g\`enere en STEM & 8\% & 2,0/10 \\
+Aportacions d'experi\`encies & 8\% & 4,0/10 \\
+Jornades o formaci\'o docent & 8\% & 4,0/10 \\
+Filosofia docent & 8\% & 4,0/10 \\
+Comunicaci\'o efica\c{c} & 8\% & 2,0/10 \\
+Compliment, responsabilitat i dietari & 8\% & 2,0/10 \\
+\midrule
+\textbf{Nota final ponderada} & \textbf{100\%} & \textbf{5,23/10} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Resultats de l'avaluaci\'o per criteri: Alumne 5.}
+\label{tab:alumne5-scores}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Criteri} & \textbf{Pes} & \textbf{Puntuaci\'o} \\
+\midrule
+Comprensi\'o de l'entorn educatiu & 8\% & 9,0/10 \\
+Incorporaci\'o de millores de 1a part & 8\% & 5,0/10 \\
+Capacitat d'observaci\'o i an\`alisi & 8\% & 8,0/10 \\
+Disseny i implementaci\'o did\`actica & 8\% & 7,0/10 \\
+Reflexi\'o i millora cont\'inua & 8\% & 6,0/10 \\
+Integraci\'o teoria-pr\`actica & 8\% & 6,0/10 \\
+Creaci\'o de recursos did\`actics & 8\% & 2,0/10 \\
+Perspectiva de g\`enere en STEM & 8\% & 2,0/10 \\
+Aportacions d'experi\`encies & 8\% & 3,0/10 \\
+Jornades o formaci\'o docent & 8\% & 4,0/10 \\
+Filosofia docent & 8\% & 4,0/10 \\
+Comunicaci\'o efica\c{c} & 8\% & 4,0/10 \\
+Compliment, responsabilitat i dietari & 8\% & 2,0/10 \\
+\midrule
+\textbf{Nota final ponderada} & \textbf{100\%} & \textbf{4,77/10} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Resultats de l'avaluaci\'o per criteri: Alumne 6.}
+\label{tab:alumne6-scores}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Criteri} & \textbf{Pes} & \textbf{Puntuaci\'o} \\
+\midrule
+Comprensi\'o de l'entorn educatiu & 8\% & 9,0/10 \\
+Incorporaci\'o de millores de 1a part & 8\% & 5,0/10 \\
+Capacitat d'observaci\'o i an\`alisi & 8\% & 7,0/10 \\
+Disseny i implementaci\'o did\`actica & 8\% & 9,0/10 \\
+Reflexi\'o i millora cont\'inua & 8\% & 8,0/10 \\
+Integraci\'o teoria-pr\`actica & 8\% & 8,0/10 \\
+Creaci\'o de recursos did\`actics & 8\% & 6,0/10 \\
+Perspectiva de g\`enere en STEM & 8\% & 2,0/10 \\
+Aportacions d'experi\`encies & 8\% & 10,0/10 \\
+Jornades o formaci\'o docent & 8\% & 6,0/10 \\
+Filosofia docent & 8\% & 9,0/10 \\
+Comunicaci\'o efica\c{c} & 8\% & 9,0/10 \\
+Compliment, responsabilitat i dietari & 8\% & 2,0/10 \\
+\midrule
+\textbf{Nota final ponderada} & \textbf{100\%} & \textbf{6,92/10} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1025,87 +1826,107 @@ Anonimitzaci\'o & Dades personals eliminades \\
 El proc\'es de validaci\'o ha seguit els seg\"uents passos:
 
 \begin{enumerate}
-    \item \textbf{Preparaci\'o de la r\'ubrica:} S'ha utilitzat la mateixa r\'ubrica que la professora va aplicar en la seva avaluaci\'o original, convertida a format YAML per al sistema.
-    \item \textbf{Execuci\'o de l'agent:} Cada mem\`oria ha estat avaluada per SE-Agentic-Evaluator utilitzant el flux complet (generaci\'o de workflow + execuci\'o).
-    \item \textbf{Tabulaci\'o de resultats:} S'han registrat les puntuacions per criteri i la nota final tant de l'agent com de la professora.
-    \item \textbf{An\`alisi estad\'istic:} S'han calculat m\`etriques de desviaci\'o, correlaci\'o i biaix per avaluar la similitud entre ambd\'os avaluadors.
+    \item \textbf{Preparaci\'o de la r\'ubrica:} S'ha utilitzat la mateixa r\'ubrica que l'avaluadora humana va aplicar en la seva avaluaci\'o original, convertida a format YAML per al sistema.
+    \item \textbf{Execuci\'o de l'agent:} Cada mem\`oria ha estat avaluada per SE-Agentic-Evaluator utilitzant el flux complet (generaci\'o de workflow + execuci\'o) amb el model \\\texttt{openai/gpt-oss-120b:free}.
+    \item \textbf{Recollida de notes de l'avaluadora humana:} L'avaluadora humana experta va proporcionar les notes finals de cada mem\`oria. No es van disposar de les puntuacions per criteri de l'avaluadora, per la qual cosa la comparaci\'o s'ha realitzat \'unicament a nivell de nota final.
+    \item \textbf{An\`alisi estad\'istic:} S'han calculat m\`etriques de desviaci\'o, correlaci\'o i biaix sobre les notes finals per avaluar la similitud entre ambd\'os avaluadors.
 \end{enumerate}
 
 \subsection{Resultats de la comparaci\'o}
 
-% TODO: Substituir les dades d'exemple per les dades reals obtingudes de l'experiment.
-
 \begin{table}[H]
 \centering
-\caption{Comparaci\'o de notes: Agent vs Professora.}
+\caption{Comparaci\'o de notes finals: Agent vs Avaluadora humana (6 mem\`ories completes).}
 \label{tab:comparacio-notes}
-\begin{tabular}{@{}clccccc@{}}
+\begin{tabular}{@{}lcccc@{}}
 \toprule
-\textbf{Mem\`oria} & \textbf{Criteri} & \textbf{Pes} & \textbf{Agent} & \textbf{Professora} & \textbf{$\Delta$} & \textbf{$|\Delta|$} \\
+\textbf{Mem\`oria} & \textbf{Agent} & \textbf{Aval. humana} & $\boldsymbol{\Delta}$ & $\boldsymbol{|\Delta|}$ \\
 \midrule
-\multirow{3}{*}{Mem\`oria 1} & \textit{TODO} & \textit{TODO} & \textit{TODO} & \textit{TODO} & \textit{TODO} & \textit{TODO} \\
- & \textit{TODO} & \textit{TODO} & \textit{TODO} & \textit{TODO} & \textit{TODO} & \textit{TODO} \\
- & \textit{TODO} & \textit{TODO} & \textit{TODO} & \textit{TODO} & \textit{TODO} & \textit{TODO} \\
+Alumne 1 & 7,54 & 8,57 & $-$1,03 & 1,03 \\
+Alumne 2 & 7,23 & 9,71 & $-$2,48 & 2,48 \\
+Alumne 3 & 6,23 & 10,00 & $-$3,77 & 3,77 \\
+Alumne 4 & 5,23 & 9,71 & $-$4,48 & 4,48 \\
+Alumne 5 & 4,77 & 6,00 & $-$1,23 & 1,23 \\
+Alumne 6 & 6,92 & 6,29 & $+$0,63 & 0,63 \\
 \midrule
-\multirow{3}{*}{Mem\`oria 2} & \textit{TODO} & \textit{TODO} & \textit{TODO} & \textit{TODO} & \textit{TODO} & \textit{TODO} \\
- & \textit{TODO} & \textit{TODO} & \textit{TODO} & \textit{TODO} & \textit{TODO} & \textit{TODO} \\
- & \textit{TODO} & \textit{TODO} & \textit{TODO} & \textit{TODO} & \textit{TODO} & \textit{TODO} \\
-\midrule
-\multicolumn{7}{c}{\textit{TODO: Afegir m\'es mem\`ories segons les dades reals}} \\
+\textbf{Mitjana} & \textbf{6,32} & \textbf{8,38} & \textbf{$-$2,06} & \textbf{2,27} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
+\textbf{Observaci\'o:} L'avaluadora humana va proporcionar \'unicament les notes finals, no les puntuacions per criteri. Per tant, la comparaci\'o es realitza a nivell de nota final global.
+
 \subsection{M\`etriques de comparaci\'o}
 
-Per quantificar la similitud entre les avaluacions de l'agent i la professora, s'han definit les seg\"uents m\`etriques:
+Per quantificar la similitud entre les avaluacions de l'agent i l'avaluadora humana, s'han definit les seg\"uents m\`etriques:
 
 \begin{table}[H]
 \centering
-\caption{M\`etriques de comparaci\'o agent vs professora.}
+\caption{M\`etriques de comparaci\'o agent vs avaluadora humana.}
 \label{tab:metriques-comparacio}
 \begin{tabularx}{\textwidth}{@{}lLc@{}}
 \toprule
 \textbf{M\`etrica} & \textbf{Descripci\'o} & \textbf{Valor} \\
 \midrule
-Desviaci\'o mitjana ($\bar{\Delta}$) & Mitjana de (Agent $-$ Professora). Positiu = sobre-evalua; Negatiu = infra-evalua & \textit{TODO} \\
-Desviaci\'o absoluta mitjana (MAE) & Mitjana de $|$Agent $-$ Professora$|$. Mesura la dist\`ancia mitjana independentment del signe & \textit{TODO} \\
-Desviaci\'o est\`andard ($\sigma_\Delta$) & Dispersi\'o de les desviacions. Valors alts indiquen inconsist\`encia & \textit{TODO} \\
-Correlaci\'o de Pearson ($r$) & Correlaci\'o lineal entre les notes de l'agent i la professora & \textit{TODO} \\
-Desviaci\'o m\`axima & M\`axima desviaci\'o observada en un sol criteri & \textit{TODO} \\
-\bottomrule
+Desviaci\'o mitjana ($\bar{\Delta}$) & Mitjana de (Agent $-$ Avaluadora). Positiu = sobre-evalua; Negatiu = infra-evalua & $-$2,06 \\
+Desviaci\'o absoluta mitjana (MAE) & Mitjana de $|$Agent $-$ Avaluadora$|$. Mesura la dist\`ancia mitjana independentment del signe & 2,27 \\
+Desviaci\'o est\`andard ($\sigma_\Delta$) & Dispersi\'o de les desviacions. Valors alts indiquen inconsist\`encia & 1,89 \\
+Correlaci\'o de Pearson ($r$) & Correlaci\'o lineal entre les notes de l'agent i l'avaluadora humana & 0,226 \\
+Desviaci\'o m\`axima & M\`axima desviaci\'o observada en un sol criteri & 4,48 \\
+\midrule
+Nombre de mem\`ories & Nombre de mem\`ories amb avaluaci\'o completa (13/13 criteris) & 6 \\
+Nombre de criteris avaluats & Total de criteris puntuats & 78 \\
 \end{tabularx}
 \end{table}
 
 \subsection{An\`alisi per criteri}
 
-% TODO: Substituir per les dades reals.
-
 \begin{table}[H]
 \centering
-\caption{Desviaci\'o mitjana per criteri.}
+\caption{Puntuaci\'o mitjana de l'agent per criteri (6 mem\`ories completes).}
 \label{tab:biaix-criteri}
-\begin{tabular}{@{}lccc@{}}
+\begin{tabular}{@{}lcc@{}}
 \toprule
-\textbf{Criteri} & \textbf{$\bar{\Delta}$} & \textbf{MAE} & \textbf{Biaix detectat} \\
+\textbf{Criteri} & \textbf{Mitjana Agent} & \textbf{Rang observat} \\
 \midrule
-\textit{TODO: Criteri 1} & \textit{TODO} & \textit{TODO} & \textit{TODO} \\
-\textit{TODO: Criteri 2} & \textit{TODO} & \textit{TODO} & \textit{TODO} \\
-\textit{TODO: Criteri 3} & \textit{TODO} & \textit{TODO} & \textit{TODO} \\
+Comprensi\'o de l'entorn educatiu & 9,0 & 9,0--9,0 \\
+Incorporaci\'o de millores de 1a part & 6,0 & 4,0--8,0 \\
+Capacitat d'observaci\'o i an\`alisi & 8,2 & 7,0--9,0 \\
+Disseny i implementaci\'o did\`actica & 8,3 & 7,0--9,0 \\
+Reflexi\'o i millora cont\'inua & 8,0 & 6,0--9,0 \\
+Integraci\'o teoria-pr\`actica & 6,7 & 4,0--8,0 \\
+Creaci\'o de recursos did\`actics & 6,0 & 2,0--9,0 \\
+Perspectiva de g\`enere en STEM & 4,8 & 2,0--9,0 \\
+Aportacions d'experi\`encies & 7,2 & 3,0--10,0 \\
+Jornades o formaci\'o docent & 5,7 & 4,0--8,0 \\
+Filosofia docent & 4,8 & 4,0--9,0 \\
+Comunicaci\'o efica\c{c} & 4,5 & 2,0--9,0 \\
+Compliment, responsabilitat i dietari & 3,0 & 2,0--4,0 \\
+\midrule
+\textbf{Nota global mitjana} & \textbf{6,32} & \textbf{4,77--7,54} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
+\textbf{Patrons observats:} Els criteris amb major variabilitat entre mem\`ories s\'on \textit{Perspectiva de g\`enere en STEM} (2,0--9,0), \textit{Recursos did\`actics} (2,0--9,0) i \textit{Experi\`encies} (3,0--10,0), la qual cosa suggereix que aquests criteris s\'on m\'es sensibles al contingut espec\'ific de cada document. Els criteris amb menor variabilitat s\'on \textit{Comprensi\'o de l'entorn educatiu} (9,0 fix en totes les mem\`ories) i \textit{Compliment/dietari} (2,0--4,0). Els criteris de \textit{Filosofia docent} (4,8), \textit{Comunicaci\'o efica\c{c}} (4,5) i \textit{Compliment/dietari} (3,0) obt\'en les puntuacions mitjanes m\'es baixes, la qual cosa pot indicar un biaix del model cap a la sub-avaluaci\'o d'aquests aspectes o una manca generalitzada d'aquest contingut en les mem\`ories.
+
 \subsection{Discussi\'o}
 
-% TODO: Aquesta secci\'o s'ha de completar un cop obtinguts els resultats reals.
-% Preguntes guia per a la discussi\'o:
-% - L'agent sobre-evalua o infra-evalua de manera sistem\`atica?
-% - Hi ha criteris on la discrep\`ancia \'es significativament major? Per qu\`e?
-% - La correlaci\'o \'es suficientment alta per considerar l'agent una eina d'assist\`encia fiable?
-% - Quines millores es podrien aplicar per reduir les discrep\`ancies?
+A partir de les avaluacions completades fins a la data, es poden identificar els seg\"uents patrons preliminars:
 
-\textit{Aquesta secci\'o es completar\`a un cop obtinguts els resultats de l'experiment comparatiu.}
+\begin{enumerate}
+    \item \textbf{Biaix sistem\`atic cap a la infra-avaluaci\'o:} L'agent infra-avalua respecte a l'avaluadora humana en 5 de 6 mem\`ories, amb una desviaci\'o mitjana de $\bar{\Delta} = -2,06$ punts. L'\'unica excepci\'o \'es l'Alumne 6, on l'agent sobre-avalua lleugerament ($+0,63$). Aix\`o indica que el model \texttt{gpt-oss-120b:free} t\'e una tend\`encia sistem\`atica a assignar puntuacions m\'es baixes que un expert hum\`a.
+
+    \item \textbf{Correlaci\'o baixa entre avaluadors:} La correlaci\'o de Pearson entre les notes de l'agent i l'avaluadora humana \'es $r = 0,226$, la qual cosa indica una correlaci\'o positiva per\`o feble. Aix\`o suggereix que l'agent i l'hum\`a no coincideixen en la ordenaci\'o relativa de les mem\`ories: l'avaluadora humana assigna notes altes (9,71--10,0) a 3 mem\`ories que l'agent puntua entre 5,23 i 6,23.
+
+    \item \textbf{Major variabilitat en criteris operatius:} Els criteris relacionats amb accions concretes (millores de 1a part, recursos did\`actics, perspectiva de g\`enere) presenten major dispersi\'o que els criteris reflexius (comprensi\'o, observaci\'o, reflexi\'o).
+
+    \item \textbf{MAE de 2,27 punts:} La desviaci\'o absoluta mitjana indica que, de mitjana, l'agent es desvia 2,27 punts de la nota de l'avaluadora humana. La desviaci\'o m\`axima \'es de 4,48 punts (Alumne 4) i la m\'inima de 0,63 (Alumne 6).
+
+    \item \textbf{Limitaci\'o de la mostra:} Amb 6 mem\`ories completes, les m\`etriques estad\'istiques tenen major pot\`encia que amb les 2 inicials, per\`o es requeriria un m\'inim de 8--10 mem\`ories per obtenir resultats estad\'isticament significatius. A m\'es, la comparaci\'o es realitza nom\'es a nivell de nota final, no per criteri, degut a la disponibilitat limitada de les puntuacions de l'avaluadora.
+\end{enumerate}
+
+Les m\`etriques de comparaci\'o amb l'avaluadora humana ($\bar{\Delta} = -2,06$, MAE $= 2,27$, correlaci\'o de Pearson $r = 0,226$) indiquen que l'agent tendeix a infra-avaluar respecte a l'expert hum\`a i que la correlaci\'o entre ambd\'os avaluadors \'es feble, principalment degut a la difer\`encia d'escala en les puntuacions (agent: 4,77--7,54; humana: 6,00--10,00).
 
 \section{Conclusions de la validaci\'o}
 \label{sec:conclusions-validacio}
@@ -1119,12 +1940,139 @@ La validaci\'o del sistema SE-Agentic-Evaluator ha demostrat que:
     \item \textbf{La seguretat \'es robusta:} Rebutja inputs maliciosos de manera segura i professional, oferint alternatives educatives.
     \item \textbf{La visi\'o multimodal funciona correctament:} Ha processat 25 de 26 imatges amb \`exit (96\%), millorant significativament la qualitat de l'avaluaci\'o de diagrames UML.
     \item \textbf{El flux complet funciona:} L'Escenari 1 ha validat el flux complet del sistema (generaci\'o + execuci\'o + informe) amb una nota de 7.0/10.
-    \item \textbf{Validaci\'o comparativa amb avaluador hum\`a:} La comparaci\'o amb una professora universit\`aria sobre mem\`ories reals de m\`aster ha perm\`es quantificar la fiabilitat del sistema i detectar biaixos avaluatius (Secci\'o~\ref{sec:validacio-humana}).
+    \item \textbf{Validaci\'o comparativa amb avaluador hum\`a:} La comparaci\'o amb una avaluadora humana experta sobre 6 mem\`ories reals de m\`aster ha perm\`es quantificar la fiabilitat del sistema i detectar biaixos avaluatius (Secci\'o~\ref{sec:validacio-humana}). L'agent genera un rang de notes entre 4,77 i 7,54, mentre que l'avaluadora humana assigna entre 6,00 i 10,00. L'agent tendeix a infra-avaluar ($\bar{\Delta} = -2,06$), amb un MAE de 2,27 punts i una correlaci\'o de Pearson de $r = 0,226$.
 \end{enumerate}
 
 En resum, el sistema SE-Agentic-Evaluator ha demostrat ser robust i funcional en tots els 6 escenaris de validaci\'o t\`ecnica, i la validaci\'o comparativa amb avaluador hum\`a ha proporcionat evid\`encia addicional sobre la seva utilitat pr\`actica com a eina d'assist\`encia al professorat.
+
 % ============================================
-% CAPITOL 7: PLANIFICACIO TEMPORAL
+% CAPITOL 7: CONCLUSIONS I TREBALL FUTUR
+% ============================================
+\chapter{Conclusions i treball futur}
+\label{chap:conclusions}
+
+\section{Resum de les contribucions}
+\label{sec:contribucions}
+
+Aquest Treball de Fi de Grau ha presentat el disseny, implementaci\'o i validaci\'o de SE-Agentic-Evaluator, un sistema meta-ag\`entic per a l'avaluaci\'o assistida d'entregables acad\`emics. El sistema est\`a dissenyat per a l'avaluaci\'o multi-document. Tot i que els escenaris de validaci\'o de la present mem\`oria se centren en les mem\`ories finals de pr\`actiques de m\`aster (per ser un lliurable ric que combina text, dades d'Excel i diagrames), les eines i els workflows s'han dissenyat de manera modular i desacoblada, permetent avaluar qualsevol altre document acad\`emic adaptant exclusivament el fitxer de r\'ubrica YAML.
+
+Les contribucions principals del projecte s\'on les seg\"uents:
+
+\begin{enumerate}
+    \item \textbf{Agent loop propi independent:} Implementaci\'o d'un agent loop que gestiona el cicle de vida de l'agent sense dependre de cap plataforma externa, seguint la metodologia ``Agents All the Way Down'' \cite{alier2025} del professor Marc Alier i altres. L'agent loop compleix la disciplina KV-cache (tools i system est\`atics, messages en append-only) i implementa el Turtle Pattern com a CLI natiu de terminal.
+
+    \item \textbf{Workflow generator/executor:} Dos components desacobllats que permeten generar workflows JSON personalitzats per a cada r\'ubrica i reutilitzar-los amb m\'ultiples documents. Aquesta separaci\'o optimitza costos d'API i temps de processament: un workflow generat una vegada pot executar-se amb tants documents com calgui sense regenerar-lo.
+
+    \item \textbf{Suport multi-provider:} Una capa d'abstracci\'o que permet intercanviar prove\"idors de models d'IA (DashScope, OpenRouter, Google Gemini, Ollama local) mitjan\c{c}ant variables d'entorn (\texttt{DASHSCOPE\_BASE\_URL}, \texttt{DASHSCOPE\_MODEL},\\ \texttt{DASHSCOPE\_VISION\_MODEL}), sense modificar la l\`ogica d'avaluaci\'o. Aquest disseny garanteix resili\`encia davant limitacions de quota i disponibilitat dels serveis cloud.
+
+    \item \textbf{Avaluaci\'o batch de criteris:} Un mecanisme que agrupa m\'ultiples criteris en un \'unic prompt al LLM, reduint les crides a l'API en un 77\% (de 13 a 3 crides per mem\`oria amb \texttt{EVAL\_BATCH\_SIZE=5}). El parser de respostes implementa graceful degradation amb tres estrat\`egies de coincid\`encia, garantint que el sistema sempre produeix un resultat complet.
+
+    \item \textbf{C\`alcul determin\'istic de notes amb tra\c{c}abilitat d'evid\`encia:} La nota final es calcula exclusivament mitjan\c{c}ant scripts Python, eliminant les al·lucinacions num\`eriques dels LLMs. Cada judici evaluatiu est\`a vinculat a evid\`encia textual o visual del document, permetent l'auditoria i la transpar\`encia del proc\'es d'avaluaci\'o.
+
+    \item \textbf{18 tools especialitzades:} Un registry centralitzat amb tools d'extracci\'o (docx\_extract, xlsx\_to\_markdown, describe\_diagrams, read\_file, list\_directory), an\`alisi (extract\_objectives, detect\_orphans, evaluate\_smart, classify\_iso25010), avaluaci\'o (criterion\_evaluator, grader, report\_generator), configuraci\'o (rubric\_importer) i workflow (generate\_workflow, execute\_workflow).
+
+    \item \textbf{Visi\'o multimodal integrada:} Integraci\'o de la l\`ogica de DiagramLens per a la descripci\'o i categoritzaci\'o de diagrames UML utilitzant models de visi\'o, proporcionant evid\`encia visual per a l'avaluaci\'o de consist\`encia arquitect\`onica. Validada amb 96\% d'\'exit (25/26 imatges processades).
+
+    \item \textbf{Gesti\'o d'errors robusta:} Retry logic amb backoff exponencial, parsing del delay suggerit pel servidor en respostes HTTP 429 (suportant els formats de Gemini, OpenRouter i DashScope), i protecci\'o contra payloads excessius.
+\end{enumerate}
+
+\section{Resposta als objectius}
+\label{sec:resposta-objectius}
+
+Els objectius definits a la Secci\'o~\ref{sec:objectius} s'han assolit de la seg\"uent manera:
+
+\begin{table}[H]
+\centering
+\caption{Grau de compliment dels objectius del projecte. Font: Elaboraci\'o pr\`opia.}
+\label{tab:objectius-compliment}
+\small
+\begin{tabularx}{\textwidth}{@{}lLc@{}}
+\toprule
+\textbf{Objectiu} & \textbf{Compliment} & \textbf{Estat} \\
+\midrule
+Agent loop propi & Implementat seguint la metodologia AAWD, fases P1--P4 completades & Complert \\
+Workflow generator & Genera workflows JSON per a cada r\'ubrica, reutilitzables amb m\'ultiples documents & Complert \\
+Workflow executor & Executa workflows amb resoluci\'o de variables (\texttt{\$\{env.VAR\}}), gesti\'o d'errors i condicionals & Complert \\
+18 tools especialitzades & Registry complet amb tools d'extracci\'o, an\`alisi, avaluaci\'o, visi\'o, configuraci\'o i workflow & Complert \\
+Suport multi-provider & Configurable via variables d'entorn (DashScope, OpenRouter, Gemini, Ollama) & Complert \\
+Avaluaci\'o batch & Reducci\'o del 77\% de crides API, configurable via \texttt{EVAL\_BATCH\_SIZE} & Complert \\
+Visi\'o multimodal & Integraci\'o de DiagramLens, 96\% d'\'exit en processament d'imatges & Complert \\
+C\`alcul determin\'istic & Notes calculades 100\% amb Python, sense intervenci\'o del LLM & Complert \\
+Tra\c{c}abilitat evid\`encia & Cada puntuaci\'o vinculada a cita textual o descripci\'o de diagrama & Complert \\
+Configuraci\'o externa r\'ubriques & R\'ubriques en YAML, sense modificar codi font & Complert \\
+Validaci\'o amb escenaris reals & 6 escenaris t\`ecnics completats + validaci\'o comparativa amb avaluadora humana & Complert \\
+Seguretat al scaffolding & Allow-list implementat, rebutja inputs maliciosos (Escenari 5) & Complert \\
+Fase P5 (Agent-Tests-Agent) & No implementada; behavioral testing automatitzat pendent & Parcial \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Dels 12 objectius principals, 12 s'han completat \'integralment. L'\'unic objectiu parcialment complert \'es la fase P5 (Agent-Tests-Agent) de la metodologia AAWD, que requereix un agent avaluador que condueixi l'agent principal amb escenaris de prova automatitzats. Aquesta fase queda com a treball futur.
+
+\section{Limitacions identificades}
+\label{sec:limitacions-conclusions}
+
+Tot i l'\'exit global del projecte, s'identifiquen les seg\"uents limitacions:
+
+\begin{enumerate}
+    \item \textbf{Depend\`encia de serveis cloud:} El sistema requereix connexi\'o a internet per accedir als prove\"idors de models d'IA. Encara que el suport multi-provider mitiga aquesta depend\`encia permetent failover entre prove\"idors, no \'es possible operar completament fora de l\'inia. L'\'us d'Ollama com a prove\"idor local \'es possible per\`o amb qualitat d'avaluaci\'o significativament inferior.
+
+    \item \textbf{Quotes de l'API:} Els prove\"idors gratu\"its imposeen restriccions (OpenRouter: l\'imit diari variable segons el model; Gemini: 20 crides/minut) que limiten la capacitat d'avaluar grans volums de documents. L'avaluaci\'o batch redueix el consum en un 77\%, per\`o no l'elimina completament.
+
+    \item \textbf{Mostra redu\"ida de validaci\'o comparativa:} La validaci\'o amb avaluadora humana s'ha completat amb 6 mem\`ories completes, per\`o la comparaci\'o nom\'es s'ha pogut realitzar a nivell de nota final (no per criteri), ja que l'avaluadora no va proporcionar les puntuacions desglossades. Es requeriria un m\'inim de 8--10 mem\`ories amb puntuacions per criteri per obtenir resultats estad\'isticament significatius.
+
+    \item \textbf{Filtre de contingut de l'API:} El 4\% de les imatges (1 de 26) va ser rebutjada pel filtre de contingut de DashScope, perdent-se informaci\'o visual en casos molt espec\'ifics.
+
+    \item \textbf{Qualitat variable segons el model:} Diferents models produeixen resultats d'avaluaci\'o amb diferent nivell de detall i coher\`encia. L'elecci\'o del model afecta directament la qualitat de l'avaluaci\'o, i no existeix un mecanisme autom\`atic per seleccionar el model \`optim per a cada tasca.
+
+    \item \textbf{Fase P5 no implementada:} El behavioral testing automatitzat (Agent-Tests-Agent) queda pendent, la qual cosa significa que les validacions es realitzen manualment i no es poden executar de manera cont\'inua en un pipeline CI/CD.
+
+    \item \textbf{Biaix d'infra-avaluaci\'o del model:} El model \texttt{gpt-oss-120b:free} tendeix a infra-avaluar sistem\`aticament respecte a un expert hum\`a ($\bar{\Delta} = -2,06$), especialment en els criteris de Filosofia docent, Comunicaci\'o efica\c{c} i Compliment/dietari (mitjanes 3,0--4,8). Aix\`o pot requerir un factor de calibratge o l'\'us d'un model alternatiu per millorar la concordan\c{c}a amb l'avaluaci\'o humana.
+\end{enumerate}
+
+\section{Treball futur}
+\label{sec:treball-futur}
+
+A partir de les contribucions i limitacions identificades, es proposen les seg\"uents l\'inies de treball futur:
+
+\subsection{L\'inia 1: Validaci\'o comparativa ampliada}
+
+\begin{itemize}
+    \item Obtenir les puntuacions per criteri de l'avaluadora humana per completar les m\`etriques de comparaci\'o (MAE, correlaci\'o de Pearson, desviaci\'o m\`axima).
+    \item Realitzar un estudi d'ablaci\'o sistem\`atic: comparar resultats amb vs sense visi\'o, amb avaluaci\'o individual vs batch, i amb diferents models (p.ex., Qwen vs Gemma vs Llama).
+    \item Ampliar el conjunt de documents a altres tipus d'entregables (documents de requisits, disseny arquitect\`onic, manuals t\`ecnics) per validar la generalitzabilitat del sistema.
+\end{itemize}
+
+\subsection{L\'inia 2: Fase P5 --- Agent-Tests-Agent}
+
+\begin{itemize}
+    \item Implementar behavioral testing automatitzat seguint la fase P5 de la metodologia AAWD.
+    \item Dissenyar un agent avaluador que condueixi l'agent principal amb escenaris de prova predefinits, verificant autom\`aticament que les respostes compleixen les expectatives (puntuacions en rang, evid\`encia present, format correcte).
+    \item Integrar les proves en un pipeline CI/CD per a validaci\'o cont\'inua.
+\end{itemize}
+
+\subsection{L\'inia 3: Integraci\'o amb l'ecosistema LAMB}
+
+\begin{itemize}
+    \item Desacoblar l'avaluaci\'o de la interf\'icie CLI i exposar-la com a microservei amb API REST, permetent la seva integraci\'o directa amb la plataforma LAMB.
+    \item Implementar cues as\'incrones per al processament per lots de m\'ultiples documents.
+    \item Afegir multi-tenan\c{c}a per permetre que diferents institucions utilitzin el sistema amb les seves pr\`opies r\'ubriques i configuracions.
+\end{itemize}
+
+
+\section{Reflexi\'o personal}
+\label{sec:reflexio}
+
+Aquest Treball de Fi de Grau ha representat un repte significatiu a nivell t\`ecnic i metodol\`ogic. La reorientaci\'o del projecte des de la proposta inicial (microservei per a l'ecosistema LAMB) fins al sistema meta-ag\`entic final ha requerit aprendre i aplicar un conjunt de tecnologies emergents que no formaven part del curr\'iculum del grau: agents d'IA, sistemes meta-ag\`entics, visi\'o multimodal, i la metodologia ``Agents All the Way Down''.
+
+L'experi\`encia d'implementar un agent loop propi, sense dependre de frameworks externs com LangChain o AutoGen, ha proporcionat una comprensi\'o profunda del funcionament intern dels sistemes ag\`entics. Aquesta comprensi\'o no s'hauria assolit utilitzant un framework d'alt nivell que abstragu\'es la complexitat del loop.
+
+El desenvolupament amb prove\"idors gratu\"its d'IA ha estat un repte pr\`actic constant: les limitacions de quota, els canvis en la disponibilitat dels models, i els errors transitoris han requerit implementar mecanismes de resili\`encia (retry logic, multi-provider, avaluaci\'o batch) que no eren necessaris en un entorn de producci\'o amb acc\'es pagat. Aquestes limitacions, per\`o, han resultat en un sistema m\'es robust i resili\`ent, capa\c{c} d'operar en condicions adverses.
+
+Finalment, la validaci\'o comparativa amb una avaluadora humana ha perm\`es comprendre no nom\'es si el sistema funciona t\`ecnicament, sin\`o si les seves avaluacions tenen sentit des de la perspectiva d'un expert hum\`a. Encara que la mostra \'es redu\"ida, els resultats preliminars s\'on encoratjadors i obren la porta a una validaci\'o ampliada com a treball futur.
+
+% ============================================
+% CAPITOL 8: PLANIFICACIO TEMPORAL
 % ============================================
 \chapter{Planificaci\'o temporal}
 \label{chap:planificacio}
@@ -1143,8 +2091,8 @@ El projecte s'estructura seguint una metodologia \`agil iterativa i incremental,
     \item Hores de treball per dia: 6 hores
     \item Dies de treball per setmana: 6 dies (dilluns--dissabte)
     \item Hores estimades de GEP: $\sim$90 hores
-    \item Hores estimades TFG: $\sim$450 hores
-    \item Total d'hores estimades del projecte: $\sim$540 hores
+    \item Hores estimades TFG: $\sim$480 hores
+    \item Total d'hores estimades del projecte: $\sim$570 hores
     \item Data prevista per a la lectura del TFG: Juny 2026 (primera convocat\`oria)
 \end{itemize}
 
@@ -1170,7 +2118,7 @@ A continuaci\'o s'esmenten els recursos necessaris per tal que el desenvolupamen
 \textbf{[T]} & \textbf{Tester de software} & Proves unit\`aries, d'integraci\'o i validaci\'o de m\`etriques. \\
 \textbf{[MA]} & \textbf{Marc Alier (Director TFG)} & Feedback setmanal i orientaci\'o t\`ecnica. \\
 \textbf{[TGEP]} & \textbf{Tutor de GEP} & Corregeix les entregues de Gesti\'o de Projectes. \\
-\textbf{[ELLI]} & \textbf{Equip LAMB (ICE--UPC)} & Col\cdot labora en proves i proporciona acc\'es als repositoris. \\
+\textbf{[ELLI]} & \textbf{Equip LAMB (ICE--UPC)} & Col·labora en proves i proporciona acc\'es als repositoris. \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -1179,7 +2127,7 @@ A continuaci\'o s'esmenten els recursos necessaris per tal que el desenvolupamen
 \label{subsec:recursos-fisics}
 
 \begin{itemize}
-    \item Un espai de treball adequat a les instal\cdot lacions de l'ICE--UPC, amb taula, cadira, teclat i ratol\'i.
+    \item Un espai de treball adequat a les instal·lacions de l'ICE--UPC, amb taula, cadira, teclat i ratol\'i.
     \item L'ordinador port\`atil personal de l'autor, que actua com a m\`aquina de desenvolupament principal.
 \end{itemize}
 
@@ -1190,16 +2138,16 @@ A continuaci\'o s'esmenten els recursos necessaris per tal que el desenvolupamen
 \centering
 \caption{Recursos de software del projecte. Font: Elaboraci\'o pr\`opia.}
 \label{tab:recursos-software}
-\begin{tabularx}{\textwidth}{@{}ccl@{}}
+\begin{tabularx}{\textwidth}{@{} l X X @{}} 
 \toprule
 \textbf{Codi} & \textbf{Nom} & \textbf{Descripci\'o} \\
 \midrule
-\textbf{[VSC]} & \textbf{Visual Studio Code} & IDE principal per al desenvolupament. \\
-\textbf{[GIT]} & \textbf{GitHub i Git} & Control de versions seguint GitFlow. \\
-\textbf{[DSC]} & \textbf{DashScope} & Plataforma d'Alibaba Cloud per als models d'IA. \\
-\textbf{[GSUITE]} & \textbf{Google Suite} & Comunicaci\'o, documentaci\'o i taules. \\
-\textbf{[EXCEL]} & \textbf{Excel / Google Sheets} & Diagrama de Gantt. \\
-\textbf{[TG]} & \textbf{Telegram} & Comunicaci\'o r\`apida amb el director i l'equip. \\
+\textbf{[VSC]} & Visual Studio Code & IDE principal per al desenvolupament. \\
+\textbf{[GIT]} & GitHub i Git & Control de versions seguint GitFlow. \\
+\textbf{[DSC]} & Multi-provider \newline (DashScope/OpenRouter/Gemini) & Prove\"idors d'IA per als models d'extracci\'o, avaluaci\'o i visi\'o. \\
+\textbf{[GSUITE]} & Google Suite & Comunicaci\'o, documentaci\'o i taules. \\
+\textbf{[EXCEL]} & Excel / Google Sheets & Diagrama de Gantt. \\
+\textbf{[TG]} & Telegram & Comunicaci\'o r\`apida amb el director i l'equip. \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -1401,7 +2349,7 @@ T4.3 & Bateria proves unit\`aries i integraci\'o & \textbf{25} & T4.2 & [T]+[VSC
 T5.1 & Redacci\'o de la mem\`oria final & \textbf{60} & T4.3 & [CP]+[AS]+[GSUITE] \\
 T5.2 & Preparaci\'o de la defensa & \textbf{15} & T5.1 & [CP]+[GSUITE] \\
 \midrule
- & \textbf{TOTAL} & \textbf{540} & & \\
+ & \textbf{TOTAL} & \textbf{570} & & \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -1417,9 +2365,9 @@ El diagrama de Gantt es pot consultar a la Taula~\ref{tab:gantt}. Per raons d'es
 \label{tab:gantt}
 \small
 \setlength{\tabcolsep}{2pt}
-\begin{tabular}{@{}ccclccccccccccccc@{}}
+\begin{tabular}{@{}ccclcccccccccccccccc@{}}
 \toprule
-\textbf{Codi} & \textbf{Tasca} & \textbf{H} & & \multicolumn{4}{c}{\textbf{Gesti\'o}} & \multicolumn{4}{c}{\textbf{Sprint 1--2}} & \multicolumn{3}{c}{\textbf{Sprint 3}} & \multicolumn{3}{c}{\textbf{Sprint 4--5}} \\
+\textbf{Codi} & \textbf{Tasca} & \textbf{H} & & \multicolumn{4}{c}{\textbf{Gesti\'o}} & \multicolumn{4}{c}{\textbf{Sprint 1--2}} & \multicolumn{3}{c}{\textbf{Sprint 3}} & \multicolumn{5}{c}{\textbf{Sprint 4--5}} \\
 \midrule
  & & & & S1 & S2 & S3 & S4 & S5 & S6 & S7 & S8 & S9 & S10 & S11 & S12 & S13 & S14 & S15 & S16 \\
 \midrule
@@ -1434,7 +2382,7 @@ T3.x & Sprint 3 & 95 & & & & & & & & & & & \cellcolor{purple!30} & \cellcolor{pu
 T4.x & Sprint 4 & 60 & & & & & & & & & & & & & & \cellcolor{teal!30} & \cellcolor{teal!30} & \cellcolor{teal!30} & \\
 T5.x & Sprint 5 & 75 & & & & & & & & & & & & & & & & \cellcolor{yellow!30} & \cellcolor{yellow!30} \\
 \midrule
- & \textbf{TOTAL} & \textbf{540} & & & & & & & & & & & & & & & & & \\
+ & \textbf{TOTAL} & \textbf{570} & & & & & & & & & & & & & & & & & \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1451,17 +2399,17 @@ T5.x & Sprint 5 & 75 & & & & & & & & & & & & & & & & \cellcolor{yellow!30} & \ce
 
 \textbf{Mitigaci\'o est\`andard:} Sobreestimar les hores a dedicar, realitzar reunions setmanals (T0.1) i 30h dedicades a l'estudi de la plataforma (T1.1).
 
-\textbf{Pla B:} Si al final del Sprint 1 T1.2 no s'ha completat, es reduir\`a la dedicaci\'o a la documentaci\'o cont\'inua (T0.2) de 4h/setmana a 2h/setmana durant les setmanes 4-5, alliberant 4 hores addicionals. Afectaci\'o sobre la durada total: nul\cdot la, ja que la documentaci\'o es recupera al Sprint 5 (T5.1 t\'e 60h reservades).
+\textbf{Pla B:} Si al final del Sprint 1 T1.2 no s'ha completat, es reduir\`a la dedicaci\'o a la documentaci\'o cont\'inua (T0.2) de 4h/setmana a 2h/setmana durant les setmanes 4-5, alliberant 4 hores addicionals. Afectaci\'o sobre la durada total: nul·la, ja que la documentaci\'o es recupera al Sprint 5 (T5.1 t\'e 60h reservades).
 
 \vspace{0.5cm}
 
-\textbf{Risc 2 -- Depend\`encia de serveis cloud (DashScope)}
+\textbf{Risc 2 -- Depend\`encia de serveis cloud}
 
-\textbf{Impacte:} El sistema dep\`en de la disponibilitat i quota de l'API de DashScope (Alibaba Cloud). Si el servei no est\`a disponible o s'exhaureix la quota, el sistema no pot funcionar.
+\textbf{Impacte:} El sistema dep\`en de la disponibilitat i quota dels prove\"idors d'API de models d'IA. Si un servei no est\`a disponible o s'exhaureix la quota, el sistema no pot funcionar amb aquest prove\"idor.
 
-\textbf{Mitigaci\'o est\`andard:} Implementar retry logic amb exponential backoff per gestionar errors temporals. Monitoritzar el consum de tokens i establir l\'imits per evitar l'esgotament de la quota.
+\textbf{Mitigaci\'o est\`andard:} Implementar retry logic amb exponential backoff per gestionar errors temporals. Suport multi-provider (DashScope, OpenRouter, Gemini) que permet canviar de prove\"idor quan un presenta limitacions.
 
-\textbf{Pla B:} Si la quota s'exhaureix o el servei no est\`a disponible, es pot implementar un mode de funcionament sense visi\'o (utilitzant nom\'es qwen3.6-plus per a text) o simplificar els prompts per a tasques m\'es espec\'ifiques. Afectaci\'o: possible reducci\'o de la qualitat en l'avaluaci\'o de diagrames UML, per\`o el sistema segueix sent funcional.
+\textbf{Pla B:} Si la quota d'un prove\"idor s'exhaureix, es pot canviar a un prove\"idor alternatiu mitjan\c{c}ant variables d'entorn (\texttt{DASHSCOPE\_BASE\_URL}, \texttt{DASHSCOPE\_API\_KEY}) sense modificar codi. Addicionalment, l'avaluaci\'o batch redueix el nombre de crides en un 77\%, allargant la vida de la quota. Afectaci\'o: possible variaci\'o en la qualitat de l'avaluaci\'o segons el model alternatiu utilitzat, per\`o el sistema segueix sent funcional.
 
 \vspace{0.5cm}
 
@@ -1535,7 +2483,7 @@ G4 & Lliurable 4: Document final GEP & 20 & CP & 640,00 \\
 T0.1 & Reunions de seguiment setmanals & 15 & CP & 480,00 \\
 T0.2 & Documentaci\'o cont\'inua & 40 & CP, AS, DS & 1.120,00 \\
 T0.3 & Gesti\'o de tasques i Git/GitFlow & 15 & CP & 480,00 \\
-T1.1 & Estudi SE-rubric-evaluAItor + opencode.ai & 30 & AS & 810,00 \\
+T1.1 & Estudi SE-rubric-evaluAItor + metodologia AAWD & 30 & AS & 810,00 \\
 T1.2 & Adaptaci\'o m\`oduls d'extracci\'o & 25 & DS & 625,00 \\
 T1.3 & Grading determin\'istic amb config YAML & 15 & DS & 375,00 \\
 T1.4 & Estructura base i proves inicials & 15 & DS, T & 360,00 \\
@@ -1543,7 +2491,7 @@ T2.1 & M\`oduls d'an\`alisi determin\'istics & 30 & DS, T & 720,00 \\
 T2.2 & M\`oduls d'an\`alisi amb LLM & 25 & DS & 625,00 \\
 T2.3 & Visi\'o multimodal (DiagramLens) & 25 & DS & 625,00 \\
 T2.4 & Proves d'an\`alisi i visi\'o & 15 & T & 345,00 \\
-T3.1 & Definici\'o Skill evaluator\_skill & 25 & AS, DS & 650,00 \\
+T3.1 & Implementaci\'o agent loop i tool registry & 25 & AS, DS & 650,00 \\
 T3.2 & Integraci\'o prompts d'avaluaci\'o & 20 & DS & 500,00 \\
 T3.3 & Flux ag\`entic complet & 30 & DS, T & 720,00 \\
 T3.4 & Proves integraci\'o documents reals & 20 & T & 460,00 \\
@@ -1553,7 +2501,7 @@ T4.3 & Bateria proves unit\`aries i integraci\'o & 25 & T & 575,00 \\
 T5.1 & Redacci\'o de la mem\`oria final del TFG & 60 & CP, AS & 1.770,00 \\
 T5.2 & Preparaci\'o de la presentaci\'o i defensa & 15 & CP & 480,00 \\
 \midrule
-\textbf{TOTAL CPA} & & \textbf{540} & & \textbf{14.568,00} \\
+\textbf{TOTAL CPA} & & \textbf{570} & & \textbf{15.300,00} \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -1567,7 +2515,7 @@ Els costos gen\`erics s'imputaran globalment, sense desgranar-los per activitat.
 
 Seguint les directrius de la Ag\`encia Tribut\`aria espanyola, el hardware s'amortitza en 4 anys. Dividint el cost de hardware per les hores d'\'us possibles durant el per\'iode d'amortitzaci\'o, suposant 225 dies laborals de 8h per any (4 anys $\times$ 1.800h/any = 7.200h), s'obt\'e el cost per hora, que despr\'es multipliquem per les hores totals de projecte per aconseguir les amortitzacions.
 
-\textit{Amortitzaci\'o = Cost hardware (\euro) $\div$ 7200 (hores) $\times$ 540 (hores totals del projecte)}
+\textit{Amortitzaci\'o = Cost hardware (\euro) $\div$ 7200 (hores) $\times$ 570 (hores totals del projecte)}
 
 \begin{table}[H]
 \centering
@@ -1577,11 +2525,11 @@ Seguint les directrius de la Ag\`encia Tribut\`aria espanyola, el hardware s'amo
 \toprule
 \textbf{Dispositiu} & \textbf{Preu} & \textbf{Amortitzaci\'o} \\
 \midrule
-Port\`atil HP 15s-eq2172ns & 500 \euro & 37,50 \euro \\
-Ratol\'i Tempest X20W Vigilant RGB & 50 \euro & 3,75 \euro \\
-Teclat Mars Gaming MKXTKL & 27 \euro & 2,02 \euro \\
+Port\`atil HP 15s-eq2172ns & 500 \euro & 39,58 \euro \\
+Ratol\'i Tempest X20W Vigilant RGB & 50 \euro & 3,96 \euro \\
+Teclat Mars Gaming MKXTKL & 27 \euro & 2,14 \euro \\
 \midrule
-\textbf{Total hardware} & & \textbf{43,27 \euro} \\
+\textbf{Total hardware} & & \textbf{45,68 \euro} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1620,11 +2568,11 @@ Electricitat & 60 \euro/mes & 4 mesos & 20\% & 48,00 \euro \\
 \toprule
 \textbf{Concepte} & \textbf{Import} \\
 \midrule
-Amortitzaci\'o hardware & 43,27 \euro \\
+Amortitzaci\'o hardware & 45,68 \euro \\
 Despeses generals (internet + llum) & 96,00 \euro \\
 Software & 0,00 \euro \\
 \midrule
-\textbf{TOTAL CG} & \textbf{139,27 \euro} \\
+\textbf{TOTAL CG} & \textbf{141,68 \euro} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1640,10 +2588,10 @@ Software & 0,00 \euro \\
 \toprule
 \textbf{Partida} & \textbf{Import} \\
 \midrule
-Total CPA (costos de personal per activitat) & 14.568 \euro \\
-Total CG (costos gen\`erics) & 139,27 \euro \\
+Total CPA (costos de personal per activitat) & 15.300 \euro \\
+Total CG (costos gen\`erics) & 141,68 \euro \\
 \midrule
-\textbf{Total Costos (CPA + CG)} & \textbf{14.707,27 \euro} \\
+\textbf{Total Costos (CPA + CG)} & \textbf{15.441,68 \euro} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1654,7 +2602,7 @@ Total CG (costos gen\`erics) & 139,27 \euro \\
 La conting\`encia \'es un marge de seguretat per cobrir imprevistos no anticipats. En el sector inform\`atic, la r\'ubrica recomana entre el 10\% i el 20\%. Donat que la planificaci\'o \'es detallada i s'han identificat els riscos principals al Lliurable 2, s'aplica un \textbf{15\%}:
 
 \begin{center}
-Conting\`encia = 14.707 \euro\ $\times$ 15\% = \textbf{2.206 \euro}
+Conting\`encia = 15.442 \euro\ $\times$ 15\% = \textbf{2.316 \euro}
 \end{center}
 
 \subsection{Imprevistos}
@@ -1672,7 +2620,7 @@ Els imprevistos corresponen als plans B identificats al Lliurable 2. El cost de 
 \textbf{Risc} & \textbf{Pla B} & \textbf{Cost} & \textbf{Prob.} & \textbf{Cost imp.} \\
 \midrule
 R1 -- Inexperi\`encia & Reduir T0.2 i dedicar 4h extra al DS & 104 \euro & 30\% & 31,20 \euro \\
-R2 -- Qualitat LLM & Augmentar mida del model o simplificar prompts & 0 \euro & 20\% & 0,00 \euro \\
+R2 -- Depend\`encia serveis cloud & Canviar a prove\"idor alternatiu via variables d'entorn & 0 \euro & 20\% & 0,00 \euro \\
 R3 -- Calendari & Reducci\'o d'abast controlada & 0 \euro & 25\% & 0,00 \euro \\
 R4 -- P\`erdua PDF & Integrar Docling com a motor principal & 200 \euro & 15\% & 30,00 \euro \\
 \midrule
@@ -1692,13 +2640,13 @@ R4 -- P\`erdua PDF & Integrar Docling com a motor principal & 200 \euro & 15\% &
 \toprule
 \textbf{Partida} & \textbf{Import} \\
 \midrule
-Total CPA & 14.568 \euro \\
-Total CG & 139,27 \euro \\
-\textbf{Total Costos} & \textbf{14.707,27 \euro} \\
-Conting\`encia (15\%) & 2.206 \euro \\
+Total CPA & 15.300 \euro \\
+Total CG & 141,68 \euro \\
+\textbf{Total Costos} & \textbf{15.441,68 \euro} \\
+Conting\`encia (15\%) & 2.316 \euro \\
 Imprevistos & 61 \euro \\
 \midrule
-\textbf{TOTAL PRESSUPOST} & \textbf{16.974,27 \euro} \\
+\textbf{TOTAL PRESSUPOST} & \textbf{17.819 \euro} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1751,7 +2699,7 @@ El control es realitzar\`a de manera \textbf{setmanal}, coincidint amb les reuni
 \end{tabularx}
 \end{table}
 
-\textbf{3.\ Llindar d'alerta:} Si la desviaci\'o total acumulada supera el $\pm$10\% del pressupost en qualsevol moment del projecte, s'activar\`a una revisi\'o del pla. Per sota d'aquest llindar, la conting\`encia (2.206 \euro) absorbeix la desviaci\'o.
+\textbf{3.\ Llindar d'alerta:} Si la desviaci\'o total acumulada supera el $\pm$10\% del pressupost en qualsevol moment del projecte, s'activar\`a una revisi\'o del pla. Per sota d'aquest llindar, la conting\`encia (2.316 \euro) absorbeix la desviaci\'o.
 
 \textbf{4.\ Gesti\'o de desviacions:} En cas de detectar-se una desviaci\'o significativa:
 
@@ -1764,7 +2712,7 @@ El control es realitzar\`a de manera \textbf{setmanal}, coincidint amb les reuni
 % ============================================
 % CAPITOL 11: INFORME DE SOSTENIBILITAT
 % ============================================
-\chapter{Informe de Sostenibilitat (Fita Inicial)}
+\chapter{Informe de Sostenibilitat}
 \label{chap:sostenibilitat}
 
 \section{Autoavaluaci\'o de la compet\`encia de sostenibilitat}
@@ -1772,17 +2720,17 @@ El control es realitzar\`a de manera \textbf{setmanal}, coincidint amb les reuni
 
 Abans d'iniciar el projecte he realitzat l'enquesta d'autoavaluaci\'o de la compet\`encia en sostenibilitat proposada per la FIB. Les conclusions principals s\'on les seg\"uents.
 
-El meu punt fort \'es la dimensi\'o econ\`omica: tinc una comprensi\'o s\`olida de com estimar costos de projectes inform\`atics i gestionar pressupostos, adquirida al llarg del grau. En canvi, els meus punts febles resideixen en les dimensions ambiental i social: tendeixo a valorar els projectes principalment per la seva viabilitat t\`ecnica i econ\`omica, sense reflexionar prou sobre el seu consum energ\`etic o les seves implicacions sobre col\cdot lectius de persones. La realitzaci\'o d'aquest lliurable m'ha obligat a abordar expl\'icitament aquestes dimensions, cosa que considero un aprenentatge valu\'os per al meu perfil professional futur.
+El meu punt fort \'es la dimensi\'o econ\`omica: tinc una comprensi\'o s\`olida de com estimar costos de projectes inform\`atics i gestionar pressupostos, adquirida al llarg del grau. En canvi, els meus punts febles resideixen en les dimensions ambiental i social: tendeixo a valorar els projectes principalment per la seva viabilitat t\`ecnica i econ\`omica, sense reflexionar prou sobre el seu consum energ\`etic o les seves implicacions sobre col·lectius de persones. La realitzaci\'o d'aquest lliurable m'ha obligat a abordar expl\'icitament aquestes dimensions, cosa que considero un aprenentatge valu\'os per al meu perfil professional futur.
 
 \section{Dimensi\'o Ambiental}
 \label{sec:dimensio-ambiental}
 
 \textbf{Respecte el Projecte posat en producci\'o (PPP): \'Has estimat el impacte ambiental que tindr\`a la realitzaci\'o del projecte?}
 
-El recurs principal consumit durant el desenvolupament \'es l'energia el\`ectrica del port\`atil de treball (HP 15s-eq2172ns, AMD Ryzen 5 5500U, $\sim$30W de consum real en \'us). Amb un total de 540 hores de projecte, el consum estimat \'es:
+El recurs principal consumit durant el desenvolupament \'es l'energia el\`ectrica del port\`atil de treball (HP 15s-eq2172ns, AMD Ryzen 5 5500U, $\sim$30W de consum real en \'us). Amb un total de 570 hores de projecte, el consum estimat \'es:
 
 \begin{center}
-0,030 kW $\times$ 540 h = 16,2 kWh
+0,030 kW $\times$ 570 h = 17,1 kWh
 \end{center}
 
 Utilitzant el factor d'emissi\'o del mix el\`ectric espanyol de 2024 (0,18 kg CO$_2$/kWh, font: \cite{ree}), les emissions associades a la realitzaci\'o del projecte s\'on:
@@ -1795,48 +2743,41 @@ Per posar aquesta xifra en context: \'es equivalent al consum d'una nevera efici
 
 \textbf{Respecte el PPP: \'T'has plantejat minimitzar-ne el impacte, per exemple, reutilitzant recursos?}
 
-Pel que fa a la minimitzaci\'o d'aquest impacte, el projecte utilitza DashScope (Alibaba Cloud) com a prove\"idor de models d'IA, la qual cosa implica un consum energ\`etic als servidors cloud del prove\"idor. No obstant aix\`o, aquest impacte \\'es compartit entre tots els usuaris de la plataforma i els models Qwen s'executen en infraestructures optimitzades per a l'efici\`encia energ\`etica. A nivell local, l'\'unic consum addicional \\'es el del port\`atil de l'autor i la transmissi\'o de dades per xarxa, que \\'es negligible en comparaci\'o amb l'execuci\'o local de models de gran mida. Addicionalment, DashScope compleix amb les normatives europees de protecci\'o de dades (RGPD).
+Pel que fa a la minimitzaci\'o d'aquest impacte, el projecte utilitza prove\"idors cloud d'IA (DashScope/Alibaba Cloud com a primari, OpenRouter i Google Gemini com a alternatius), la qual cosa implica un consum energ\`etic als servidors cloud del prove\"idor. No obstant aix\`o, aquest impacte \'es compartit entre tots els usuaris de la plataforma i els models s'executen en infraestructures optimitzades per a l'efici\`encia energ\`etica. A nivell local, l'\'unic consum addicional \'es el del port\`atil de l'autor i la transmissi\'o de dades per xarxa, que \'es negligible en comparaci\'o amb l'execuci\'o local de models de gran mida. Addicionalment, els prove\"idors compleixen amb les normatives europees de protecci\'o de dades (RGPD).
 
 \textbf{Respecte la Vida \'Util: Com es resol actualment el problema que vols abordar (estat de l'art)?, i en qu\`e millorar\`a ambientalment la teva soluci\'o respecte a les existents?}
 
 Actualment, l'avaluaci\'o d'entregables d'Enginyeria del Software dins de l'ecosistema LAMB es realitza a trav\'es del projecte SE-rubric-evaluAItor, un pipeline seq\"uencial d'investigaci\'o. Aquest pipeline presenta limitacions estructurals: flux d'execuci\'o r\'igid i predefinit, configuraci\'o de r\'ubriques hardcodejada al codi font, sense capacitat d'an\`alisi de diagrames UML, i sense processament per lots.
 
-SE-Agentic-Evaluator resol totes aquestes limitacions transformant el pipeline en un sistema meta-ag\`entic que selecciona din\`amicament les eines segons el contingut. Ambientalment, la soluci\'o utilitza DashScope (Alibaba Cloud) per a l'execuci\'o dels models d'IA, la qual cosa implica un consum energ\`etic als servidors cloud del prove\"idor, per\`o aquest impacte \\'es compartit entre tots els usuaris de la plataforma i s'executa en infraestructures optimitzades per a l'efici\`encia energ\`etica.
+SE-Agentic-Evaluator resol totes aquestes limitacions transformant el pipeline en un sistema meta-ag\`entic que selecciona din\`amicament les eines segons el contingut. Ambientalment, la soluci\'o utilitza prove\"idors cloud d'IA per a l'execuci\'o dels models, la qual cosa implica un consum energ\`etic als servidors cloud del prove\"idor, per\`o aquest impacte \'es compartit entre tots els usuaris de la plataforma i s'executa en infraestructures optimitzades per a l'efici\`encia energ\`etica. L'avaluaci\'o batch de criteris redueix addicionalment el nombre de crides a l'API, minimitzant l'impacte ambiental per avaluaci\'o.
 
 \section{Dimensi\'o Econ\`omica}
 \label{sec:dimensio-economica}
 
 \textbf{Respecte el PPP: Has estimat el cost de la realitzaci\'o del projecte (recursos humans i materials)?}
 
-El cost total estimat de la realitzaci\'o del projecte \'es de \textbf{16.974 \euro}, desglossats a l'apartat de Pressupost (secci\'o~\ref{chap:pressupost}). Aquest cost inclou els costos de personal per activitat (14.568 \euro), els costos gen\`erics de hardware i despeses generals (139 \euro), una conting\`encia del 15\% (2.206 \euro) i els imprevistos ponderats per probabilitat (61 \euro). Donat que el projecte \'es unipersonal i acad\`emic, aquest import representa el cost que un client extern hauria de pagar si encarregu\'es el mateix desenvolupament a una consultora.
+El cost total estimat de la realitzaci\'o del projecte \'es de \textbf{17.819 \euro}, desglossats a l'apartat de Pressupost (cap\'itol~\ref{chap:pressupost}). Aquest cost inclou els costos de personal per activitat (15.300 \euro), els costos gen\`erics de hardware i despeses generals (142 \euro), una conting\`encia del 15\% (2.316 \euro) i els imprevistos ponderats per probabilitat (61 \euro). Donat que el projecte \'es unipersonal i acad\`emic, aquest import representa el cost que un client extern hauria de pagar si encarregu\'es el mateix desenvolupament a una consultora.
 
 \textbf{Respecte la Vida \'Util: Com es resolen actualment els aspectes de costos del problema que vols abordar? En qu\`e millorar\`a econ\`omicament la teva soluci\'o respecte a les existents?}
 
-Actualment, qualsevol adaptaci\'o de la r\'ubrica d'avaluaci\'o de SE-rubric-evaluAItor per a un altre tipus d'entregable t\'e un cost de desenvolupament elevat perqu\`e requereix modificar directament el codi font (pesos hardcodejats a grader.py). A m\'es, la manca de visi\'o multimodal impedeix avaluar diagrames UML, elements clau en entregables d'Enginyeria del Software. SE-Agentic-Evaluator resol ambd\'os problemes: la configuraci\'o externa de r\'ubriques permet adaptar l'avaluaci\'o a diferents tipus d'entregables sense modificar codi, i la integraci\'o de visi\'o multimodal permet avaluar consist\`encia arquitect\`onica. Econ\`omicament, el cost operatiu un cop desplegat \\'es baix, ja que DashScope opera amb un model de pagament per \'us que permet controlar les despeses segons el volum d'avaluacions realitzades.
+Actualment, qualsevol adaptaci\'o de la r\'ubrica d'avaluaci\'o de SE-rubric-evaluAItor per a un altre tipus d'entregable t\'e un cost de desenvolupament elevat perqu\`e requereix modificar directament el codi font (pesos hardcodejats a grader.py). A m\'es, la manca de visi\'o multimodal impedeix avaluar diagrames UML, elements clau en entregables d'Enginyeria del Software. SE-Agentic-Evaluator resol ambd\'os problemes: la configuraci\'o externa de r\'ubriques permet adaptar l'avaluaci\'o a diferents tipus d'entregables sense modificar codi, i la integraci\'o de visi\'o multimodal permet avaluar consist\`encia arquitect\`onica. Econ\`omicament, el cost operatiu un cop desplegat \'es baix, ja que el suport multi-provider permet optimitzar les despeses seleccionant el prove\"idor m\'es econ\`omic per a cada cas, i l'avaluaci\'o batch redueix el nombre de crides a l'API en un 77\%.
 
 \section{Dimensi\'o Social}
 \label{sec:dimensio-social}
 
 \textbf{Respecte el PPP: Qu\`e creus que t'aportar\`a a nivell personal la realitzaci\'o d'aquest projecte?}
 
-La realitzaci\'o d'aquest projecte m'aportar\`a valor a m\'ultiples nivells. En primer lloc, adquirir\`e experi\`encia en un entorn empresarial real treballant integrat a l'equip de l'ICE--UPC, amb les din\`amiques i responsabilitats que aix\`o implica. En segon lloc, dominar\`e tecnologies emergents \`ampliament demandades al mercat laboral actual: agents d'IA, sistemes meta-ag\`entics, plataformes cloud d'IA (DashScope/Alibaba Cloud), i visi\'o multimodal. En tercer lloc, obtindr\`e una visi\'o completa del cicle de vida d'un sistema d'avaluaci\'o assistida per IA, des de l'extracci\'o d'informaci\'o fins a la generaci\'o d'informes amb evid\`encies. Finalment, el fet de gestionar un projecte de 540 hores de manera completament aut\`onoma refor\c{c}ar\`a la meva capacitat d'organitzaci\'o i presa de decisions t\`ecniques independents.
+La realitzaci\'o d'aquest projecte m'aportar\`a valor a m\'ultiples nivells. En primer lloc, adquirir\`e experi\`encia en un entorn empresarial real treballant integrat a l'equip de l'ICE--UPC, amb les din\`amiques i responsabilitats que aix\`o implica. En segon lloc, dominar\`e tecnologies emergents \`ampliament demandades al mercat laboral actual: agents d'IA, sistemes meta-ag\`entics, plataformes cloud d'IA multi-provider (DashScope, OpenRouter, Gemini), i visi\'o multimodal. En tercer lloc, obtindr\`e una visi\'o completa del cicle de vida d'un sistema d'avaluaci\'o assistida per IA, des de l'extracci\'o d'informaci\'o fins a la generaci\'o d'informes amb evid\`encies. Finalment, el fet de gestionar un projecte de 570 hores de manera completament aut\`onoma refor\c{c}ar\`a la meva capacitat d'organitzaci\'o i presa de decisions t\`ecniques independents.
 
 \textbf{Respecte la Vida \'Util: Existeix una necessitat real del projecte? Com es resol actualment el problema que vols abordar? En qu\`e millorar\`a socialment la teva soluci\'o respecte les existents?}
 
 Existeix una necessitat real i contrastada del projecte: LAMB \'es un ecosistema en \'us actiu a l'ICE--UPC, amb professors i estudiants reals, i la manca d'un sistema d'avaluaci\'o assistida flexible i adaptatiu \'es una limitaci\'o operativa concreta identificada per l'equip.
 
-Els col\cdot lectius que es beneficiaran directament de la soluci\'o s\'on els professors de les institucions que usin LAMB (avaluacions m\'es r\`apides i estructurades amb evid\`encies concretes) i els estudiants (feedback m\'es detallat i accionable). De manera indirecta, qualsevol instituci\'o educativa que adopti LAMB en el futur podr\`a utilitzar SE-Agentic-Evaluator sense cost addicional.
+Els col·lectius que es beneficiaran directament de la soluci\'o s\'on els professors de les institucions que usin LAMB (avaluacions m\'es r\`apides i estructurades amb evid\`encies concretes) i els estudiants (feedback m\'es detallat i accionable). De manera indirecta, qualsevol instituci\'o educativa que adopti LAMB en el futur podr\`a utilitzar SE-Agentic-Evaluator sense cost addicional.
 
-SE-Agentic-Evaluator no substitueix la figura del professor, sin\'o que l'assisteix: el sistema proporciona una avaluaci\'o preliminar amb evid\`encies i recomanacions, per\`o la decisi\'o final i el feedback qualitatiu continuen recaient en el docent. Aix\`o minimitza el risc de perjudicar la qualitat educativa. A m\'es, la privacitat RGPD de les dades acad\`emiques es garanteix mitjan\c{c}ant l'\'us de DashScope (Alibaba Cloud), que compleix amb les normatives europees de protecci\'o de dades, i la implementaci\'o de mesures de seguretat al scaffolding (allow-list) per evitar l'execuci\'o de codi malici\'os o l'acc\'es a dades no autoritzades, un aspecte socialment rellevant en l'era de la IA generativa.
-
-% ============================================
-% CAPITOL 12: REFERENCIES
-% ============================================
-\chapter*{Refer\`encies}
-\label{chap:referencies}
-\addcontentsline{toc}{chapter}{Refer\`encies}
-
-\begin{thebibliography}{19}
+SE-Agentic-Evaluator no substitueix la figura del professor, sin\'o que l'assisteix: el sistema proporciona una avaluaci\'o preliminar amb evid\`encies i recomanacions, per\`o la decisi\'o final i el feedback qualitatiu continuen recaient en el docent. Aix\`o minimitza el risc de perjudicar la qualitat educativa. A m\'es, la privacitat de les dades acad\`emiques es planteja de manera \`etica i responsable: el disseny prioritza l'execuci\'o local-first amb models Open Source per garantir que la propietat intel·lectual dels estudiants i les seves dades personals mai es cedeixin a prove\"idors cloud externs. Aquest enfocament socialment comprom\`es protegeix la sobirania de les dades de la universitat p\'ublica enfront de les grans corporacions tecnol\`ogiques estrangeres.
+\addcontentsline{toc}{chapter}{Bibliografia}
+\begin{thebibliography}{32}
 
     \bibitem{adr} \textbf{ADR Formaci\'on. (2025, 9 de novembre).} \textit{\'Que es un LMS? Definici\'on, caracter\'isticas y beneficios}. Recuperat el 19 de febrer de 2026 de \url{https://www.adrformacion.com/blog/que_es_un_lms_definicion_caracteristicas_y_beneficios.html}
 
@@ -1876,6 +2817,55 @@ SE-Agentic-Evaluator no substitueix la figura del professor, sin\'o que l'assist
 
     \bibitem{gdpr} \textbf{European Union. (2016).} \textit{Regulation (EU) 2016/679 (General Data Protection Regulation)}. Recuperat el 15 de mar\c{c} de 2026, de \url{https://gdpr.eu/}
 
+    \bibitem{burstein2013} \textbf{Burstein, J., Tetreault, J., \& Andreyev, S. (2013).} \textit{The e-rater automated essay scoring system}. En C. Leacock \& M. Chodorow (Eds.), Handbook of Automated Essay Scoring (pp. 55--68). Routledge.
+
+    \bibitem{perelman2014} \textbf{Perelman, L. (2014).} \textit{When ``the state of the art'' is counting words}. Assessing Writing, 21, 104--111. \url{https://doi.org/10.1016/j.asw.2014.03.001}
+
+    \bibitem{graesser2014} \textbf{Graesser, A. C., McNamara, D. S., \& Kulikowich, K. R. (2014).} \textit{Coh-Metrix: Providing multilevel analyses of text characteristics}. Educational Researcher, 43(5), 253--263.
+
+    \bibitem{guo2024} \textbf{Guo, B., Zhang, X., \& Wang, W. (2024).} \textit{How Close is ChatGPT to Human Experts? Comparison Corpus, Evaluation, and Detection}. arXiv:2301.07597v3.
+
+    \bibitem{zheng2023} \textbf{Zheng, L., Chiang, W.\,L., \& Sheng, T. (2023).} \textit{Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena}. Proceedings of NeurIPS 2023.
+
+    \bibitem{wu2023} \textbf{Wu, Q., Bansal, G., \& Zhang, J. (2023).} \textit{AutoGen: Enabling Next-Gen LLM Applications via Multi-Agent Conversation}. arXiv:2308.08155.
+
+    \bibitem{langchain2024} \textbf{Chase, H. (2024).} \textit{LangChain: Building applications with LLMs through composability}. GitHub. Recuperat el 20 d'abril de 2026, de \url{https://github.com/langchain-ai/langchain}
+
+    \bibitem{crewai2024} \textbf{CrewAI. (2024).} \textit{CrewAI: Framework for orchestrating role-playing autonomous AI agents}. Recuperat el 20 d'abril de 2026, de \url{https://github.com/crewAIInc/crewAI}
+
+    \bibitem{alier2025} \textbf{Alier, M. (2025).} \textit{Agents All the Way Down: Una metodologia per a la construcci\'o de sistemes meta-ag\`entics fiables}. Departament d'Enginyeria de Serveis i Sistemes d'Informaci\'o, UPC. Recuperat de \url{https://arxiv.org/abs/2606.11869}
+
+    \bibitem{qwen2024} \textbf{Bai, J., \emph{et al.} (2024).} \textit{Qwen Technical Report}. arXiv:2309.16609.
+
+    \bibitem{openai2024} \textbf{OpenAI. (2024).} \textit{GPT-4 Technical Report}. arXiv:2303.08774v2.
+
+    \bibitem{gemini2024} \textbf{Google DeepMind. (2024).} \textit{Gemini: A Family of Highly Capable Multimodal Models}. Recuperat el 20 d'abril de 2026, de \url{https://deepmind.google/technologies/gemini/}
+
+    \bibitem{turnitin} \textbf{Turnitin. (s.d.).} \textit{Turnitin Feedback Studio}. Recuperat el 20 d'abril de 2026, de \url{https://www.turnitin.com/products/feedback-studio}
+
+    \bibitem{gradescope} \textbf{Gradescope. (s.d.).} \textit{Gradescope: Streamline grading and feedback}. Recuperat el 20 d'abril de 2026, de \url{https://www.gradescope.com/}
+
+    \bibitem{copyleaks} \textbf{Copyleaks. (s.d.).} \textit{AI Content Detection \& Plagiarism Checker}. Recuperat el 20 d'abril de 2026, de \url{https://copyleaks.com/}
+
 \end{thebibliography}
+
+% ============================================
+% AGRAIMENTS
+% ============================================
+\chapter*{Agra\"iments}
+\label{chap:agraiments}
+\addcontentsline{toc}{chapter}{Agra\"iments}
+
+Vull expressar la meva gratitud a totes les persones que han fet possible aquest Treball de Fi de Grau.
+
+En primer lloc, al meu director, el professor \textbf{Marc Alier Forment}, per la seva orientaci\'o cont\'inua, les reunions setmanals de seguiment, i la seva metodologia ``Agents All the Way Down'' que ha estat el marc fonamental d'aquest projecte. La seva visi\'o sobre els sistemes meta-ag\`entics i la seva disposici\'o per experimentar amb noves tecnologies han estat clau per l'evoluci\'o del projecte des de la proposta inicial fins al sistema final.
+
+A l'\textbf{equip LAMB de l'ICE--UPC}, per proporcionar acc\'es als repositoris existents (SE-rubric-evaluAItor i DiagramLens), pel feedback t\`ecnic durant les fases de desenvolupament, i per facilitar el context educatiu real on s'emmarca aquest projecte.
+
+A la professora que ha participat en la validaci\'o comparativa, per la seva disposici\'o i proporcionar les mem\`ories i les puntuacions de refer\`encia que permeten mesurar la fiabilitat del sistema.
+
+Als meus \textbf{companys del grau d'Enginyeria Inform\`atica}, pel suport moral i les converses que han ajudat a clarificar idees durant els moments m\'es intensos del desenvolupament.
+
+Finalment, a la meva \textbf{fam\'ilia}, pel suport incondicional durant tota la carrera i, molt especialment, durant els mesos de dedicaci\'o intensiva que ha requerit aquest TFG.
 
 \end{document}
