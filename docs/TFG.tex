@@ -123,7 +123,7 @@ Aquest Treball de Fi de Grau presenta \textbf{SE-Agentic-Evaluator}, un sistema 
 
 Per fer-ho possible, el sistema combina tres idees clau. Primer, disposa d'un conjunt de 18 eines especialitzades (extracci\'o de text, an\`alisi de diagrames, generaci\'o d'informes, etc.) que l'agent invoca segons les necessitats de cada cas. Segon, genera autom\`aticament un pla de treball personalitzat per a cada r\'ubrica i el reutilitza amb m\'ultiples documents, estalviant temps i costos. I tercer, delega sempre el c\`alcul de les notes a codi Python ---mai al model d'IA--- de manera que cada puntuaci\'o quedi vinculada a una evid\`encia concreta del document, evitant errors num\`erics. El sistema tamb\'e interpreta diagrames i imatges t\`ecniques, i pot funcionar amb diversos prove\"idors de models d'IA (locals o al n\'uvol) sense necessitat de tocar el codi.
 
-SE-Agentic-Evaluator s'ha validat mitjan\c{c}ant sis escenaris t\`ecnics, tots completats amb \`exit, i mitjan\c{c}ant una comparaci\'o amb una avaluadora humana experta sobre mem\`ories reals de m\`aster. Els resultats confirmen que el sistema \'es robust, segur i capa\c{c} de produir avaluacions fiables en casos d'\'us reals.
+SE-Agentic-Evaluator s'ha validat mitjan\c{c}ant sis escenaris t\`ecnics, tots completats amb \`exit, i mitjan\c{c}ant una comparaci\'o amb una avaluadora humana experta sobre mem\`ories reals de m\`aster. La validaci\'o t\`ecnica del sistema \'es robusta; no obstant aix\`o, la comparaci\'o amb l'experta revela un biaix sistem\`atic cap a la infra-avaluaci\'o i una correlaci\'o encara feble, la qual cosa marca el cam\'i per a la futura calibraci\'o del sistema.
 
 \textbf{Paraules clau:} agent d'IA, avaluaci\'o assistida, workflow reutilitzable, visi\'o multimodal, c\`alcul determinista, multi-prove\"idor.
 
@@ -138,7 +138,7 @@ This Bachelor's Thesis presents \textbf{SE-Agentic-Evaluator}, a system that rep
 
 To achieve this, the system combines three key ideas. First, it relies on a set of 18 specialized tools (text extraction, diagram analysis, report generation, etc.) that the agent invokes according to the needs of each case. Second, it automatically generates a customized workflow for each rubric and reuses it across multiple documents, saving time and cost. Third, grade calculation is always delegated to Python code ---never to the AI model--- so that every score is tied to concrete evidence from the document, avoiding numerical errors. The system can also interpret diagrams and technical images, and works with several AI model providers (local or cloud-based) without requiring any code changes.
 
-SE-Agentic-Evaluator has been validated through six technical scenarios, all successfully completed, and through a comparison against an expert human evaluator on real master's theses. The results confirm that the system is robust, secure, and capable of producing reliable evaluations in real-world use cases.
+SE-Agentic-Evaluator has been validated through six technical scenarios, all successfully completed, and through a comparison against an expert human evaluator on real master's theses. The technical validation of the system is robust; however, the comparison with the human expert reveals a systematic bias towards under-evaluation and a still weak correlation, which paves the way for future system calibration.
 
 \textbf{Keywords:} AI agent, assisted evaluation, reusable workflow, multimodal vision, deterministic grading, multi-provider.
 
@@ -721,7 +721,6 @@ Addicionalment, el projecte segueix la metodologia \textbf{``Agents All the Way 
     \item \textbf{Fase P5 (Agent-Tests-Agent):} Implementar behavioral testing amb un agent avaluador que condueixi l'agent principal.
 \end{enumerate}
 
-El projecte ha completat les fases P1-P4 i actualment es troba en la fase P5 (validaci\'o amb escenaris reals).
 
 Com que el projecte \'es desenvolupat per un \'unic integrant dins del context de l'ecosistema LAMB, la metodologia \`agil est\`andard (tipus Scrum) s'adapta al projecte estructurant el treball en quatre fases iteratives (sprints llargs) de dues-tres setmanes de durada cadascuna:
 
@@ -732,28 +731,28 @@ Com que el projecte \'es desenvolupat per un \'unic integrant dins del context d
     \item \textbf{Fase 4 (Refinament i Documentaci\'o):} Implementaci\'o de millores identificades (configuraci\'o YAML, gesti\'o de fitxers intermedios), proves amb m\'ultiples documents, i redacci\'o de la mem\`oria final.
 \end{enumerate}
 
-Aquest enfocament permetr\`a tenir versions funcionals del sistema des de les primeres fases, facilitant l'adaptaci\'o a possibles canvis en els requisits de l'empresa. El control de versions del codi es gestionar\`a mitjan\c{c}ant Git, integrant els canvis progressivament per evitar trencaments en la branca principal, seguint el flux de treball de \textit{GitFlow}.
+Aquest enfocament ha pem\'es tenir versions funcionals del sistema des de les primeres fases, facilitant l'adaptaci\'o a possibles canvis en els requisits del projecte. El control de versions del codi s'ha gestionat mitjan\c{c}ant Git, integrant els canvis progressivament per evitar trencaments en la branca principal, seguint el flux de treball de \textit{GitFlow}.
 
 \section{M\`etode de validaci\'o}
 \label{sec:metode-validacio}
 
-Per validar que el projecte assoleix els objectius de manera rigorosa, s'implementaran mecanismes de seguiment del proc\'es i m\`etodes de validaci\'o del producte de programari.
+Per validar que el projecte ha assolit els objectius de manera rigorosa, s'han implementat mecanismes de seguiment del proc\'es i m\`etodes de validaci\'o del producte de programari.
 
 \textbf{Eines de seguiment del projecte:}
 
 \begin{itemize}
-    \item \textbf{Reunions de sincronitzaci\'o:} Es realitzaran reunions peri\`odiques setmanals amb el director del TFG. Aquestes trobades serviran per reportar l'estat de les tasques, resoldre bloquejos i validar que l'abast es mant\'e alineat amb les expectatives del negoci i de la universitat.
-    \item \textbf{Gestor de tasques:} S'emprar\`a una eina tipus Kanban (com GitHub Projects) per visibilitzar el flux de treball (tasques pendents, en curs i finalitzades) associat a les hist\`ories d'usuari definides a l'apartat de requeriments.
+    \item \textbf{Reunions de sincronitzaci\'o:} S'han realitzat reunions peri\`odiques setmanals amb el director del TFG. Aquestes trobades han servit per reportar l'estat de les tasques, resoldre bloquejos i validar que l'abast es mant\'e alineat amb les expectatives del projecte i de la universitat.
+    \item \textbf{Gestor de tasques:} S'ha emprat una eina tipus Kanban (com GitHub Projects) per visibilitzar el flux de treball (tasques pendents, en curs i finalitzades) associat a les hist\`ories d'usuari definides a l'apartat de requeriments.
 \end{itemize}
 
 \textbf{Validaci\'o t\`ecnica del programari:}
 
 \begin{itemize}
-    \item \textbf{Proves Unit\`aries i d'Integraci\'o:} Es desenvolupar\`a una bateria de proves per verificar el funcionament a\"illat dels m\`oduls determin\'istics (orphans, smart, iso25010, grader) i una prova d'integraci\'o que validi el flux complet de la Skill amb documents de prova coneguts.
-    \item \textbf{M\`etriques de Qualitat:} Es validar\`a que el 100\% dels judicis evaluatius inclouen evid\`encia, que la nota final es calcula de manera determin\'istica, i que les dades enviades a prove\"idors cloud compleixen les normatives de protecci\'o de dades.
+    \item \textbf{Proves Unit\`aries i d'Integraci\'o:} S'ha desenvolupat una bateria de proves per verificar el funcionament a\"illat dels m\`oduls determin\'istics (orphans, smart, iso25010, grader) i una prova d'integraci\'o que validi el flux complet de l'agent amb documents de prova coneguts.
+    \item \textbf{M\`etriques de Qualitat:} S'ha validat que el 100\% dels judicis evaluatius inclouen evid\`encia, que la nota final es calcula de manera determin\'istica, i que les dades enviades a prove\"idors cloud compleixen les normatives de protecci\'o de dades.
 \end{itemize}
 
-Finalment, tota decisi\'o t\`ecnica presa durant el desenvolupament (avaluaci\'o d'alternatives de disseny, canvis en la base de dades, etc.) quedar\`a documentada degudament, aportant el rigor propi d'un projecte d'enginyeria inform\`atica.
+Finalment, tota decisi\'o t\`ecnica presa durant el desenvolupament (avaluaci\'o d'alternatives de disseny, canvis en la base de dades, etc.) ha quedat documentada degudament, aportant el rigor propi d'un projecte d'enginyeria inform\`atica.
 % ============================================
 % CAPITOL 5: IMPLEMENTACIO
 % ============================================
@@ -1937,7 +1936,7 @@ A partir de les avaluacions completades fins a la data, es poden identificar els
     \item \textbf{Limitaci\'o de la mostra:} Amb 6 mem\`ories completes, les m\`etriques estad\'istiques tenen major pot\`encia que amb les 2 inicials, per\`o es requeriria un m\'inim de 8--10 mem\`ories per obtenir resultats estad\'isticament significatius. A m\'es, la comparaci\'o es realitza nom\'es a nivell de nota final, no per criteri, degut a la disponibilitat limitada de les puntuacions de l'avaluadora.
 \end{enumerate}
 
-Les m\`etriques de comparaci\'o amb l'avaluadora humana ($\bar{\Delta} = -2,06$, MAE $= 2,27$, correlaci\'o de Pearson $r = 0,226$) indiquen que l'agent tendeix a infra-avaluar respecte a l'expert hum\`a i que la correlaci\'o entre ambd\'os avaluadors \'es feble, principalment degut a la difer\`encia d'escala en les puntuacions (agent: 4,77--7,54; humana: 6,00--10,00).
+Les m\`etriques de comparaci\'o amb l'avaluadora humana ($\bar{\Delta} = -2,06$, MAE $= 2,27$, correlaci\'o de Pearson $r = 0,226$) indiquen que l'agent tendeix a infra-avaluar respecte a l'expert hum\`a i que la correlaci\'o entre ambd\'os avaluadors \'es feble, la qual cosa significa que l'agent i l'experta no coincideixen en l'ordre relatiu (o r\`anquing) de les mem\`ories avaluades.
 
 \section{Conclusions de la validaci\'o}
 \label{sec:conclusions-validacio}
@@ -1951,10 +1950,10 @@ La validaci\'o del sistema SE-Agentic-Evaluator ha demostrat que:
     \item \textbf{La seguretat \'es robusta:} Rebutja inputs maliciosos de manera segura i professional, oferint alternatives educatives.
     \item \textbf{La visi\'o multimodal funciona correctament:} Ha processat 25 de 26 imatges amb \`exit (96\%), millorant significativament la qualitat de l'avaluaci\'o de diagrames UML.
     \item \textbf{El flux complet funciona:} L'Escenari 1 ha validat el flux complet del sistema (generaci\'o + execuci\'o + informe) amb una nota de 7.0/10.
-    \item \textbf{Validaci\'o comparativa amb avaluador hum\`a:} La comparaci\'o amb una avaluadora humana experta sobre 6 mem\`ories reals de m\`aster ha perm\`es quantificar la fiabilitat del sistema i detectar biaixos avaluatius (Secci\'o~\ref{sec:validacio-humana}). L'agent genera un rang de notes entre 4,77 i 7,54, mentre que l'avaluadora humana assigna entre 6,00 i 10,00. L'agent tendeix a infra-avaluar ($\bar{\Delta} = -2,06$), amb un MAE de 2,27 punts i una correlaci\'o de Pearson de $r = 0,226$.
+    \item \textbf{Validaci\'o comparativa amb avaluador hum\`a:} La comparaci\'o amb una avaluadora humana experta sobre 6 mem\`ories reals de m\`aster ha revelat un biaix sistem\`atic cap a la infra-avaluaci\'o i una correlaci\'o encara feble (Secci\'o~\ref{sec:validacio-humana}). L'agent genera un rang de notes entre 4,77 i 7,54, mentre que l'avaluadora humana assigna entre 6,00 i 10,00. L'agent tendeix a infra-avaluar ($\bar{\Delta} = -2,06$), amb un MAE de 2,27 punts i una correlaci\'o de Pearson de $r = 0,226$.
 \end{enumerate}
 
-En resum, el sistema SE-Agentic-Evaluator ha demostrat ser robust i funcional en tots els 6 escenaris de validaci\'o t\`ecnica, i la validaci\'o comparativa amb avaluador hum\`a ha proporcionat evid\`encia addicional sobre la seva utilitat pr\`actica com a eina d'assist\`encia al professorat.
+En resum, la validaci\'o t\`ecnica del sistema SE-Agentic-Evaluator \'es robusta en els 6 escenaris provats; no obstant aix\`o, la comparaci\'o amb l'experta revela un biaix sistem\`atic cap a la infra-avaluaci\'o i una correlaci\'o encara feble, la qual cosa marca el cam\'i per a la calibraci\'o futura de l'eina abans del seu desplegament en producci\'o.
 
 % ============================================
 % CAPITOL 7: CONCLUSIONS I TREBALL FUTUR
@@ -2863,6 +2862,413 @@ SE-Agentic-Evaluator no substitueix la figura del professor, sin\'o que l'assist
 % ============================================
 % AGRAIMENTS
 % ============================================
+
+% ============================================
+% ANNEXOS
+% ============================================
+\appendix
+
+\chapter{Exemple de R\'ubrica YAML i Workflow JSON}
+\label{annex:rubrica-workflow}
+Aquest annex mostra la transformaci\'o d'una r\'ubrica docent en format YAML (utilitzada com a input de configuraci\'o) al pla d'execuci\'o (\textit{workflow}) en format JSON que el Workflow Generator crea de manera din\`amica per orquestrar l'avaluaci\'o.
+
+\section{R\'ubrica YAML (Fragment)}
+\begin{lstlisting}[language=yaml]
+version: '1.0'
+id: memories
+description: Rúbrica importada desde Markdown (13 criterios)
+provider:
+  type: dashscope
+  region: singapore
+  text_model: qwen3.6-plus
+  vision_model: qwen-vl-max
+rubric:
+  criteria:
+  - id: comprensio_de_lentorn_educatiu
+    name: Comprensió de l'entorn educatiu
+    weight: 0.0769
+    prompt: memories_comprensio_de_lentorn_educatiu.md
+    description: Evaluación de Comprensió de l'entorn educatiu según rúbrica importada.
+  - id: incorporacio_de_millores_de_1a_part
+    name: Incorporació de millores de 1a part
+    weight: 0.0769
+    prompt: memories_incorporacio_de_millores_de_1a_part.md
+    description: Evaluación de Incorporació de millores de 1a part según rúbrica importada.
+  - id: capacitat_dobservacio_i_analisi
+    name: Capacitat d'observació i anàlisi
+    weight: 0.0769
+    prompt: memories_capacitat_dobservacio_i_analisi.md
+    description: Evaluación de Capacitat d'observació i anàlisi según rúbrica importada.
+  - id: disseny_i_implementacio_didactica
+    name: Disseny i implementació didàctica
+    weight: 0.0769
+    prompt: memories_disseny_i_implementacio_didactica.md
+    description: Evaluación de Disseny i implementació didàctica según rúbrica importada.
+  - id: reflexio_i_millora_continua
+    name: Reflexió i millora contínua
+    weight: 0.0769
+    prompt: memories_reflexio_i_millora_continua.md
+    description: Evaluación de Reflexió i millora contínua según rúbrica importada.
+  - id: integracio_teoria_practica
+    name: Integració teoria pràctica
+    weight: 0.0769
+    prompt: memories_integracio_teoria_practica.md
+    description: Evaluación de Integració teoria pràctica según rúbrica importada.
+  - id: creacio_de_recursos_didactics
+    name: Creació de recursos didàctics
+    weight: 0.0769
+    prompt: memories_creacio_de_recursos_didactics.md
+    description: Evaluación de Creació de recursos didàctics según rúbrica importada.
+  - id: perspectiva_de_genere_en_stem
+    name: Perspectiva de gènere en STEM
+    weight: 0.0769
+    prompt: memories_perspectiva_de_genere_en_stem.md
+    description: Evaluación de Perspectiva de gènere en STEM según rúbrica importada.
+  - id: aportacions_dexperiencies
+    name: Aportacions d'experiències
+    weight: 0.0769
+    prompt: memories_aportacions_dexperiencies.md
+    description: Evaluación de Aportacions d'experiències según rúbrica importada.
+  - id: jornades_o_formacio_docent
+    name: Jornades o formació docent
+    weight: 0.0769
+    prompt: memories_jornades_o_formacio_docent.md
+    description: Evaluación de Jornades o formació docent según rúbrica importada.
+  - id: filosofia_docent
+    name: Filosofia docent
+    weight: 0.0769
+    prompt: memories_filosofia_docent.md
+    description: Evaluación de Filosofia docent según rúbrica importada.
+  - id: comunicacio_eficac
+    name: Comunicació eficaç
+    weight: 0.0769
+    prompt: memories_comunicacio_eficac.md
+    description: Evaluación de Comunicació eficaç según rúbrica importada.
+  - id: compliment_responsabilitat_i_dietari
+    name: Compliment, responsabilitat i dietari
+    weight: 0.0769
+    prompt: memories_compliment_responsabilitat_i_dietari.md
+    description: Evaluación de Compliment, responsabilitat i dietari según rúbrica
+      importada.
+options:
+  multimodal: true
+  skip_existing: false
+  detailed_scoring: false
+
+\end{lstlisting}
+
+\section{Workflow JSON generat (Fragment)}
+\begin{lstlisting}[language=json]
+{
+  "version": "1.0",
+  "name": "workflow_memories",
+  "description": "Workflow para evaluar memorias docentes contra la rúbrica 'memories'. Incluye extracción de DOCX, descripción de imágenes (multimodal), evaluación directa de criterios, cálculo de nota y generación de informe.",
+  "metadata": {
+    "rubric_id": "memories",
+    "created_at": "2026-06-15T17:39:59.623488",
+    "version": "1.0"
+  },
+  "variables": {
+    "input_docx": "path/to/document.docx",
+    "input_rubric": "path/to/rubric.yaml",
+    "output_dir": "path/to/output"
+  },
+  "steps": [
+    {
+      "id": "step_extract_docx",
+      "tool": "docx_extract",
+      "description": "Convertir el documento DOCX a Markdown para su procesamiento.",
+      "params": {
+        "input": "${variables.input_docx}",
+        "output_dir": "${variables.output_dir}/extracted"
+      },
+      "output": {
+        "contents_md": "markdown_path",
+        "images": "image_count"
+      },
+      "on_error": "abort"
+    },
+    {
+      "id": "step_describe_diagrams",
+      "tool": "describe_diagrams",
+      "description": "Analizar y describir imágenes/diagramas presentes en el documento (soporte multimodal).",
+      "params": {
+        "document_path": "${step_extract_docx.result.contents_md}",
+        "model": "${env.DASHSCOPE_VISION_MODEL}"
+      },
+      "output": {
+        "updated_md": "markdown_path",
+        "descriptions_count": "number"
+      },
+      "on_error": "skip"
+    },
+    {
+      "id": "step_evaluate",
+      "tool": "criterion_evaluator",
+      "description": "Evaluar el documento contra los criterios de la rúbrica sin análisis profundo.",
+      "params": {
+        "document": "${step_describe_diagrams.result.updated_md}",
+        "config": "${variables.input_rubric}",
+        "full": false,
+        "output_dir": "${variables.output_dir}/eval"
+      },
+      "output": {
+        "scores": "scores_dict",
+        "output_dir": "eval_dir"
+      },
+      "on_error": "abort"
+    },
+    {
+      "id": "step_grade",
+      "tool": "grader",
+      "description": "Calcular la nota final ponderada y el nivel de desempeño.",
+      "params": {
+        "scores": "${step_evaluate.result.scores}",
+        "config": "${variables.input_rubric}"
+      },
+      "output": {
+        "weighted_final": "final_grade",
+        "mean_xbar": "mean_score",
+        "performance_level": "performance_label"
+      },
+      "on_error": "abort"
+    },
+    {
+      "id": "step_report",
+      "tool": "report_generator",
+      "description": "Generar el informe final de evaluación consolidado.",
+      "params": {
+        "document": "${step_describe_diagrams.result.updated_md}",
+        "eval_dir": "${step_evaluate.result.output_dir}",
+        "config": "${variables.input_rubric}",
+        "scores": "${variables.output_dir}/eval/scores.json",
+        "output": "${variables.output_dir}/report.md"
+      },
+      "output": {
+        "report_path": "report_path"
+      },
+      "on_error": "abort"
+    }
+  ]
+}
+\end{lstlisting}
+
+\chapter{Exemple d'Informe Final d'Avaluaci\'o}
+\label{annex:informe-final}
+L'objectiu final del sistema \textit{SE-Agentic-Evaluator} \'es generar un informe detallat en format Markdown. A continuaci\'o es mostra un exemple real generat pel sistema (fragment inicial), on s'aprecia el desglossament de les puntuacions i la justificaci\'o qualitativa.
+
+\begin{lstlisting}[language=markdown]
+# Informe de Síntesis – Memòria de Pràctiques 
+
+**Estudiant:** (OMÈS PER PRIVACITAT)
+
+## 1. Resumen Ejecutivo  
+
+| Ítem | Valor |
+|------|-------|
+| **Nota final** | **7,54 / 10** |
+| **Nivell de desempeño** | **Bueno** |
+| **Valoración global** | El documento presenta una memoria completa, bien estructurada y con una reflexión profunda sobre la práctica docente. Destaca la capacidad de observació, l’anàlisi crítica i la generació de recursos pròpis. Les àrees més febles són la gestió documental (registre d’hores i cites bibliogràfiques) i alguns aspectes de redacció que es podrien perfeccionar. |
+
+### Principales Fortalezas  
+- **Anàlisi exhaustiva** de l’entorn del centre i de les pràctiques (criteris *aportacions_dexperiencies*, *capacitat_dobservacio_i_analisi*, *comprensio_de_lentorn_educatiu*).  
+- **Disseny i implementació d’una SA robusta** (corrent altern) amb objectius clars, components transversals i adaptacions per a la diversitat.  
+- **Creació de recursos digitals i materials inclusius** (simuladors, quadern interactiu, activitat de perspectiva de gènere).  
+- **Aplicació estructurada del model reflexiu ALACT‑R5** i una reflexió final que evidencia una millora contínua.  
+
+### Principales Debilidades  
+- **Documentació de compliment horari i bibliografia** insuficient (puntuació baixa en *compliment_responsabilitat_i_dietari* i *comunicacio_eficac*).  
+- **Escassa quantificació de dades** (percentatges d’alumnes amb TDAH, resultats d’avaluacions).  
+- **Algunes incoherències tipogràfiques** que dificulten la lectura.  
+- **Manca d’un pla d’acció detallat** per a les millores proposades.  
+
+---
+
+## 2. Análisis por Criterios  
+
+| Criteri | Puntuació | Comentari resumit |
+|---------|-----------|-------------------|
+| **aportacions_dexperiencies** | 9/10 | Identifica punts forts i febles de les experiències del centre; proposa millores concretes. |
+| **capacitat_dobservacio_i_analisi** | 9/10 | Observació detallada del grup‑classe, professorat i conflictes; reflexió teòrica sòlida. |
+| **compliment_responsabilitat_i_dietari** | 4/10 | Falta de quadre de control d’hores i data de lliurament; es percep que les hores s’han complert, però no queda documentat. |
+| **comprensio_de_lentorn_educatiu** | 9/10 | Descripció àmplia i crítica del centre, projectes i organització. |
+| **comunicacio_eficac** | 4/10 | Redacció clara però amb errors de codificació i sense referències bibliogràfiques. |
+| **creacio_de_recursos_didactics** | 9/10 | Recursos originals i adaptats (simuladors, quadern interactiu, activitat de gènere). |
+| **disseny_i_implementacio_didactica** | 9/10 | SA completa, seqüenciació, avaluació i adaptacions; bona integració de metodologies actives. |
+| **filosofia_docent** | 4/10 | Reflexió extensa però poc argumentada amb evidència empírica i sense citacions d’autors. |
+| **incorporacio_de_millores_de_1a_part** | 8/10 | Resposta clara a la retroalimentació anterior; algunes propostes encara són només suggeriments. |
+| **integracio_teoria_practica** | 8/10 | Connexió coherent amb marcs del màster; falta de cites bibliogràfiques concretes. |
+| **jornades_o_formacio_docent** | 7/10 | Assistència a WSCITECH25 descrita; es podria aprofundir en l’impacte a l’aula. |
+| **perspectiva_de_genere_en_stem** | 9/10 | Activitat de gènere ben dissenyada i avaluada; reflexió sobre rols i estereotips. |
+| **reflexio_i_millora_continua** | 9/10 | Cicle complet ALACT‑R5 amb propostes concretes i aplicació parcial. |
+
+### Criteri millor puntuats  
+- **aportacions_dexperiencies**, **capacitat_dobservacio_i_analisi**, **creacio_de_recursos_didactics**, **disseny_i_implementacio_didactica**, **perspectiva_de_genere_en_stem** (9/10).  
+
+### Criteri pitjor puntuats  
+- **compliment_responsabilitat_i_dietari**, **comunicacio_eficac**, **filosofia_docent** (4/10).  
+
+### Coherència general  
+Els apartats que descriuen el context i les pràctiques (B i C) són coherents amb les propostes didàctiques (C.1‑C.3). La reflexió final integra la majoria dels aprenentatges, però la manca de suport documental (hores, bibliografia) i la poca quantificació de resultats fan que la coherència sigui parcial.
+
+---
+
+## 3. Observaciones Transversals  
+
+1. **Patró d’anàlisi crítica**: En tots els criteris es troba una actitud reflexiva i orientada a la millora, indicant una mentalitat de “pràctica basada en evidències”.  
+2. **Enfocament competencial**: El treball destaca la integració de competències transversals (pensament crític, ODS, perspectiva de gènere, competència digital).  
+3. **Qualitat de la documentació**: L’estructura de la memòria és excel·lent (índex, seccions clares). No obstant, la presentació visual es veu afectada per errors de codificació i per l’absència de recursos annexos (rúbriques, enllaços).  
+4. **Ús de recursos digitals**: L’ús de PhET, Google Classroom i altres eines és consistent i ben motivat.  
+5. **Gestió de la diversitat**: S’apliquen principis de DUA i adaptacions per a alumnes amb dislèxia i TDAH, però la planificació per a l’alumnat nouvingut encara és limitada.  
+
+---
+
+## 4. Recomendaciones Prioritarias  
+
+| Prioritat | Recomanació | Acció concreta | Impacte esperat |
+|-----------|-------------|----------------|-----------------|
+| **1** | **Formalitzar el registre d’hores i la documentació de compliment** | Crear un quadre de control d’hores (data, tipus d’activitat, supervisor) i adjuntar-lo a la memòria. | Millora la transparència i garanteix el compliment del requisit horari (puntuació en *compliment_responsabilitat_i_dietari*). |
+| **2** | **Enriquir la base bibliogràfica i les citacions** | Incloure referències APA/Harvard per a marcs teòrics (ALACT, DUA, Vygotsky, etc.) i per a les fonts de recursos digitals. | Augmenta la credibilitat acadèmica i reforça la puntuació en *comunicacio_eficac* i *filosofia_docent*. |
+| **3** | **Quantificar les dades d’observació** | Recollir i presentar percentatges d’alumnes amb TDAH, NESE, resultats d’avaluacions diagnòstiques i post‑intervenció. | Permet validar les conclusions i millorar la robustesa de l’anàlisi (criteris d’observació i de comprensió del entorn). |
+| **4** | **Desenvolupar un pla d’acció per a les millores proposades** | Definir objectius, responsables, terminis i indicadors de seguiment per a cada proposta (p.ex., “reduir la durada de les sessions STEM a 45 min a partir del proper trimestre”). | Facilita la implementació i el seguiment, augmentant l’impacte de les millores i la puntuació en *incorporacio_de_millores_de_1a_part*. |
+| **5** | **Ampliar la perspectiva de gènere a més àrees** | Incorporar activitats de gènere en altres unitats (disseny de circuits, programació) i recollir dades de participació per gènere. | Consolidarà una cultura de coeducació transversal i reforçarà la puntuació en *perspectiva_de_genere_en_stem*. |
+
+---
+
+## 5. Fortalezas del Proyecto  
+
+| Àrea | Evidència |
+|------|-----------|
+| **Comprensió del context** | Descripció detallada del centre, projectes transversals i organització (B). |
+| **Disseny didàctic** | SA completa amb objectius, criteris d’avaluació, components transversals i adaptacions (C.3). |
+| **Innovació i recursos** | Simuladors, quadern interactiu, activitat de gènere, ús d’Arduino i impressora 3D (C.1‑c). |
+| **Reflexió i millora** | Aplicació del model ALACT‑R5 i pla de millora continu (D). |
+| **Compromís amb la diversitat** | DUA, suport a alumnes amb dislèxia i TDAH, aula d’acollida, perspectiva de gènere. |
+| **Participació en formació externa** | Assistència al congrés WSCITECH25 i integració de temes d’IA i biaixos de gènere. |
+
+---
+
+## 6. Conclusiones  
+
+- **Nivell aconseguit**: El treball demostra un nivell **buen** (7,5/10). La majoria dels criteris són superiors a 8, indicant una competència avançada en observació, disseny i reflexió pedagògica.  
+- **Adequació al context educatiu**: La proposta s’alinea amb les polítiques del centre (PEC, ODS, projectes Erasmus+) i respon a les necessitats del grup‑classe (diversitat, gènere, competències digitals).  
+- **Viabilitat del projecte**: Els recursos i les estratègies proposades són realitzables amb la infraestructura existent del centre. Les millores suggerides (formació homogènia en tecnologia, gestió de projectes) són factibles si es planifiquen adequadament.  
+
+**Recomanació final**: Consolidar la part documental (hores, bibliografia) i transformar les propostes de millora en un pla d’acció amb indicadors de seguiment. Això elevarà la qualitat global del treball, facilitarà la seva avaluació i potenciarà l’impacte real en l’aprenentatge dels alumnes.  
+
+---  
+
+*Aquest informe és una eina de suport per a la reflexió i la millora continuada. La decisió final de qualificació correspon al professorat responsable.*
+\end{lstlisting}
+
+\chapter{Prompts del Sistema (System Prompts)}
+\label{annex:prompts}
+L'arquitectura meta-ag\`entica d'aquest projecte dep\`en en gran mesura de la instrucci\'o inicial donada als models de llenguatge. Aquest annex detalla un dels \textit{prompts} m\'es cr\'itics del sistema: el prompt per generar un \textit{workflow}.
+
+\section{Workflow generator}
+\begin{lstlisting}[language=markdown]
+# Workflow Generator Prompt
+
+Eres un experto en Ingeniería del Software y evaluación académica. Tu tarea es **generar un workflow JSON** que defina los pasos necesarios para evaluar un documento académico contra una rúbrica dada.
+
+## Catálogo de Tools Disponibles
+
+--{CATALOGO}--
+
+## Rúbrica a Evaluar
+
+--{RUBRICA}--
+
+## Documento de Entrada (Contexto)
+
+--{DOCUMENTO}--
+
+## Instrucciones
+
+1. **Analiza la rúbrica**: Identifica los criterios de evaluación y sus pesos.
+2. **Selecciona las tools necesarias**: Elige SOLO las tools estrictamente necesarias para los criterios de la rúbrica.
+3. **NO uses `full: true` en `criterion_evaluator`**: A menos que la rúbrica requiera explícitamente análisis profundo de objetivos, requisitos o casos de uso. Para rúbricas de memoria técnica o diagramas, usa solo la evaluación directa.
+4. **Define el orden de ejecución**: Las tools de extracción deben ejecutarse antes que las de análisis, y las de análisis antes que las de evaluación.
+5. **Conecta los outputs con los inputs**: Usa referencias `${step_id.result.key}` para pasar datos entre steps.
+6. **Configura el manejo de errores**: Usa `on_error: "abort"` para steps críticos, `on_error: "skip"` para steps opcionales.
+7. **Genera un JSON válido** que cumpla con el siguiente esquema:
+
+```json
+{
+  "version": "1.0",
+  "name": "workflow_<nombre>",
+  "description": "<descripción breve>",
+  "metadata": {
+    "rubric_id": "<id de la rúbrica>",
+    "created_at": "<fecha actual ISO8601>",
+    "version": "1.0"
+  },
+  "variables": {
+    "input_docx": "path/to/document.docx",
+    "input_rubric": "path/to/rubric.yaml",
+    "output_dir": "path/to/output"
+  },
+  "steps": [
+    {
+      "id": "step_<nombre>",
+      "tool": "<nombre de la tool>",
+      "description": "<qué hace este paso>",
+      "params": { ... },
+      "output": { ... },
+      "on_error": "abort|skip|retry"
+    }
+  ]
+}
+```
+
+## Reglas
+
+- **NUNCA inventes tools** que no estén en el catálogo.
+- **Cada step debe tener un `id` único** con el formato `step_<nombre>`.
+- **Las referencias a variables** usan `${variable_name}` para variables iniciales y `${step_id.result.key}` para outputs de steps anteriores.
+- **El workflow debe ser MINIMALISTA**: no incluyas steps innecesarios. Si la rúbrica solo pide evaluar el documento, usa directamente `criterion_evaluator` con `full: false`.
+- **Si la rúbrica tiene criterios de trazabilidad** (matrices obj-req), incluye `detect_orphans`.
+- **Si la rúbrica tiene criterios de objetivos**, incluye `evaluate_smart`.
+- **Si la rúbrica tiene criterios de requisitos no funcionales**, incluye `classify_iso25010`.
+- **Si la rúbrica evalúa diagramas o imágenes** (ej. "Diagrama de clases", "Modelo C4"), incluye `describe_diagrams` después de la extracción del documento para que el evaluador pueda leer la descripción. **IMPORTANTE**: Cuando uses `describe_diagrams`, especifica el parámetro `"model": "qwen3-vl-32b"` (NO uses `qwen-vl-max` ni otros modelos de visión, ya que no están disponibles).
+- **EVITA `full: true`** a menos que sea estrictamente necesario.
+- **IMPORTANTE**: En la sección `variables`, usa paths genéricos (ej. `path/to/document.docx`) en lugar de paths reales del documento de ejemplo. El workflow debe ser reutilizable para cualquier documento.
+
+## Formato de Respuesta
+
+Responde SOLO con el JSON del workflow, sin texto adicional.
+\end{lstlisting}
+
+
+
+\chapter{Execuci\'o de l'Agent via Terminal (CLI)}
+\label{annex:execucio-terminal}
+At\`es que el sistema implementa una interf\'icie nativa de l\'inia de comandes (CLI) aplicant el Turtle Pattern, aquest annex recull una seq\"u\`encia de captures de pantalla que il·lustren una sessi\'o real d'avaluaci\'o.
+
+A les imatges es pot observar com l'agent carrega la configuraci\'o inicial, orquestra la crida din\`amica de m\'ultiples eines i reporta l'estat d'execuci\'o de manera interactiva a l'usuari.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{captura_1.png}
+    \caption{Inici de l'execuci\'o: C\`arrega de la r\'ubrica i inicialitzaci\'o de l'agent meta-ag\`entic.}
+    \label{fig:captura-1}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{captura_2.png}
+    \caption{Inici del la generaci\'o de l'informe: L'agent recull totes les avaluacions individuals per generar un informe final.}
+    \label{fig:captura-2}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{captura_3.png}
+    \caption{Finalitzaci\'o: L'agent conclou l'avaluaci\'o de tots els criteris i fa un resum executiu del proc\'es on indica els directoris de tots els documents generats.}
+    \label{fig:captura-3}
+\end{figure}
+
+
 \chapter*{Agra\"iments}
 \label{chap:agraiments}
 \addcontentsline{toc}{chapter}{Agra\"iments}
