@@ -82,15 +82,31 @@ ollama pull llava
 
 ## 💻 Ús de la CLI (se-agent)
 
-El projecte s'utilitza mitjançant la interfície de línia de comandes (CLI).
+La interacció principal amb el sistema es fa a través de l'executable `se-agent`, el qual implementa el **Turtle Pattern** per mantenir sessions interactives.
 
-### Iniciar l'Agent
-Arrenca l'agent interactiu proporcionant una rúbrica com a base:
+### 1. Iniciar una nova avaluació (run)
+Per demanar a l'agent que executi una tasca o avaluï un document nou:
 ```bash
-python se-agent --rubric configs/rubric_hito1.yaml
+./se-agent run "Avalua la memòria 'docs/memoria.pdf' utilitzant la rúbrica de l'hito 2"
 ```
 
-*L'agent inicialitzarà el context i et saludarà per terminal, esperant les teves instruccions per iniciar un procés d'extracció, creació de workflows o avaluació d'un document complet.*
+### 2. Llistar sessions actives
+El sistema guarda automàticament l'estat de les converses per poder-les reprendre més tard. Pots veure-les amb:
+```bash
+./se-agent list-sessions
+```
+
+### 3. Continuar una sessió existent (Multi-turn)
+Si vols que l'agent continuï una avaluació prèvia, per exemple per demanar-li correccions manuals o que generi l'informe final després d'avaluar:
+```bash
+./se-agent run --session-id abc123def456 "Genera l'informe final Markdown basat en l'avaluació que acabem de fer"
+```
+
+### 4. Mode d'integració (JSON Output)
+Si es vol integrar el CLI amb altres scripts o interfícies gràfiques, es pot forçar l'output estructurat:
+```bash
+./se-agent run --json "Resumeix els punts febles del document"
+```
 
 ---
 
