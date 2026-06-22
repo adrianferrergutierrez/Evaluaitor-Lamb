@@ -1,220 +1,105 @@
 # SE-Agentic-Evaluator
 
-Asistente agéntico para evaluación asistida por IA generativa, diseñado para
-**complementar** el juicio docente, **no sustituirlo**.
+Assistent meta-agèntic interactiu per a l'avaluació de lliurables acadèmics, dissenyat per **complementar** el judici docent, **no substituir-lo**. 
 
-> ⚠️ **Nota ética y de uso**  
-> Este sistema debe emplearse exclusivamente como herramienta de apoyo.
-> La calificación final y todas las decisiones académicas deben permanecer
-> bajo responsabilidad del profesorado.
+Aquest projecte implementa un cicle de vida complet d'agent d'IA seguint la metodologia **"Agents All the Way Down"** del professor Marc Alier (UPC), empaquetat com a eina de línia de comandes (CLI) aplicant el patró Turtle.
 
----
-
-## Propósito
-
-Transforma el pipeline rígido de investigación del proyecto
-[SE-rubric-evaluAItor](https://github.com/Lamb-Project/SE-rubric-evaluAItor)
-en una **Skill agéntica** para la plataforma **opencode.ai**, permitiendo:
-
-- **Selección dinámica de herramientas** según el contenido (texto, PDFs, diagramas UML).
-- **Visión multimodal local**: integra la lógica de
-  [DiagramLens](https://github.com/Lamb-Project/DiagramLens) para categorizar
-  y describir diagramas técnicos sin enviar datos a servicios externos.
-- **Privacidad RGPD**: todos los modelos de IA se ejecutan localmente vía
-  [Ollama](https://ollama.com).
-- **Trazabilidad**: cada afirmación evaluativa debe poder vincularse a
-  evidencia textual o visual del documento.
-- **Cálculo determinístico**: la nota final se calcula mediante un script
-  Python, nunca por el propio LLM, evitando errores de alucinación.
+> ⚠️ **Nota ètica i d'ús**  
+> Aquest sistema s'ha d'emprar exclusivament com a eina de suport. La qualificació final i totes les decisions acadèmiques han de romandre sota responsabilitat de l'equip docent humà.
 
 ---
 
-## Estructura del repositorio
+## 🎯 Arquitectura i Característiques Principals
 
-```
+- **Agent Loop Independent:** Bucle d'agent nadiu i segur que orquestra 18 *tools* especialitzades sense dependre de cap framework pesat de tercers.
+- **Workflow Generator & Executor:** Generació automàtica de plans d'execució JSON a partir de rúbriques YAML. Un cop generat, un workflow es pot reutilitzar amb infinits documents per optimitzar costos i temps.
+- **Visió Multimodal Local i Cloud:** Suport natiu per descriure diagrames UML inserits als documents mitjançant models de visió, traduint la imatge a text per l'avaluació.
+- **Suport Multi-Proveïdor (Capa d'abstracció):** Transició transparent entre entorns Cloud i Local canviant només una variable d'entorn.
+  - *Cloud:* DashScope (Qwen), OpenRouter (Llama, Gemma), Google Gemini.
+  - *Local:* Suport natiu per Ollama (ex. `qwen2.5-coder:1.5b`, `llava`) per assegurar el compliment estricte del **RGPD**.
+- **Càlcul Determinista:** El càlcul de les notes finals es fa sempre mitjançant codi Python determinista basat en els pesos de la rúbrica; l'IA només genera evidències texturals i sub-puntuacions per criteri.
+
+---
+
+## 📂 Estructura del Repositori
+
+```text
 SE-Agentic-Evaluator/
-├── .opencode/
-│   └── skills/
-│       └── evaluator_skill.md      # Definición de la Skill para opencode.ai
-├── configs/
-│   └── rubric_default.yaml         # Rúbrica por defecto (pesos, modelos, prompts)
+├── configs/               # Rúbriques en format YAML (pesos, descriptors)
 ├── core/
-│   ├── config/
-│   │   └── config_manager.py       # Carga y validación de configs YAML (Pydantic)
-│   ├── extraction/
-│   │   ├── objectives.py            # Tool: extraer OBJ-X
-│   │   ├── requirements.py          # Tool: extraer IRQ/NFR
-│   │   ├── use_cases.py             # Tool: extraer CU-XXX
-│   │   └── diagramlens/             # Módulo de visión (de DiagramLens)
-│   │       ├── annotate.py          # Lógica importable de descripción de diagramas
-│   │       └── image_categories_enhanced.json
-│   ├── analysis/
-│   │   ├── traceability.py          # Tool: análisis de trazabilidad OBJ<->IRQ
-│   │   ├── completeness.py          # Tool: análisis de completitud de requisitos
-│   │   ├── orphans.py               # Tool determinística: detección de huérfanos
-│   │   ├── smart.py                 # Helper: evaluación SMART de objetivos
-│   │   └── iso25010.py              # Helper: clasificación ISO/IEC 25010 de NFR
-│   └── grading/
-│       └── grader.py                # Script determinístico de calificación final
-├── prompts/                          # Prompts reales de SE-rubric-evaluAItor (GPL-3.0)
-│   ├── 1_1_extraccion_objetivos.md
-│   ├── 1_2_extraccion_requisitos.md
-│   ├── 1_3_extraccion_casos_de_uso.md
-│   ├── 2_1_analisis_trazabilidad.md
-│   ├── 2_2_analisis_completitud.md
-│   ├── 3_1_evaluacion_objetivos.md
-│   ├── 3_2_evaluacion_requisitos_info.md
-│   ├── 3_3_evaluacion_requisitos_nf.md
-│   ├── 3_4_evaluacion_caso_uso.md
-│   ├── 3_5_evaluacion_matrices.md
-│   └── 4_1_generacion_informe.md
-├── docs/
-│   └── TECHNICAL_NOTES.md
-├── requirements.txt
+│   ├── agent/             # Lògica core: agent.py, security.py, tools.py
+│   ├── clients/           # Capa d'abstracció LLM: base.py, ollama_client.py, dashscope_client.py
+│   ├── meta_agent/        # Workflow Generator
+│   ├── analysis/          # Tools d'anàlisi: completitud, trazabilitat, orfes (determinístic)
+│   ├── extraction/        # Tools per extracció de docs i processament multimodal
+│   └── grading/           # Càlcul de qualificacions matemàticament assegurades
+├── docs/                  # Memòria del TFG, annexos i imatges
+├── evaluations/           # Informes generats per l'agent (ex. memoria_garcia)
+├── workflows/             # Workflows JSON auto-generats
+├── se-agent               # Punt d'entrada de la CLI interactiva
 └── README.md
 ```
 
 ---
 
-## Dependencias
+## 🚀 Requisits i Instal·lació
 
+### 1. Entorn Virtual
+Es recomana utilitzar un entorn virtual Python (versió recomanada: 3.10+):
 ```bash
+python -m venv venv
+source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Requiere **Ollama** ejecutándose localmente con los modelos necesarios:
+### 2. Variables d'Entorn (.env)
+Crea un fitxer `.env` a l'arrel del projecte per configurar el teu proveïdor:
 
+**Opció A: Ús en Local (Privacitat Total amb Ollama)**
+```env
+LLM_PROVIDER=ollama
+OLLAMA_BASE_URL=http://localhost:11434
+OLLAMA_MODEL=qwen2.5-coder:1.5b
+OLLAMA_VISION_MODEL=llava
+```
+
+**Opció B: Ús Cloud (Alta precisió)**
+```env
+LLM_PROVIDER=dashscope
+DASHSCOPE_API_KEY=la_teva_clau_aqui
+DASHSCOPE_MODEL=qwen-max
+DASHSCOPE_VISION_MODEL=qwen-vl-max
+```
+
+### 3. Ollama (Només per a ús local)
+Si optes per la via local, descarrega't Ollama (https://ollama.com) i baixa els models:
 ```bash
-# Modelo de texto (extracción y análisis)
-ollama pull qwen3
-
-# Modelo de visión (descripción de diagramas)
-ollama pull qwen3-vl
+ollama pull qwen2.5-coder:1.5b
+ollama pull llava
 ```
 
 ---
 
-## Uso rápido
+## 💻 Ús de la CLI (se-agent)
 
-### 1. Extracción
+El projecte s'utilitza mitjançant la interfície de línia de comandes (CLI).
 
-```python
-from core.extraction.objectives import extract_objectives
-from core.extraction.requirements import extract_requirements, parse_objective_associations
-
-doc = open("entregable.md").read()
-objectives_md = extract_objectives(doc)
-requirements_md = extract_requirements(doc)
-```
-
-### 2. Detección de huérfanos (determinístico)
-
-```python
-from core.analysis.orphans import detect_orphans
-
-report = detect_orphans(objectives_md, requirements_md)
-print(report.as_markdown())
-```
-
-### 3. Evaluación SMART e ISO 25010 (determinística)
-
-```python
-from core.analysis.smart import evaluate_objectives_smart, smart_summary_markdown
-from core.analysis.iso25010 import classify_requirements_iso25010
-
-smart_scores = evaluate_objectives_smart(objectives_md)
-print(smart_summary_markdown(smart_scores))
-
-iso_report = classify_requirements_iso25010(requirements_md)
-print(iso_report.as_markdown())
-```
-
-### 4. Descripción de diagramas (requiere Ollama + modelo de visión)
-
-```python
-from core.extraction.diagramlens import process_markdown_document
-from pathlib import Path
-
-results = process_markdown_document(
-    input_md=Path("entregable.md"),
-    output_annotated=Path("entregable_anotado.md"),
-    output_summary=Path("resumen_diagramas.md"),
-)
-```
-
-### 5. Calificación final (determinístico)
-
+### Iniciar l'Agent
+Arrenca l'agent interactiu proporcionant una rúbrica com a base:
 ```bash
-python core/grading/grader.py \
-  --scores 7.5 8.0 6.0 7.0 8.5
-# Output: {"mean_xbar": 7.4}
-
-python core/grading/grader.py \
-  --criteria-json criteria.json
-# Output: {"weighted_final": 7.43}
-
-# Con configuración YAML personalizada
-python core/grading/grader.py \
-  --config configs/rubric_default.yaml \
-  --eval-md eval_obj.md:objetivos eval_cu.md:casos_uso
+python se-agent --rubric configs/rubric_hito1.yaml
 ```
+
+*L'agent inicialitzarà el context i et saludarà per terminal, esperant les teves instruccions per iniciar un procés d'extracció, creació de workflows o avaluació d'un document complet.*
 
 ---
 
-## Configuración de rúbrica
+## 📜 Crèdits i Llicència
 
-A partir de la versión 2, los pesos y criterios de la rúbrica se definen en
-archivos YAML dentro de `configs/`, en lugar de estar hardcodeados en el código.
+Desenvolupat com a Treball de Fi de Grau (TFG).
 
-```bash
-# Usar la rúbrica por defecto
-python core/grading/grader.py --config configs/rubric_default.yaml --scores 7 8 6 7 8
+Aquest projecte integra conceptes estructurals i fragments clau de:
+- **[SE-rubric-evaluAItor](https://github.com/Lamb-Project/SE-rubric-evaluAItor)** (Lamb-Project) – Lògica base de parsing de rúbriques.
+- **[DiagramLens](https://github.com/Lamb-Project/DiagramLens)** (Lamb-Project) – Lògica d'anotació multimodal de diagrames tècnics.
 
-# Crear una rúbrica personalizada
-cp configs/rubric_default.yaml configs/mi-rubrica.yaml
-# Editar mi-rubrica.yaml: cambiar criterios, pesos y prompts
-```
-
-Estructura del YAML:
-
-```yaml
-version: "1.0"
-id: "entregable-1-uso"
-description: "Evaluación Entregable 1 - Casos de Uso"
-
-models:
-  text: "qwen3:32b"
-  vision: "qwen3-vl:30b"
-
-rubric:
-  criteria:
-    - id: "objetivos"
-      name: "Objetivos del Sistema"
-      weight: 0.20
-      prompt: "3_1_evaluacion_objetivos.md"
-    # ... más criterios
-
-options:
-  multimodal: true
-  skip_existing: false
-```
-
-Los pesos se validan automáticamente (deben sumar ~1.0). La validación usa
-Pydantic para garantizar la integridad del esquema.
-
----
-
-## Créditos y licencias
-
-Este proyecto integra código de:
-
-- **[SE-rubric-evaluAItor](https://github.com/Lamb-Project/SE-rubric-evaluAItor)**
-  (Lamb-Project) – prompts, lógica de parsing y generación de reportes.
-  Licencia: GNU GPL v3.0.
-
-- **[DiagramLens](https://github.com/Lamb-Project/DiagramLens)**
-  (Lamb-Project) – lógica de descripción de diagramas vía modelos de visión.
-  Licencia: GNU GPL v3.0.
-
-El código de SE-Agentic-Evaluator que integra estos recursos también se
-distribuye bajo **GNU GPL v3.0** (ver `LICENSE`).
+Distribuït sota llicència **GNU GPL v3.0**.
