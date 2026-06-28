@@ -129,7 +129,7 @@ def compress_image_if_needed(image_path: Path) -> Path:
 
 def describe_diagrams(
     document_path: str,
-    model: str = os.environ.get("DASHSCOPE_VISION_MODEL", "qwen3-vl-32b"),
+    model: Optional[str] = None,
     prompt: str = (
         "Identify the specific type of this diagram (e.g., UML Class Diagram, Sequence Diagram, "
         "Use Case Diagram, Activity Diagram, ER Diagram, Flowchart, etc.). "
@@ -201,6 +201,12 @@ def describe_diagrams(
             "skipped": True,
             "reason": str(e)
         }
+    
+    if model is None:
+        if provider == "ollama":
+            model = os.environ.get("OLLAMA_VISION_MODEL", "llava")
+        else:
+            model = os.environ.get("DASHSCOPE_VISION_MODEL", "qwen3-vl-32b")
     
     matches = list(IMAGE_PATTERN.finditer(content))
     descriptions_count = 0

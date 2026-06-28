@@ -641,11 +641,10 @@ class DescribeDiagramsTool(Tool):
     def execute(self, **kwargs: Any) -> Dict[str, Any]:
         from core.extraction.diagramlens_tool import describe_diagrams
         
-        # Build kwargs for describe_diagrams, only including prompt if provided
-        call_kwargs = {
-            "model": os.environ.get("DASHSCOPE_VISION_MODEL", "qwen3-vl-32b"),
-        }
-        
+        call_kwargs = {}
+        if "model" in kwargs and kwargs["model"]:
+            call_kwargs["model"] = kwargs["model"]
+            
         # Only pass prompt if it's explicitly provided (not None)
         if "prompt" in kwargs and kwargs["prompt"]:
             call_kwargs["prompt"] = kwargs["prompt"]
