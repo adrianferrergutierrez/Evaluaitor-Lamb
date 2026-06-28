@@ -32,7 +32,8 @@ load_dotenv()
 
 import jsonschema
 
-from core.clients.dashscope_client import DashScopeClient
+from core.clients.base import BaseLLMClient
+from core.clients import get_client
 from core.meta_agent.tool_catalog import format_catalog_for_prompt
 
 logger = logging.getLogger(__name__)
@@ -107,7 +108,7 @@ def generate_workflow(
     output_path: Optional[str] = None,
     model: str = DEFAULT_MODEL,
     max_retries: int = MAX_RETRIES,
-    client: Optional[DashScopeClient] = None,
+    client: Optional[BaseLLMClient] = None,
 ) -> Dict[str, Any]:
     """Generate a workflow JSON from a rubric and document.
 
@@ -125,7 +126,7 @@ def generate_workflow(
     max_retries:
         Maximum number of retries if validation fails.
     client:
-        Optional DashScopeClient instance.
+        Optional BaseLLMClient instance.
 
     Returns
     -------
@@ -138,14 +139,10 @@ def generate_workflow(
         If workflow generation fails after all retries.
     """
     if client is None:
+        client = get_client()
         provider = os.environ.get("LLM_PROVIDER", "dashscope").lower()
-        if provider == "ollama":
-            from core.clients.ollama_client import OllamaClient
-            client = OllamaClient()
-            if model == DEFAULT_MODEL:
-                model = os.environ.get("OLLAMA_MODEL", "llama3.1")
-        else:
-            client = DashScopeClient()
+        if provider == "ollama" and model == DEFAULT_MODEL:
+            model = os.environ.get("OLLAMA_MODEL", "llama3.1")
 
     schema = _load_json(SCHEMA_PATH)
     catalog_text = format_catalog_for_prompt()
