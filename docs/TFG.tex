@@ -792,40 +792,45 @@ El sistema implementa una arquitectura meta-ag\`entica amb els seg\"uents compon
     darrow/.style={-{Stealth[length=2.5mm]}, thick, dashed},
 ]
 
-    % External actors
-    \node[external] (user) at (0, 4) {Usuari\\(Professor)};
-
     % Top layer
-    \node[component] (cli) at (0, 2) {CLI\\(\texttt{se-agent\_CLI})};
-    \node[component, fill=teal!15] (agent) at (4.5, 2) {Agent Loop\\(\texttt{agent.py})};
-    \node[component, fill=purple!15] (session) at (9, 2) {Session Store\\(\texttt{session\_store.py})};
+    \node[component, fill=gray!10] (user) at (4.5, 4.5) {Usuari};
+    \node[component, fill=blue!15] (cli) at (4.5, 3) {CLI\\\texttt{se-agent}};
+    \node[component, fill=teal!15] (agent) at (4.5, 1.5) {Agent Loop\\(\texttt{agent.py})};
+    
+    \node[component, fill=purple!15] (session) at (9, 3) {Session Store\\(\texttt{session\_store.py})};
+    \node[component, fill=red!10] (security) at (9, 1.5) {Security\\Policy};
 
-    % Middle layer
-    \node[component, fill=green!15] (wfgen) at (0, 0) {Workflow\\Generator};
-    \node[component, fill=green!15] (wfexec) at (4.5, 0) {Workflow\\Executor};
-    \node[component, fill=red!10] (security) at (9, 0) {Security\\Policy};
+    % Tool Registry - central hub
+    \node[component, fill=yellow!15, minimum width=6cm, minimum height=1.2cm] (registry) at (4.5, -0.5) {Tool Registry (18 tools)};
 
-    % Tool Registry - large box
-    \node[component, fill=yellow!15, minimum width=8cm, minimum height=1.2cm] (registry) at (4.5, -2) {Tool Registry (18 tools): extracci\'o | an\`alisi | avaluaci\'o | visi\'o | config | workflow};
+    % Workflow tools (integrated in registry)
+    \node[component, fill=green!15] (wfgen) at (-0.5, -0.5) {Workflow\\Generator};
+    \node[component, fill=green!15] (wfexec) at (9.5, -0.5) {Workflow\\Executor};
 
-    % Bottom layer - providers
-    \node[external, fill=orange!20] (dashscope) at (-3, -4) {DashScope\\(Qwen)};
-    \node[external, fill=orange!20] (ollama) at (2, -4) {Ollama\\(local)};
-    \node[external, fill=orange!20] (openrouter) at (7, -4) {OpenRouter\\(Gemma, Llama)};
-    \node[external, fill=orange!20] (gemini) at (12, -4) {Google\\Gemini};
-
-    % Grader
-    \node[component, fill=cyan!15] (grader) at (4.5, -6) {Grader\\(determin\'istic)};
+    % Bottom layer - providers & Grader
+    \node[external, fill=orange!20] (dashscope) at (-2, -3.5) {DashScope\\(Qwen)};
+    \node[external, fill=orange!20] (ollama) at (2.2, -3.5) {Ollama\\(local)};
+    \node[component, fill=cyan!15] (grader) at (4.5, -5) {Grader\\(determin\'istic)};
+    \node[external, fill=orange!20] (openrouter) at (6.8, -3.5) {OpenRouter\\(Gemma, Llama)};
+    \node[external, fill=orange!20] (gemini) at (11, -3.5) {Google\\Gemini};
 
     % Arrows
     \draw[arrow] (user) -- (cli);
     \draw[arrow] (cli) -- (agent);
+    
+    % Agent dependencies
     \draw[arrow] (agent) -- (session);
-    \draw[arrow] (cli) -- (wfgen);
-    \draw[arrow] (cli) -- (wfexec);
-    \draw[arrow] (agent) -- (wfexec);
-    \draw[arrow] (wfexec) -- (registry);
     \draw[arrow] (agent) -- (security);
+    \draw[arrow] (agent) -- (registry);
+    
+    % Registry exposes workflow tools
+    \draw[arrow] (registry) -- (wfgen);
+    \draw[arrow] (registry) -- (wfexec);
+    
+    % Executor relies on registry tools to complete steps
+    \draw[arrow] (wfexec.south) |- (4.5, -2) -- (registry.south);
+    
+    % Registry dependencies
     \draw[arrow] (registry) -- (dashscope);
     \draw[arrow] (registry) -- (ollama);
     \draw[arrow] (registry) -- (openrouter);
